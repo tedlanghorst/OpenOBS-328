@@ -1,3 +1,47 @@
+bool checkGuiConnection(){
+  long tStart = millis();
+  while(millis()-tStart<COMMS_WAIT){
+    sprintf(messageBuffer,"OPENOBS,%u",serialNumber);
+    serialSend(messageBuffer);
+    delay(100); //allow time for the gui to process/respond.
+    if(serialReceive(&messageBuffer[0])){
+      if(strncmp(messageBuffer,"$OPENOBS",8)==0){
+        clk_init = rtc.begin(); //reset the rtc
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+void receiveGuiSettings(){
+  serialSend("READY");
+  //wait indefinitely while user picks settings and clicks 'send' button.
+  while(true){
+    delay(100); 
+    if(serialReceive(&messageBuffer[0])){
+      //if we receive a message, start parsing the inividual words
+      //hardcoded order of settings string.
+      char *tmpbuf;
+      tmpbuf = strtok(messageBuffer,",");
+      if(strcmp(tmpbuf,"$SET")!=0) break; //somehow received another message.
+      tmpbuf = strtok(NULL, ",");
+      currentTime = atol(tmpbuf);   
+      tmpbuf = strtok(NULL, ",");
+      sleepDuration_seconds = atol(tmpbuf);
+      tmpbuf = strtok(NULL, "*");
+      delayedStart_seconds = atol(tmpbuf);
+      
+      rtc.adjust(DateTime(currentTime)); //set RTC
+      EEPROM.put(SLEEP_ADDRESS,sleepDuration_seconds); //store the new value.
+      serialSend("SET,SUCCESS");
+      delay(100);
+      break;
+    }
+  }
+}
+
+
 void requestData(){
   sendSize = myTransfer.txObj((byte)1,0);
   myTransfer.sendData(sendSize);

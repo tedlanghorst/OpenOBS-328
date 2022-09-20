@@ -1,12 +1,16 @@
 #include <Wire.h>               //standard library
 #include <SoftwareSerial.h>
 #include "SerialTransfer.h"
+#include "Adafruit_VCNL4010.h"
 #include <MS5803_14.h>          // https://github.com/millerlp/MS5803_14
 
-SoftwareSerial ArduinoMaster(3,4);
+#define DIAGNOSTICS true // Change this to see diagnostics
+
+SoftwareSerial ArduinoMaster(4,3);
 SerialTransfer myTransfer;
 
-//pressure sensor
+//sensors
+Adafruit_VCNL4010 vcnl;
 MS_5803 pressure_sensor = MS_5803(4096);
 
 //data storage
@@ -28,12 +32,22 @@ void setup()
   ArduinoMaster.begin(38400);
   myTransfer.begin(ArduinoMaster);
 
+  //initialize the light sensor
+  bool light_init = vcnl.begin();
+  if (!light_init){
+    /*
+    send an error back to the logger.
+    */
+    Serial.println("VCNL4010 not found");
+  }
+
   //initialize the pressure sensor
   bool pressure_init = pressure_sensor.initializeMS_5803();
   if(!pressure_init){
     /*
     send an error back to the logger.
     */
+    Serial.println("MS5803 not found");
   }
 }
 
@@ -42,14 +56,13 @@ void loop()
 {
   //Wait for a data request.
   if(myTransfer.available()){
-    Serial.println("received");
     myTransfer.rxObj(request);
   }
-
+  
   if(request == 1){
     //Replace our data fields with new sensor data.
-    data.tuBackground = 127;
-    data.tuReading = 32768;
+    data.tuBackground = vcnl.readAmbient();
+    data.tuReading = vcnl.readProximity();
     
     pressure_sensor.readSensor();
     data.p = pressure_sensor.pressure();

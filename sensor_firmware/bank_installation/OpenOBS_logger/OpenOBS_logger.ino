@@ -10,11 +10,11 @@
 //firmware data
 const DateTime uploadDT = DateTime((__DATE__),(__TIME__)); //saves compile time into progmem
 const char contactInfo[] PROGMEM = "tlang@live.unc.edu"; 
-const char dataColumnLabels[] PROGMEM = "time,amb,turb,P,temp";
+const char dataColumnLabels[] PROGMEM = "time,ambient,turbidity,pressure,temperature";
 uint16_t serialNumber; 
 
 //connected pins
-#define pChipSelect 10       //chip select pin for SD card
+#define pChipSelect 53       //chip select pin for SD card
 
 //EEPROM addresses
 #define SLEEP_ADDRESS 0
@@ -47,14 +47,14 @@ data_union_t data;
 uint8_t recordCount = 0;
 
 //time settings
+bool clk_init = true; //assume true, check on startup.
 long currentTime = 0;
-long sleepDuration_seconds = 15;
+long sleepDuration_seconds = 1;
 long delayedStart_seconds = 0;
 DateTime nextAlarm;
 DS3231 rtc; //create RTC object
 
 uint32_t lastRequestTime = 0;
-uint32_t logInterval = 1000; 
 uint16_t sendSize;
 
 //SD vars
@@ -65,7 +65,7 @@ SdFile file;
 
 //Iridium
 #define DIAGNOSTICS false // Change this to see diagnostics
-IridiumSBD modem(Serial2); 
+IridiumSBD modem(Serial3); 
 int err;
 
 void setup(){
@@ -74,42 +74,20 @@ void setup(){
   Wire.begin();
   EEPROM.get(SN_ADDRESS, serialNumber);
   
-  //Start serial port connected to the sensor
-  Serial2.begin(38400);
+  //Start serial port connected to the sensor.
+  Serial1.begin(38400);
   myTransfer.begin(Serial1);
- 
-  //Start the serial port connected to the satellite modem
-  modem.setPowerProfile(IridiumSBD::USB_POWER_PROFILE); //for testing
-  Serial2.begin(19200);
-  // Begin satellite modem operation
-  Serial.println(F("Starting modem..."));
-  err = modem.begin();
-  if (err != ISBD_SUCCESS){
-    Serial.print(F("Begin failed: error "));
-    Serial.println(err);
-    if (err == ISBD_NO_MODEM_DETECTED){
-      Serial.println(F("No modem detected: check wiring."));
-    }
-  }
 
-  int signalQuality = -1;
-  err = modem.getSignalQuality(signalQuality);
-  if (err != ISBD_SUCCESS){
-    Serial.print(F("SignalQuality failed: error "));
-    Serial.println(err);
-  }
-  Serial.print(F("On a scale of 0 to 5, signal quality is currently "));
-  Serial.print(signalQuality);
-  Serial.println(F("."));
-
+  //initialize the Iridium modem.
+  bool iridium_init = startIridium();
+  int signalQuality = getIridiumSignalQuality();
   
   /* With power switching between measurements, we need to know what kind of setup() this is.
    *  First, check if the firmware was updated.
    *  Next, check if the GUI connection forced a reset.
    *  If neither, we assume this is a power cycle during deployment and use stored settings.
    */
-  bool clk_init = true; //assume true, check in next blocks
-
+   
   //if firmware was updated, take those settings and time.
   uint32_t storedTime;
   EEPROM.get(UPLOAD_TIME_ADDRESS,storedTime);
@@ -123,55 +101,64 @@ void setup(){
   //otherwise check if the GUI is connected
   //send a startup message and wait a bit for an echo from the gui
   else {
-    long tStart = millis();
-    while(millis()-tStart<COMMS_WAIT){
-      sprintf(messageBuffer,"OPENOBS,%u",serialNumber);
-      serialSend(messageBuffer);
-      delay(100); //allow time for the gui to process/respond.
-      if(serialReceive(&messageBuffer[0])){
-        if(strncmp(messageBuffer,"$OPENOBS",8)==0){
-          guiConnected = true;
-          clk_init = rtc.begin(); //reset the rtc
-          break;
-        }
-      }
-    }
+    guiConnected = checkGuiConnection();
   }
   if (guiConnected == false){
     //if no contact from GUI, read last stored value
     EEPROM.get(SLEEP_ADDRESS,sleepDuration_seconds);
   }
-
+  
   //intialize SD card
   bool sd_init = sd.begin(pChipSelect,SPI_SPEED);
-  if(!sd_init) {
-    /*
-    send an error back to the logger.
-    */
-  }
+  if(!sd_init) serialSend("SDINIT,0");
   
   //initialize the RTC
-  if(!clk_init) {
-    /*
-    send an error back to the logger.
-    */
+  if(!clk_init) serialSend("CLKINIT,0");
+
+  if(!iridium_init) serialSend("IRIDIUMINIT,0");
+
+  //check sensor status
+//  if(!sensor_init) serialSend("SENSORINIT,0");
+
+  //if we had any errors turn off battery power and stop program.
+  //set another alarm to try again- intermittent issues shouldnt end entire deploy.
+  //RTC errors likely are fatal though. Will it even wake if RTC fails?
+  if(!sd_init | !clk_init | !iridium_init){
+    nextAlarm = DateTime(rtc.now().unixtime() + sleepDuration_seconds);
+    sensorSleep(nextAlarm);
   }
 
+  //if we have established a connection to the java gui, 
+  //send a ready message and wait for a settings response.
+  //otherwise, use the settings from EEPROM.
+  if(guiConnected){
+    receiveGuiSettings();
+  }
+
+  if(delayedStart_seconds>0){
+    nextAlarm = DateTime(currentTime + delayedStart_seconds);
+    sensorSleep(nextAlarm);
+  }
   
+  updateFilename();
+  sprintf(messageBuffer,"FILE,OPEN,%s\0",filename);
+  serialSend(messageBuffer);
 }
 
 
 void loop()
 {
   //Request data if it is the right time.
-  if((millis() - lastRequestTime)>logInterval){
+  if((millis() - lastRequestTime)>(sleepDuration_seconds*1000)){
     requestData();
     lastRequestTime = millis();
+    delay(50); //allow time to respond.
   }
 
   //Receive data if it is available.
   if(myTransfer.available()){
     myTransfer.rxObj(data.records[recordCount]);
+    data.records[recordCount].logTime = rtc.now().unixtime();
     writeDataToSD(data.records[recordCount]);
     recordCount += 1;
   }
@@ -190,7 +177,7 @@ void loop()
       Serial.print("temperature:\t");
       Serial.println(data.records[i].temp);
     }
-    
+    /*
     Serial.println(F("Trying to send the message.  This might take several minutes."));
     err = modem.sendSBDBinary(data.serialPacket,sizeof(data));
     
@@ -212,6 +199,7 @@ void loop()
       Serial.println(err);
     }
 
+    */
     
     Serial.println();
     recordCount = 0; //clear our packet idx
