@@ -16,10 +16,12 @@ MS_5803 pressure_sensor = MS_5803(4096);
 //data storage
 typedef struct single_record_t {
   uint32_t logTime = 0;
+  uint32_t hydro_p;
+  uint32_t baro_p = 0;
   uint16_t tuBackground;
   uint16_t tuReading; 
-  uint32_t p;
-  int16_t temp;
+  int16_t water_temp;
+  int16_t air_temp;
 };
 single_record_t data;
 
@@ -65,8 +67,8 @@ void loop()
     data.tuReading = vcnl.readProximity();
     
     pressure_sensor.readSensor();
-    data.p = pressure_sensor.pressure();
-    data.temp = pressure_sensor.temperature();
+    data.hydro_p = pressure_sensor.pressure();
+    data.water_temp = pressure_sensor.temperature();
     
     //Stuff buffer with struct.
     sendSize = myTransfer.txObj(data, 0);

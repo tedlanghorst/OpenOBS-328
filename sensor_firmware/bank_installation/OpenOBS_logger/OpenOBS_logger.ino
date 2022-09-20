@@ -1,9 +1,24 @@
+/* TODO
+ * Check sensor initialization with message exchange.
+ * Sleep cycling
+ *  full shutdown like original?
+ *  soft shutdown is likely a lot easier to manage
+ * Figure out optimal batching of iridium messages
+ *  Maximum time between messages?
+ *  Sending less often might save money (e.g. 50 bytes fits 2.5 messages)
+ * Battery power
+ *  Test solar setup from Adafruit
+ *  do we need to bother with full shutdown like autonomous?
+ * 
+ */
+
 #include <Wire.h>               //standard library
 #include <SPI.h>                //standard library
 #include <EEPROM.h>             //standard library
 #include "SerialTransfer.h"     //Version 3.1.2 https://github.com/PowerBroker2/SerialTransfer
 #include <SdFat.h>              //Version 2.0.7 https://github.com/greiman/SdFat //uses 908 bytes of memory
 #include <DS3231.h>             //Updated Jan 2, 2017 https://github.com/kinasmith/DS3231
+#include <MS5803_14.h>          // https://github.com/millerlp/MS5803_14
 #include <IridiumSBD.h> // Click here to get the library: http://librarymanager/All#IridiumSBDI2C
 
 
@@ -28,15 +43,19 @@ const int MAX_CHAR = 60;            //max num character in messages
 char messageBuffer[MAX_CHAR];       //buffer for sending and receiving comms
 
 SerialTransfer myTransfer;
+MS_5803 pressure_sensor = MS_5803(4096);
 
 //data storage
 typedef struct single_record_t {
   uint32_t logTime;
+  uint32_t hydro_p;
+  uint32_t baro_p;
   uint16_t tuBackground;
   uint16_t tuReading; 
-  uint32_t p;
-  int16_t temp;
-};
+  int16_t water_temp;
+  int16_t air_temp;
+}; //20 bytes
+
 //max message is 340 bytes, but charged per 50 bytes.
 #define N_RECORDS (int(50)/sizeof(single_record_t)) 
 typedef union data_union_t{
@@ -115,6 +134,10 @@ void setup(){
   //initialize the RTC
   if(!clk_init) serialSend("CLKINIT,0");
 
+  //initialize the pressure sensor
+  bool pressure_init = pressure_sensor.initializeMS_5803();
+  if(!pressure_init) serialSend("BAROINIT,0");
+
   if(!iridium_init) serialSend("IRIDIUMINIT,0");
 
   //check sensor status
@@ -158,7 +181,12 @@ void loop()
   //Receive data if it is available.
   if(myTransfer.available()){
     myTransfer.rxObj(data.records[recordCount]);
+    //add data from logger
     data.records[recordCount].logTime = rtc.now().unixtime();
+    pressure_sensor.readSensor();
+    data.baro_p = pressure_sensor.pressure();
+    data.air_temp = pressure_sensor.temperature(); //do we need atmospheric temperature?
+    
     writeDataToSD(data.records[recordCount]);
     recordCount += 1;
   }
