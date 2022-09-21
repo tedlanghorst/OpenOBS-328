@@ -25,9 +25,8 @@ typedef struct single_record_t {
 };
 single_record_t data;
 
-byte request = 0;
 uint16_t sendSize;
-
+byte request;
 void setup()
 {
   Serial.begin(115200);
@@ -61,12 +60,11 @@ void loop()
   }
   else if(request == 2){
     //Replace our data fields with new sensor data.
-    data.tuBackground = vcnl.readAmbient();
-    data.tuReading = vcnl.readProximity();
-    
     pressure_sensor.readSensor();
     data.hydro_p = pressure_sensor.pressure();
     data.water_temp = pressure_sensor.temperature();
+    data.tuBackground = vcnl.readAmbient();
+    data.tuReading = vcnl.readProximity();
     
     //Fill buffer with a data struct.
     sendSize = myTransfer.txObj(data, 0);

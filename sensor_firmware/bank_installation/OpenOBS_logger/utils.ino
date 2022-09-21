@@ -7,17 +7,22 @@ void sensorSleep(DateTime nextAlarm){
   delay(delayedStart_seconds*1000); //delay program if we have another power source
 }
 
+
 void writeDataToSD(single_record_t record){
   file.open(filename, O_WRITE | O_APPEND);
     file.print(record.logTime);
+    file.print(',');
+    file.print(record.hydro_p);
+    file.print(',');
+    file.print(record.baro_p);
     file.print(',');
     file.print(record.tuBackground);
     file.print(',');
     file.print(record.tuReading);
     file.print(',');
-    file.print(record.p);
+    file.print(record.water_temp);
     file.print(',');
-    file.println(record.temp);
+    file.println(record.air_temp);
   file.close();
 }
 
