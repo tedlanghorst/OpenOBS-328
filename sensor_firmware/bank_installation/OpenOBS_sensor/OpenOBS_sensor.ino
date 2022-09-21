@@ -35,22 +35,10 @@ void setup()
   myTransfer.begin(ArduinoMaster);
 
   //initialize the light sensor
-  bool light_init = vcnl.begin();
-  if (!light_init){
-    /*
-    send an error back to the logger.
-    */
-    Serial.println("VCNL4010 not found");
-  }
-
+  bool turb_init = vcnl.begin();
   //initialize the pressure sensor
   bool pressure_init = pressure_sensor.initializeMS_5803();
-  if(!pressure_init){
-    /*
-    send an error back to the logger.
-    */
-    Serial.println("MS5803 not found");
-  }
+  
 }
 
 
@@ -60,8 +48,18 @@ void loop()
   if(myTransfer.available()){
     myTransfer.rxObj(request);
   }
-  
+
   if(request == 1){
+    byte sensor_init = (turb_init << 1) + pressure_init;
+    Serial.println(sensor_init);
+    //Fill buffer with initializations
+    sendSize = myTransfer.txObj(sensor_init, 0);
+  
+    //Send buffer to the logger.
+    myTransfer.sendData(sendSize);
+    request = 0;
+  }
+  else if(request == 2){
     //Replace our data fields with new sensor data.
     data.tuBackground = vcnl.readAmbient();
     data.tuReading = vcnl.readProximity();
@@ -70,7 +68,7 @@ void loop()
     data.hydro_p = pressure_sensor.pressure();
     data.water_temp = pressure_sensor.temperature();
     
-    //Stuff buffer with struct.
+    //Fill buffer with a data struct.
     sendSize = myTransfer.txObj(data, 0);
   
     //Send buffer to the logger.

@@ -6,12 +6,12 @@ bool checkGuiConnection(){
     delay(100); //allow time for the gui to process/respond.
     if(serialReceive(&messageBuffer[0])){
       if(strncmp(messageBuffer,"$OPENOBS",8)==0){
-        clk_init = rtc.begin(); //reset the rtc
-        return true;
+        status.module.clk = rtc.begin(); //reset the rtc
+        guiConnected = true;
       }
     }
   }
-  return false;
+  return guiConnected;
 }
 
 void receiveGuiSettings(){
@@ -41,13 +41,11 @@ void receiveGuiSettings(){
   }
 }
 
-
-void requestData(){
-  sendSize = myTransfer.txObj((byte)1,0);
+void sensorRequest(byte request){
+  sendSize = myTransfer.txObj(request,0);
   myTransfer.sendData(sendSize);
   Serial.println("Requesting...");
 }
-
 
 /*function reads in the available serial data, checks for an NMEA-style sentence, 
 and verifies the checksum. The function returns the result of the checksum validation 

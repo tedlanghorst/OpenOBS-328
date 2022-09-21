@@ -3,11 +3,11 @@ bool startIridium() {
   //Start the serial port connected to the satellite modem
   Serial3.begin(19200);
   Serial.println(F("Starting modem..."));
-  err = modem.begin();
-  if (err != ISBD_SUCCESS) {
+  modemErr = modem.begin();
+  if (modemErr != ISBD_SUCCESS) {
     Serial.print(F("Begin failed: error "));
-    Serial.println(err);
-    if (err == ISBD_NO_MODEM_DETECTED) {
+    Serial.println(modemErr);
+    if (modemErr == ISBD_NO_MODEM_DETECTED) {
       Serial.println(F("No modem detected: check wiring."));
     }
     return false;
@@ -17,10 +17,10 @@ bool startIridium() {
 
 int getIridiumSignalQuality() {
   int quality;
-  err = modem.getSignalQuality(quality);
-  if (err != ISBD_SUCCESS) {
+  modemErr = modem.getSignalQuality(quality);
+  if (modemErr != ISBD_SUCCESS) {
     Serial.print(F("SignalQuality failed: error "));
-    Serial.println(err);
+    Serial.println(modemErr);
     return -1;
   } 
   Serial.print(F("On a scale of 0 to 5, signal quality is currently "));

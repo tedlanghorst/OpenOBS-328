@@ -5,7 +5,6 @@ void sensorSleep(DateTime nextAlarm){
   delay(100); //ensure the alarm is set
   rtc.clearAlarm(); //turn off battery
   delay(delayedStart_seconds*1000); //delay program if we have another power source
-  
 }
 
 void writeDataToSD(single_record_t record){
