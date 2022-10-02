@@ -1,49 +1,10 @@
-void sensorRequest(byte request){
-  sendSize = myTransfer.txObj(request,0);
-  myTransfer.sendData(sendSize);
-  if (request == 2) Serial.println("Sensor Request: data");
-}
-
-void sensorWake(){
-  digitalWrite(pSensorPower,LOW); // turn on sensor.
-  Serial1.begin(115200);
-  myTransfer.begin(Serial1);
-
-  sensorRequest(1);
-  
-  long tStart = millis();
-  while(startup.module.sensor != 3 && millis()-tStart<COMMS_WAIT){
-    if(myTransfer.available()){
-      //For some reason we need to read the transfer into a tmp object this time. 
-      //Maybe something incongruous with the strcuture. Works with data struct.
-      byte tmp;
-      myTransfer.rxObj(tmp);
-      startup.module.sensor = tmp;
-    }
-  }
-}
-
-void sensorSleep(){
-  digitalWrite(pSensorPower,HIGH); //turn off sensor.
-  Serial1.end();
-  startup.module.sensor = 0;
-}
-
-
-void loggerSleep(DateTime alarmTime){
-  digitalWrite(pIridiumPower,LOW);
-  RTC.clearAlarm(); //clear last alarm
-  RTC.enableAlarm(alarmTime);
+void sensorSleep(DateTime nextAlarm){
+  RTC.enableAlarm(nextAlarm);
+  setBBSQW(); //enable battery-backed alarm
   serialSend("POWEROFF,1");
-  attachInterrupt(digitalPinToInterrupt(pRtcInterrupt), wake, LOW);
-  sensorSleep();
-  LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
-//  delay(sleepDuration_seconds*1000); //delay program if we have another power source
-}
-
-void wake(){
-  Serial.println("Alarm triggered!");
-  detachInterrupt(digitalPinToInterrupt(pRtcInterrupt)); 
+  delay(100); //ensure the alarm is set
+  RTC.clearAlarm(); //turn off battery
+  delay(sleepDuration_seconds*1000); //delay program if we have another power source
 }
 
 

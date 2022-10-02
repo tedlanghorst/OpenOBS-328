@@ -16,21 +16,24 @@
 #include <Wire.h>               //standard library
 #include <SPI.h>                //standard library
 #include <EEPROM.h>             //standard library
+#include "LowPower.h"           
 #include "SerialTransfer.h"     //Version 3.1.2 https://github.com/PowerBroker2/SerialTransfer
 #include <SdFat.h>              //Version 2.0.7 https://github.com/greiman/SdFat //uses 908 bytes of memory
 #include <DS3231.h>             //Updated Jan 2, 2017 https://github.com/kinasmith/DS3231
-#include <MS5803_14.h>          // https://github.com/millerlp/MS5803_14
 #include <IridiumSBD.h> // Click here to get the library: http://librarymanager/All#IridiumSBDI2C
 
 
 //firmware data
 const DateTime uploadDT = DateTime((__DATE__),(__TIME__)); //saves compile time into progmem
 const char contactInfo[] PROGMEM = "If found, please contact tlang@live.unc.edu"; 
-const char dataColumnLabels[] PROGMEM = "time,hydrostatic_pressure,barometric_pressure,ambient_light,scattered_light,water_temperature,air_temperature";
+const char dataColumnLabels[] PROGMEM = "time,hydrostatic_pressure,ambient_light,scattered_light,water_temperature";
 uint16_t serialNumber; 
 
 //connected pins
 #define pChipSelect 53       //chip select pin for SD card
+#define pRtcInterrupt 2
+#define pSensorPower 4
+#define pIridiumPower 5
 
 //EEPROM addresses
 #define SLEEP_ADDRESS 0
@@ -39,23 +42,20 @@ uint16_t serialNumber;
 
 //gui communications vars
 bool guiConnected = false;
-const uint16_t COMMS_WAIT = 500;    //ms delay to try gui connection
+const uint16_t COMMS_WAIT = 1000;    //ms delay to try gui connection
 const int MAX_CHAR = 60;            //max num character in messages
 char messageBuffer[MAX_CHAR];       //buffer for sending and receiving comms
 
 SerialTransfer myTransfer;
-MS_5803 pressure_sensor = MS_5803(4096);
 
 //data storage variables
 typedef struct single_record_t {
   uint32_t logTime;
   uint32_t hydro_p;
-  uint32_t baro_p;
   uint16_t tuBackground;
   uint16_t tuReading; 
   int16_t water_temp;
-  int16_t air_temp;
-}; //20 bytes
+}; //16 bytes
 //max message is 340 bytes, but charged per 50 bytes.
 #define N_RECORDS (int(50)/sizeof(single_record_t)) 
 typedef union data_union_t{
@@ -63,30 +63,31 @@ typedef union data_union_t{
  byte serialPacket[sizeof(single_record_t)*N_RECORDS];
 };
 data_union_t data;
+data_union_t data_failedPacket;
 uint8_t recordCount = 0;
+bool failedPacket = false;
 
 //initialization variable
 typedef struct module_t {
   bool sd:1;
   bool clk:1;
-  bool baro:1;
   bool iridium:1;
   byte sensor:2;
 };
-typedef union status_t {
+typedef union startup_t {
   module_t module;
   byte b;
 };
-status_t status;
-status.module.clk = true; //assume true, check on startup.
+startup_t startup;
 
 //time settings
 long currentTime = 0;
-long sleepDuration_seconds = 1;
+long sleepDuration_seconds = 5;
 long delayedStart_seconds = 0;
 DateTime nextAlarm;
-DS3231 rtc; //create RTC object
+DS3231 RTC; //create RTC object
 
+//serial transfer vars
 uint32_t lastRequestTime = 0;
 uint16_t sendSize;
 
@@ -106,21 +107,22 @@ void setup(){
   Serial.setTimeout(50);
   Wire.begin();
   EEPROM.get(SN_ADDRESS, serialNumber);
-  
-  //Start serial port connected to the sensor.
-  Serial1.begin(38400);
-  myTransfer.begin(Serial1);
+
+//  pinMode(pRtcInterrupt, INPUT);
+//  digitalWrite(pRtcInterrupt, HIGH);
+  pinMode(pSensorPower,OUTPUT);
+  pinMode(pIridiumPower,OUTPUT);
+
 
   //initialize the Iridium modem.
-  status.module.iridium = startIridium();
+  startup.module.iridium = startIridium();
   int signalQuality = getIridiumSignalQuality();
   
-  /* With power switching between measurements, we need to know what kind of setup() this is.
-   *  First, check if the firmware was updated.
-   *  Next, check if the GUI connection forced a reset.
-   *  If neither, we assume this is a power cycle during deployment and use stored settings.
-   */
-   
+/* With power switching between measurements, we need to know what kind of setup() this is.
+ *  First, check if the firmware was updated.
+ *  Next, check if the GUI connection forced a reset.
+ *  If neither, we assume this is a power cycle during deployment and use stored settings.
+ */
   //if firmware was updated, take those settings and time.
   uint32_t storedTime;
   EEPROM.get(UPLOAD_TIME_ADDRESS,storedTime);
@@ -128,42 +130,41 @@ void setup(){
     EEPROM.put(UPLOAD_TIME_ADDRESS,uploadDT.unixtime());
     EEPROM.put(SLEEP_ADDRESS,sleepDuration_seconds);
     Serial.println("Firmware updated");
-    status.module.clk = rtc.begin(); //reset the rtc
-    rtc.adjust(uploadDT);
+    startup.module.clk = RTC.begin(); //reset the RTC
+    RTC.adjust(uploadDT);
   }  
   //otherwise check if the GUI is connected
   //send a startup message and wait a bit for an echo from the gui
-  else if (checkGuiConnection())
+  else if (checkGuiConnection());
   else {
     //if no contact from GUI, read last stored value
     EEPROM.get(SLEEP_ADDRESS,sleepDuration_seconds);
+    startup.module.clk = true; //assume true if logger woke up.
   }
   
-  //intialize SD card
-  status.module.sd = sd.begin(pChipSelect,SPI_SPEED);
-  if(!status.module.sd) serialSend("SDINIT,0");
-  
-  //initialize the RTC
-  if(!status.module.clk) serialSend("CLKINIT,0");
-
-  //initialize the pressure sensor
-  status.module.baro = pressure_sensor.initializeMS_5803();
-  if(!status.module.baro) serialSend("BAROINIT,0");
-
-  if(!status.module.iridium) serialSend("IRIDIUMINIT,0");
-
-//  check sensor status
-  sensorRequest(1);
-  delay(50); //give the sensor time to respond.
-  if(myTransfer.available()) myTransfer.rxObj(status.module.sensor);
-  if(status.module.sensor != 3) serialSend("SENSORINIT,0");
+  //Initialize & check all the modules.
+  startup.module.sd = sd.begin(pChipSelect,SPI_SPEED);
+  if(!startup.module.sd) serialSend("SDINIT,0");
+  if(!startup.module.clk) serialSend("CLKINIT,0");
+  if(!startup.module.iridium) serialSend("IRIDIUMINIT,0");
+  sensorWake();
+  if(startup.module.sensor != 3) serialSend("SENSORINIT,0");
 
   //if we had any errors turn off battery power and stop program.
   //set another alarm to try again- intermittent issues shouldnt end entire deploy.
   //RTC errors likely are fatal though. Will it even wake if RTC fails?
-  if(!(status.b && 0xFF)){
-    nextAlarm = DateTime(rtc.now().unixtime() + sleepDuration_seconds);
-    sensorSleep(nextAlarm);
+  while(startup.b != 0b11111){    
+    nextAlarm = DateTime(RTC.now().unixtime() + sleepDuration_seconds);
+    loggerSleep(nextAlarm);
+    
+    //Initialize & check all the modules.
+    Serial.println(F("rechecking modules...."));
+    startup.module.sd = sd.begin(pChipSelect,SPI_SPEED);
+    if(!startup.module.sd) serialSend("SDINIT,0");
+    if(!startup.module.clk) serialSend("CLKINIT,0");
+    if(!startup.module.iridium) serialSend("IRIDIUMINIT,0");
+    sensorWake();
+    if(startup.module.sensor != 3) serialSend("SENSORINIT,0");
   }
 
   //if we have established a connection to the java gui, 
@@ -175,7 +176,7 @@ void setup(){
 
   if(delayedStart_seconds>0){
     nextAlarm = DateTime(currentTime + delayedStart_seconds);
-    sensorSleep(nextAlarm);
+    loggerSleep(nextAlarm);
   }
   
   updateFilename();
@@ -183,31 +184,27 @@ void setup(){
   serialSend(messageBuffer);
 }
 
-
 void loop()
-{
-  //Request data if it is the right time.
-  if((millis() - lastRequestTime)>(sleepDuration_seconds*1000)){
-    sensorRequest(2);
-    lastRequestTime = millis();
-    delay(50); //allow time to respond.
-  }
+{ 
+  nextAlarm = DateTime(RTC.now().unixtime() + sleepDuration_seconds);
+  
+  //Request data
+  while(startup.module.sensor != 3) sensorWake();
+  sensorRequest(2);
+  delay(250); //allow time to respond.
 
   //Receive data if it is available.
   if(myTransfer.available()){
     myTransfer.rxObj(data.records[recordCount]);
-    //add data from logger
-    data.records[recordCount].logTime = rtc.now().unixtime();
-    pressure_sensor.readSensor();
-    data.baro_p = pressure_sensor.pressure();
-    data.air_temp = pressure_sensor.temperature(); //do we need atmospheric temperature?
-    
+    data.records[recordCount].logTime = RTC.now().unixtime();
+    sensorSleep();
     writeDataToSD(data.records[recordCount]);
     recordCount += 1;
   }
 
   //if we have filled out transmit packet...
   if(recordCount == N_RECORDS){
+    Serial.println();
     for(int i=0; i<N_RECORDS; i++){
       Serial.print("time:\t\t");
       Serial.println(data.records[i].logTime);
@@ -215,38 +212,62 @@ void loop()
       Serial.println(data.records[i].tuBackground);
       Serial.print("reading:\t");
       Serial.println(data.records[i].tuReading);
-      Serial.print("pressure:\t");
-      Serial.println(data.records[i].p);
-      Serial.print("temperature:\t");
-      Serial.println(data.records[i].temp);
-    }
-    
-    /*
-    Serial.println(F("Trying to send the message.  This might take several minutes."));
-    modemErr = modem.sendSBDBinary(data.serialPacket,sizeof(data));
-    
-    if (modemErr != ISBD_SUCCESS){
-      Serial.print(F("sendSBDText failed: error "));
-      Serial.println(modemErr);
-      if (modemErr == ISBD_SENDRECEIVE_TIMEOUT)
-        Serial.println(F("Try again with a better view of the sky."));
-    } 
-    else {
-      Serial.println(F("Hey, it worked!"));
+      Serial.print("hydro p:\t");
+      Serial.println(data.records[i].hydro_p);
+      Serial.print("water temp:\t");
+      Serial.println(data.records[i].water_temp); 
+      Serial.println();
+      Serial.flush();
     }
 
-    // Clear the Mobile Originated message buffer
-    Serial.println(F("Clearing the MO buffer."));
-    modemErr = modem.clearBuffers(ISBD_CLEAR_MO); // Clear MO buffer
-    if (modemErr != ISBD_SUCCESS){
-      Serial.print(F("clearBuffers failed: error "));
-      Serial.println(modemErr);
-    }
-
-    */
+    int tries = 0;
+    bool messageSent = false;
+    digitalWrite(pIridiumPower,HIGH);
+    while (!messageSent && tries<5){
+      Serial.println(F("Trying to send the message.  This might take a minute."));
+      //This could be more elegant. Currently only care if the current packet sends. 
+      //If we fail 2 in a row the older will be overwritten (still on SD card).
+      //Should also pack this stuff in a function, could handle the 2 sends more elegantly that way.
+      if (failedPacket){
+        //send the old data if we have some.
+        modemErr = modem.sendSBDBinary(data_failedPacket.serialPacket,sizeof(data_failedPacket));
+        if (modemErr == ISBD_SUCCESS) failedPacket = false;
+      }
+      //send the current data packet.
+      modemErr = modem.sendSBDBinary(data.serialPacket,sizeof(data));
+      tries++;
+      
+      if (modemErr != ISBD_SUCCESS){
+        Serial.print(F("sendSBDText failed: error "));
+        Serial.println(modemErr);
+        if (modemErr == ISBD_SENDRECEIVE_TIMEOUT)
+          Serial.println(F("Try again with a better view of the sky."));
+      } 
+      else {
+        Serial.println(F("Message sent!"));
+        messageSent = true;
+      }
+  
+      // Clear the Mobile Originated message buffer
+      modemErr = modem.clearBuffers(ISBD_CLEAR_MO); // Clear MO buffer
+      if (modemErr != ISBD_SUCCESS){
+        Serial.print(F("clearBuffers failed: error "));
+        Serial.println(modemErr);
+      }
     
     Serial.println();
-    recordCount = 0; //clear our packet idx
-    while(true){}; //for now, hang so we don't spam Iridium accidentally.
+    recordCount = 0; //reset our packet idx
+    }
+    if (!messageSent){
+      data_failedPacket = data; //store failed data, try next time.
+      failedPacket = true;
+    }
+  }
+
+  //ensure a 5 second margin for the next alarm before shutting down.
+  //if the alarm we set during this wake has already passed, the OBS will never wake up.
+  long timeUntilAlarm = nextAlarm.unixtime()-RTC.now().unixtime();
+  if(timeUntilAlarm > 5){
+    loggerSleep(nextAlarm);
   }
 }

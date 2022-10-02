@@ -1,5 +1,7 @@
 bool startIridium() {
+  digitalWrite(pIridiumPower,HIGH); //ensure sleep pin is high
   modem.setPowerProfile(IridiumSBD::USB_POWER_PROFILE); //for testing
+  modem.adjustSendReceiveTimeout(30);
   //Start the serial port connected to the satellite modem
   Serial3.begin(19200);
   Serial.println(F("Starting modem..."));

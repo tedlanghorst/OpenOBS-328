@@ -1,12 +1,8 @@
 #include <Wire.h>               //standard library
-#include <SoftwareSerial.h>
 #include "SerialTransfer.h"
 #include "Adafruit_VCNL4010.h"
 #include <MS5803_14.h>          // https://github.com/millerlp/MS5803_14
 
-#define DIAGNOSTICS true // Change this to see diagnostics
-
-SoftwareSerial ArduinoMaster(4,3);
 SerialTransfer myTransfer;
 
 //sensors
@@ -17,27 +13,36 @@ MS_5803 pressure_sensor = MS_5803(4096);
 typedef struct single_record_t {
   uint32_t logTime = 0;
   uint32_t hydro_p;
-  uint32_t baro_p = 0;
   uint16_t tuBackground;
   uint16_t tuReading; 
   int16_t water_temp;
-  int16_t air_temp;
 };
 single_record_t data;
 
 uint16_t sendSize;
 byte request;
+
+bool turb_init;
+bool pressure_init;
+byte sensor_init;
+
+
 void setup()
 {
+  digitalWrite(A4, LOW);
+  digitalWrite(A5, LOW);
   Serial.begin(115200);
-  ArduinoMaster.begin(38400);
-  myTransfer.begin(ArduinoMaster);
+  myTransfer.begin(Serial);
 
   //initialize the light sensor
-  bool turb_init = vcnl.begin();
+  turb_init = vcnl.begin();
+  vcnl.setLEDcurrent(5);
+  vcnl.setFrequency(VCNL4010_250);
   //initialize the pressure sensor
-  bool pressure_init = pressure_sensor.initializeMS_5803();
-  
+  pressure_init = pressure_sensor.initializeMS_5803(false);
+
+  turb_init = true;
+  pressure_init = true;
 }
 
 
@@ -49,27 +54,23 @@ void loop()
   }
 
   if(request == 1){
-    byte sensor_init = (turb_init << 1) + pressure_init;
-    Serial.println(sensor_init);
-    //Fill buffer with initializations
+    sensor_init = (turb_init << 1) + pressure_init;
+    //Fill buffer with initializations and then send it
     sendSize = myTransfer.txObj(sensor_init, 0);
-  
-    //Send buffer to the logger.
     myTransfer.sendData(sendSize);
     request = 0;
+    
   }
   else if(request == 2){
     //Replace our data fields with new sensor data.
     pressure_sensor.readSensor();
-    data.hydro_p = pressure_sensor.pressure();
-    data.water_temp = pressure_sensor.temperature();
+    data.hydro_p = pressure_sensor.pressure()*10; //bar^10-4
+    data.water_temp = pressure_sensor.temperature()*100; //C^10-2
     data.tuBackground = vcnl.readAmbient();
     data.tuReading = vcnl.readProximity();
     
-    //Fill buffer with a data struct.
+    //Fill buffer with a data struct and then send it.
     sendSize = myTransfer.txObj(data, 0);
-  
-    //Send buffer to the logger.
     myTransfer.sendData(sendSize);
     request = 0;
   }
