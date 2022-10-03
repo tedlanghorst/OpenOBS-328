@@ -57,7 +57,9 @@ void writeDataToSD(single_record_t record){
     file.print(',');
     file.print(record.tuReading);
     file.print(',');
-    file.println(record.water_temp);
+    file.print(record.water_temp);
+    file.print(',');
+    file.println(data.batteryLevel); //klugey use of global variable...
   file.close();
 }
 

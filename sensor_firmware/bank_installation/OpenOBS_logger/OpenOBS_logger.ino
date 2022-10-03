@@ -30,10 +30,11 @@ const char dataColumnLabels[] PROGMEM = "time,hydrostatic_pressure,ambient_light
 uint16_t serialNumber; 
 
 //connected pins
-#define pChipSelect 53       //chip select pin for SD card
+#define pChipSelect 53      
 #define pRtcInterrupt 2
 #define pSensorPower 4
 #define pIridiumPower 5
+#define pBatteryMonitor A0
 
 //EEPROM addresses
 #define SLEEP_ADDRESS 0
@@ -59,11 +60,11 @@ typedef struct single_record_t {
 //max message is 340 bytes, but charged per 50 bytes.
 #define N_RECORDS (int(50)/sizeof(single_record_t)) 
 typedef union data_union_t{
- single_record_t records[N_RECORDS];
- byte serialPacket[sizeof(single_record_t)*N_RECORDS];
+  int16_t batteryLevel;
+  single_record_t records[N_RECORDS];
+  byte serialPacket[2 + sizeof(single_record_t)*N_RECORDS];
 };
-data_union_t data;
-data_union_t data_failedPacket;
+data_union_t data, data_failedPacket;
 uint8_t recordCount = 0;
 bool failedPacket = false;
 
@@ -178,28 +179,32 @@ void setup(){
     nextAlarm = DateTime(currentTime + delayedStart_seconds);
     loggerSleep(nextAlarm);
   }
-  
-  updateFilename();
-  sprintf(messageBuffer,"FILE,OPEN,%s\0",filename);
-  serialSend(messageBuffer);
 }
 
 void loop()
 { 
   nextAlarm = DateTime(RTC.now().unixtime() + sleepDuration_seconds);
+
+  updateFilename();
+  sprintf(messageBuffer,"FILE,OPEN,%s\0",filename);
+  serialSend(messageBuffer);
   
   //Request data
   while(startup.module.sensor != 3) sensorWake();
   sensorRequest(2);
-  delay(250); //allow time to respond.
 
-  //Receive data if it is available.
-  if(myTransfer.available()){
-    myTransfer.rxObj(data.records[recordCount]);
-    data.records[recordCount].logTime = RTC.now().unixtime();
-    sensorSleep();
-    writeDataToSD(data.records[recordCount]);
-    recordCount += 1;
+ //wait for data to be available
+  long tStart = millis();
+  while (millis() - tStart < COMMS_WAIT) {
+    if(myTransfer.available()){
+      myTransfer.rxObj(data.records[recordCount]);
+      data.records[recordCount].logTime = RTC.now().unixtime();
+      data.batteryLevel = analogRead(pBatteryMonitor);
+      sensorSleep();
+      writeDataToSD(data.records[recordCount]);
+      recordCount += 1;
+      break;
+    }
   }
 
   //if we have filled out transmit packet...
@@ -223,7 +228,7 @@ void loop()
     int tries = 0;
     bool messageSent = false;
     digitalWrite(pIridiumPower,HIGH);
-    while (!messageSent && tries<5){
+    while (!messageSent && tries<2){
       Serial.println(F("Trying to send the message.  This might take a minute."));
       //This could be more elegant. Currently only care if the current packet sends. 
       //If we fail 2 in a row the older will be overwritten (still on SD card).
@@ -231,7 +236,10 @@ void loop()
       if (failedPacket){
         //send the old data if we have some.
         modemErr = modem.sendSBDBinary(data_failedPacket.serialPacket,sizeof(data_failedPacket));
-        if (modemErr == ISBD_SUCCESS) failedPacket = false;
+        if (modemErr == ISBD_SUCCESS){
+          Serial.println(F("Previous failed packet sent!"));
+          failedPacket = false;
+        }
       }
       //send the current data packet.
       modemErr = modem.sendSBDBinary(data.serialPacket,sizeof(data));
