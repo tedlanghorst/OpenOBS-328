@@ -26,7 +26,7 @@
 //firmware data
 const DateTime uploadDT = DateTime((__DATE__),(__TIME__)); //saves compile time into progmem
 const char contactInfo[] PROGMEM = "If found, please contact tlang@live.unc.edu"; 
-const char dataColumnLabels[] PROGMEM = "time,hydrostatic_pressure,ambient_light,scattered_light,water_temperature";
+const char dataColumnLabels[] PROGMEM = "time,hydrostatic_pressure,ambient_light,scattered_light,water_temperature,battery_level";
 uint16_t serialNumber; 
 
 //connected pins
