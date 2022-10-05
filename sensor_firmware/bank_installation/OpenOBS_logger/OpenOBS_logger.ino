@@ -56,7 +56,7 @@ typedef struct single_record_t {
   uint16_t tuBackground;
   uint16_t tuReading; 
   int16_t water_temp;
-}; //16 bytes
+}; //14 bytes
 //max message is 340 bytes, but charged per 50 bytes.
 #define N_RECORDS (int(50)/sizeof(single_record_t)) 
 typedef union data_union_t{
@@ -83,7 +83,7 @@ startup_t startup;
 
 //time settings
 long currentTime = 0;
-long sleepDuration_seconds = 5;
+long sleepDuration_seconds = 3600;
 long delayedStart_seconds = 0;
 DateTime nextAlarm;
 DS3231 RTC; //create RTC object
@@ -154,10 +154,9 @@ void setup(){
   //if we had any errors turn off battery power and stop program.
   //set another alarm to try again- intermittent issues shouldnt end entire deploy.
   //RTC errors likely are fatal though. Will it even wake if RTC fails?
-  while(startup.b != 0b11111){    
+  while(startup.b != 0b11111){ 
     nextAlarm = DateTime(RTC.now().unixtime() + sleepDuration_seconds);
     loggerSleep(nextAlarm);
-    
     //Initialize & check all the modules.
     Serial.println(F("rechecking modules...."));
     startup.module.sd = sd.begin(pChipSelect,SPI_SPEED);
