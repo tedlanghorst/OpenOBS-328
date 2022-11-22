@@ -4,6 +4,10 @@ clc
 [file,path] = uigetfile('/*.TXT','Multiselect','on');
 filepath = fullfile(path,file);
 
+% gen_path = "/Users/Ted/GDrive/OpenOBS/Calibrations_v2/";
+gen_path = "/Users/Ted/GDrive/Sag2022/Data/OOBS/calibrations/";
+standards = [0,250,1000];
+
 %look for the sensor serial number in each file.
 
 fid = fopen(filepath);
@@ -54,9 +58,6 @@ plot(data.dt,data.hydrostatic_pressure,'b.','markersize',10);
 %}
 close all
 
-gen_path = "/Users/Ted/GDrive/OpenOBS/Calibrations_v2/";
-
-standards = [0,250,1000];
 measured = [mean(a(:,2)), std(a(:,2)); 
         mean(b(:,2)), std(b(:,2)); 
         mean(c(:,2)), std(c(:,2))];
@@ -77,10 +78,10 @@ end
 save(fullfile(save_path,file(1:8)),"measured","standards","NTU","lm","data")
 
 %% look at a bunch of cal data
-date_string = "20220515";
+date_string = "20221002";
 sn_ignore = [];
 
-cal_path = dir(fullfile(gen_path,"015",date_string+".mat"));
+cal_path = dir(fullfile(gen_path,"*",date_string+".mat"));
 lgd_names = {};
 
 close all
