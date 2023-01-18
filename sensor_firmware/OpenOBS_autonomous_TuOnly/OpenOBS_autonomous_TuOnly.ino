@@ -85,7 +85,7 @@ void setup(){
   Serial.setTimeout(50);
   Wire.begin();
   EEPROM.get(SN_ADDRESS, serialNumber);
-  
+ 
   /* With power switching between measurements, we need to know what kind of setup() this is.
    *  First, check if the firmware was updated.
    *  Next, check if the GUI connection forced a reset.
@@ -176,6 +176,6 @@ void loop()
     serialSend("POWEROFF,1");
     RTC.clearAlarm(); //turn off battery
     //mimic power off when provided USB power
-    delay((sleepDuration_seconds - timeUntilAlarm)*1000); 
+    delay(sleepDuration_seconds*1000); 
   }
 }

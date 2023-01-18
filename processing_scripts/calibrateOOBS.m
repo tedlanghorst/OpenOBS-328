@@ -6,7 +6,7 @@ filepath = fullfile(path,file);
 
 % gen_path = "/Users/Ted/GDrive/OpenOBS/Calibrations_v2/";
 gen_path = "/Users/Ted/GDrive/Sag2022/Data/OOBS/calibrations/";
-standards = [0,250,1000];
+standards = [0,100,250,500,1000];
 
 %look for the sensor serial number in each file.
 
@@ -60,7 +60,9 @@ close all
 
 measured = [mean(a(:,2)), std(a(:,2)); 
         mean(b(:,2)), std(b(:,2)); 
-        mean(c(:,2)), std(c(:,2))];
+        mean(c(:,2)), std(c(:,2));
+        mean(d(:,2)), std(d(:,2)); 
+        mean(e(:,2)), std(e(:,2))];
 
 lm = fitlm(measured(:,1),standards);
 NTU = predict(lm,measured(:,1));

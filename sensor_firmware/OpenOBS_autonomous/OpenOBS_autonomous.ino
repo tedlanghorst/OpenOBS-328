@@ -1,15 +1,4 @@
 /* TODO
- * Troubleshoot the time settings. Dates from RTC are wrong. Firmware date correct.
- * Check sensor initialization with message exchange.
- * Sleep cycling
- *  full shutdown like original?
- *  soft shutdown is likely a lot easier to manage
- * Figure out optimal batching of iridium messages
- *  Maximum time between messages?
- *  Sending less often might save money (e.g. 50 bytes fits 2.5 messages)
- * Battery power
- *  Test solar setup from Adafruit
- *  do we need to bother with full shutdown like autonomous?
  * 
  */
 
@@ -71,7 +60,7 @@ startup_t startup;
 
 //time settings
 long currentTime = 0;
-long sleepDuration_seconds = 0;
+long sleepDuration_seconds = 10;
 long delayedStart_seconds = 0;
 DateTime nextAlarm;
 DS3231 RTC; //create RTC object
@@ -86,13 +75,13 @@ SdFile file;
 
 
 void setup(){
-  digitalWrite(A4, LOW);
-  digitalWrite(A5, LOW);
-  
   Serial.begin(115200);
   Serial.setTimeout(50);
   Wire.begin();
   EEPROM.get(SN_ADDRESS, serialNumber);
+
+  pinMode(A1,OUTPUT);
+  digitalWrite(A1,LOW);
   
   /* With power switching between measurements, we need to know what kind of setup() this is.
    *  First, check if the firmware was updated.
@@ -194,9 +183,6 @@ void loop()
   long timeUntilAlarm = nextAlarm.unixtime()-RTC.now().unixtime();
   if(timeUntilAlarm > 5){
     delay(1000); //give the SD card enough time to close the file and reshuffle data.
-    serialSend("POWEROFF,1");
-    RTC.clearAlarm(); //turn off battery
-    //mimic power off when provided USB power
-    delay((sleepDuration_seconds - timeUntilAlarm)*1000); 
+    sensorSleep(nextAlarm);
   }
 }
