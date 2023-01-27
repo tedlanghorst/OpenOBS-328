@@ -161,11 +161,8 @@ void loop()
   writeDataToSD(data);
   
   Serial.println();
-  Serial.print("time:\t\t");
-  Serial.println(data.logTime);
-  Serial.print("background:\t");
-  Serial.println(data.tuBackground);
-  Serial.print("reading:\t");
+  Serial.print(data.tuBackground);
+  Serial.print(",");
   Serial.println(data.tuReading);
 
   //ensure a 5 second margin for the next alarm before shutting down.

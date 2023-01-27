@@ -1,15 +1,6 @@
 /* TODO
- * Troubleshoot the time settings. Dates from RTC are wrong. Firmware date correct.
  * Check sensor initialization with message exchange.
- * Sleep cycling
- *  full shutdown like original?
- *  soft shutdown is likely a lot easier to manage
- * Figure out optimal batching of iridium messages
- *  Maximum time between messages?
- *  Sending less often might save money (e.g. 50 bytes fits 2.5 messages)
- * Battery power
- *  Test solar setup from Adafruit
- *  do we need to bother with full shutdown like autonomous?
+ * Figure out optimal batching of iridium message
  * 
  */
 
@@ -20,7 +11,7 @@
 #include "SerialTransfer.h"     //Version 3.1.2 https://github.com/PowerBroker2/SerialTransfer
 #include <SdFat.h>              //Version 2.0.7 https://github.com/greiman/SdFat //uses 908 bytes of memory
 #include <DS3231.h>             //Updated Jan 2, 2017 https://github.com/kinasmith/DS3231
-#include <IridiumSBD.h> // Click here to get the library: http://librarymanager/All#IridiumSBDI2C
+#include <IridiumSBD.h>         // Click here to get the library: http://librarymanager/All#IridiumSBDI2C
 
 
 //firmware data
@@ -198,7 +189,7 @@ void loop()
     if(myTransfer.available()){
       myTransfer.rxObj(data.records[recordCount]);
       data.records[recordCount].logTime = RTC.now().unixtime();
-      data.batteryLevel = analogRead(pBatteryMonitor);
+      data.batteryLevel = 0; //not working for 12v converted boxes yet.
       sensorSleep();
       writeDataToSD(data.records[recordCount]);
       recordCount += 1;

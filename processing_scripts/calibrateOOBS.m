@@ -1,15 +1,13 @@
 clear
 clc
+close all
 
 [file,path] = uigetfile('/*.TXT','Multiselect','on');
 filepath = fullfile(path,file);
 
-% gen_path = "/Users/Ted/GDrive/OpenOBS/Calibrations_v2/";
-gen_path = "/Users/Ted/GDrive/Sag2022/Data/OOBS/calibrations/";
-standards = [0,100,250,500,1000];
+gen_path = "/Users/Ted/GDrive/OpenOBS_v2/calibrations/";
 
 %look for the sensor serial number in each file.
-
 fid = fopen(filepath);
 for j = 1:5 %scan first 5 lines
     tline = fgetl(fid);
@@ -20,20 +18,8 @@ for j = 1:5 %scan first 5 lines
 end
 fclose(fid);
 
-burstID = [];
-%     timeInterp = [];
-
 data = readtable(filepath);
-
 data.dt = datetime(data.time, 'ConvertFrom', 'posixtime','Format','dd-MM-yyyy HH:mm:ss.SSSS');
-isWrongDay = data.dt < datetime(file(1:8),'InputFormat','yyyyMMdd');
-data(isWrongDay,:) = [];
-isWrongDay = data.dt > datetime(file(1:8),'InputFormat','yyyyMMdd') + 1;
-data(isWrongDay,:) = [];
-
-
-% clearvars -except sn data file
-close all
 
 figure
 colormap flag
@@ -46,10 +32,6 @@ title(sprintf("Serial no. %03d", sn))
 zoom on
 
 
-figure
-plot(data.dt,data.hydrostatic_pressure,'b.','markersize',10);
-
-
 %% save calibration data
 %{
     Before running this section, make sure you use the brush tool to select
@@ -58,11 +40,13 @@ plot(data.dt,data.hydrostatic_pressure,'b.','markersize',10);
 %}
 close all
 
-measured = [mean(a(:,2)), std(a(:,2)); 
-        mean(b(:,2)), std(b(:,2)); 
-        mean(c(:,2)), std(c(:,2));
-        mean(d(:,2)), std(d(:,2)); 
-        mean(e(:,2)), std(e(:,2))];
+standards = [0; 100; 250; 500; 1000];
+
+measured = [mean(a{:,2}), std(a{:,2}); 
+        mean(b{:,2}), std(b{:,2}); 
+        mean(c{:,2}), std(c{:,2});
+        mean(d{:,2}), std(d{:,2}); 
+        mean(e{:,2}), std(e{:,2})];
 
 lm = fitlm(measured(:,1),standards);
 NTU = predict(lm,measured(:,1));
@@ -70,7 +54,7 @@ NTU = predict(lm,measured(:,1));
 eb = errorbar(standards,measured(:,1),measured(:,2));
 eb.LineWidth = 1;
 xlabel("Standard (NTU)");
-ylabel("Measured (Volts)");
+ylabel("Measured (DN)");
 
 
 save_path = sprintf(strcat(gen_path,"%03d"),sn);
@@ -80,7 +64,7 @@ end
 save(fullfile(save_path,file(1:8)),"measured","standards","NTU","lm","data")
 
 %% look at a bunch of cal data
-date_string = "20221002";
+date_string = "20230118";
 sn_ignore = [];
 
 cal_path = dir(fullfile(gen_path,"*",date_string+".mat"));
@@ -108,14 +92,14 @@ for i = 1:numel(cal_path)
     
     subplot(1,2,2)
     hold on
-    plot(standards+1,NTU'-standards,'o-','Linewidth',1.5)
+    plot(standards+1,NTU-standards,'o-','Linewidth',1.5)
     
     lgd_names{numel(lgd_names)+1} = cal_path(i).folder(end-2:end);
 end
 
 subplot(1,2,1)
 xlabel("Standard (NTU)");
-ylabel("Measured (Volts)");
+ylabel("Measured (DN)");
 title('Raw Signal')
 axis square
 box on
