@@ -1,8 +1,6 @@
 void sensorSleep(DateTime nextAlarm){
-  RTC.enableAlarm(nextAlarm);
-  setBBSQW(); //enable battery-backed alarm
+  delay(250); //ensure the alarm is set and SD card done reshuffling.
   serialSend("POWEROFF,1");
-  delay(100); //ensure the alarm is set
   RTC.clearAlarm(); //turn off battery
   delay(sleepDuration_seconds*1000); //delay program if we have another power source
 }
@@ -10,15 +8,17 @@ void sensorSleep(DateTime nextAlarm){
 
 void writeDataToSD(single_record_t record){
   file.open(filename, O_WRITE | O_APPEND);
-    file.print(record.logTime);
-    file.print(',');
-    file.print(record.hydro_p);
-    file.print(',');
-    file.print(record.tuBackground);
-    file.print(',');
-    file.print(record.tuReading);
-    file.print(',');
-    file.println(record.water_temp);
+  file.print(record.logTime);
+  file.print(',');
+  file.print(record.hydro_p);
+  file.print(',');
+  file.print(record.tuBackground);
+  file.print(',');
+  file.print(record.tuReading);
+  file.print(',');
+  file.print(record.water_temp);
+  file.print(',');
+  file.println(record.battery);
   file.close();
 }
 
