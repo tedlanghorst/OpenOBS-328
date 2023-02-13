@@ -9,6 +9,7 @@
 #include <DS3231.h>             //Updated Jan 2, 2017 https://github.com/kinasmith/DS3231
 #include "Adafruit_VCNL4010.h"
 #include <MS5803_14.h>          // https://github.com/millerlp/MS5803_14
+#include <LowPower.h>
 
 
 //firmware data
@@ -42,7 +43,7 @@ typedef struct single_record_t {
   uint16_t tuBackground;
   uint16_t tuReading;
   int16_t water_temp;
-  int16_t battery;
+  uint16_t battery;
 }; //16 bytes
 single_record_t data;
 
@@ -157,7 +158,7 @@ void loop()
   RTC.enableAlarm(nextAlarm);
   setBBSQW(); //enable battery-backed alarm
   
-//  Replace data fields with new sensor data.
+  //Replace data fields with new sensor data.
   data.logTime = RTC.now().unixtime();
   pressure_sensor.readSensor();
   data.hydro_p = pressure_sensor.pressure()*10; //bar^10-4
@@ -166,25 +167,17 @@ void loop()
   data.tuReading = vcnl.readProximity();
   data.battery = analogRead(A2);
 
-  writeDataToSD(data);
+  sprintf(messageBuffer, "%u,%u,%u,%u,%i,%u", data.logTime, data.tuBackground, data.tuReading, data.hydro_p, data.water_temp, data.battery);
+    
+  writeDataToSD();
 
-  Serial.println();
-  Serial.print("time:\t\t");
-  Serial.println(data.logTime);
-  Serial.print("background:\t");
-  Serial.println(data.tuBackground);
-  Serial.print("reading:\t");
-  Serial.println(data.tuReading);
-  Serial.print("hydro p:\t");
-  Serial.println(data.hydro_p);
-  Serial.print("water temp:\t");
-  Serial.println(data.water_temp);
-  Serial.print("battery V:\t");
-  Serial.println(data.battery);
+  Serial.println(messageBuffer);
 
   //ensure a 5 second margin for the next alarm before shutting down.
-  //if the alarm we set during this wake has already passed, the OBS will never wake up.
   if (sleepDuration_seconds > 5) {
     sensorSleep(nextAlarm);
+  }
+  else {
+    LowPower.powerDown(SLEEP_500MS, ADC_OFF, BOD_ON);
   }
 }

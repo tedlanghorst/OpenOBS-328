@@ -1,24 +1,14 @@
 void sensorSleep(DateTime nextAlarm){
   delay(250); //ensure the alarm is set and SD card done reshuffling.
   serialSend("POWEROFF,1");
-  RTC.clearAlarm(); //turn off battery
+  RTC.clearAlarm(); //turn off alarm
   delay(sleepDuration_seconds*1000); //delay program if we have another power source
 }
 
 
-void writeDataToSD(single_record_t record){
+void writeDataToSD(){
   file.open(filename, O_WRITE | O_APPEND);
-  file.print(record.logTime);
-  file.print(',');
-  file.print(record.hydro_p);
-  file.print(',');
-  file.print(record.tuBackground);
-  file.print(',');
-  file.print(record.tuReading);
-  file.print(',');
-  file.print(record.water_temp);
-  file.print(',');
-  file.println(record.battery);
+  file.println(messageBuffer);
   file.close();
 }
 
@@ -31,9 +21,7 @@ void updateFilename(){
   SdFile::dateTimeCallback(dateTime_callback);
   //if we create a new file with this name, set header
   if (file.open(filename, O_CREAT | O_EXCL | O_WRITE)) {
-    
     snprintf(messageBuffer, 11, "%04u/%02u/%02u", uploadDT.year(), uploadDT.month(), uploadDT.date());
-    
     file.println((__FlashStringHelper*)contactInfo);
     file.print(F("Firmware updated: "));
     file.println(messageBuffer);

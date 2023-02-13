@@ -1,0 +1,11 @@
+C:\Users\Ted\Documents\GitHub\OpenOBS-328\deploy_GUI\bin\OpenOBS_328_GUI.pdb
+C:\Users\Ted\Documents\GitHub\OpenOBS-328\deploy_GUI\bin\clrcompression.dll
+C:\Users\Ted\Documents\GitHub\OpenOBS-328\deploy_GUI\bin\clrjit.dll
+C:\Users\Ted\Documents\GitHub\OpenOBS-328\deploy_GUI\bin\coreclr.dll
+C:\Users\Ted\Documents\GitHub\OpenOBS-328\deploy_GUI\bin\mscordaccore.dll
+C:\Users\Ted\Documents\GitHub\OpenOBS-328\deploy_GUI\bin\D3DCompiler_47_cor3.dll
+C:\Users\Ted\Documents\GitHub\OpenOBS-328\deploy_GUI\bin\PenImc_cor3.dll
+C:\Users\Ted\Documents\GitHub\OpenOBS-328\deploy_GUI\bin\PresentationNative_cor3.dll
+C:\Users\Ted\Documents\GitHub\OpenOBS-328\deploy_GUI\bin\vcruntime140_cor3.dll
+C:\Users\Ted\Documents\GitHub\OpenOBS-328\deploy_GUI\bin\wpfgfx_cor3.dll
+C:\Users\Ted\Documents\GitHub\OpenOBS-328\deploy_GUI\bin\OpenOBS_328_GUI.exe
