@@ -9,7 +9,7 @@ Public Class Form1
     Const onTime = 1.15
     Dim battery_mah = 2000
 
-    Const textColumns = 39
+    Const textColumns = 45
 
     'Dim WithEvents comPort As New IO.Ports.SerialPort
     Dim comPort As New IO.Ports.SerialPort
@@ -29,7 +29,7 @@ Public Class Form1
         cbBattery.SelectedIndex = 0
 
         'Settings for SerialPort.
-        comPort.BaudRate = 38400
+        comPort.BaudRate = 250000
         comPort.DtrEnable = True 'force Arduino reset
     End Sub
 
@@ -181,7 +181,6 @@ Public Class Form1
                 Dim logStr = String.Format("{0," & halfIdx & "}", str)
                 serialLog.AppendText(logStr & Environment.NewLine)
         End Select
-
 
     End Sub
 

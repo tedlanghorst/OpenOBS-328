@@ -1,12 +1,12 @@
-void sensorSleep(DateTime nextAlarm){
-  delay(250); //ensure the alarm is set and SD card done reshuffling.
+void sensorSleep(DateTime nextAlarm) {
+  LowPower.powerDown(SLEEP_250MS, ADC_OFF, BOD_ON); //ensure the alarm is set and SD card done reshuffling.
   serialSend("POWEROFF,1");
   RTC.clearAlarm(); //turn off alarm
-  delay(sleepDuration_seconds*1000); //delay program if we have another power source
+  delay(sleepDuration_seconds * 1000); //delay program if we have another power source
 }
 
 
-void writeDataToSD(){
+void writeDataToSD() {
   file.open(filename, O_WRITE | O_APPEND);
   file.println(messageBuffer);
   file.close();
@@ -14,7 +14,7 @@ void writeDataToSD(){
 
 
 //Check if the daily file exists already. If not, create one and write headers.
-void updateFilename(){
+void updateFilename() {
   DateTime now = RTC.now();
   snprintf(filename, 13, "%04u%02u%02u.TXT", now.year(), now.month(), now.date());
 
@@ -29,7 +29,7 @@ void updateFilename(){
     file.println(serialNumber);
     file.println();
     file.println((__FlashStringHelper*)dataColumnLabels);
-    }
+  }
 }
 
 
@@ -43,8 +43,8 @@ void dateTime_callback(uint16_t* date, uint16_t* time) {
 }
 
 //enable alarm on battery power. Normally disabled
-void setBBSQW(){
+void setBBSQW() {
   uint8_t ctReg = RTC.readRegister(DS3231_CONTROL_REG);
   ctReg |= 0b01000000;
-  RTC.writeRegister(DS3231_CONTROL_REG,ctReg); 
+  RTC.writeRegister(DS3231_CONTROL_REG, ctReg);
 }

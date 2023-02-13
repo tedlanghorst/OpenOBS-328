@@ -85,7 +85,7 @@ Partial Class Form1
         Me.serialLog.Name = "serialLog"
         Me.serialLog.ReadOnly = True
         Me.serialLog.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical
-        Me.serialLog.Size = New System.Drawing.Size(363, 533)
+        Me.serialLog.Size = New System.Drawing.Size(425, 533)
         Me.serialLog.TabIndex = 11
         Me.serialLog.Text = ""
         '
@@ -167,7 +167,7 @@ Partial Class Form1
         '
         'Timer1
         '
-        Me.Timer1.Interval = 50
+        Me.Timer1.Interval = 25
         '
         'tbSN
         '
@@ -253,7 +253,7 @@ Partial Class Form1
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.ButtonFace
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
-        Me.ClientSize = New System.Drawing.Size(774, 591)
+        Me.ClientSize = New System.Drawing.Size(816, 591)
         Me.Controls.Add(Me.cbBattery)
         Me.Controls.Add(Me.lblBatteryConfig)
         Me.Controls.Add(Me.lblCapacity)

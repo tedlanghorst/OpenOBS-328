@@ -28,7 +28,7 @@ uint16_t serialNumber;
 
 //gui communications vars
 bool guiConnected = false;
-const uint16_t COMMS_WAIT = 300;    //ms delay to try gui connection
+const uint16_t COMMS_TRY = 3;    //ms delay to try gui connection
 const int MAX_CHAR = 60;            //max num character in messages
 char messageBuffer[MAX_CHAR];       //buffer for sending and receiving comms
 
@@ -39,9 +39,9 @@ MS_5803 pressure_sensor = MS_5803(4096);
 //data storage variables
 typedef struct single_record_t {
   uint32_t logTime;
-  uint32_t hydro_p;
-  uint16_t tuBackground;
-  uint16_t tuReading;
+  uint32_t abs_P;
+  uint16_t tuAmbient;
+  uint16_t tuBackscatter;
   int16_t water_temp;
   uint16_t battery;
 }; //16 bytes
@@ -62,7 +62,7 @@ startup_t startup;
 
 //time settings
 long currentTime = 0;
-long sleepDuration_seconds = 0;
+long sleepDuration_seconds = 10;
 long delayedStart_seconds = 0;
 DateTime nextAlarm;
 DS3231 RTC; //create RTC object
@@ -77,13 +77,10 @@ SdFile file;
 
 
 void setup() {
-  Serial.begin(38400);
+  Serial.begin(250000);
   Serial.setTimeout(50);
   Wire.begin();
   EEPROM.get(SN_ADDRESS, serialNumber);
-
-  pinMode(A1, OUTPUT);
-  digitalWrite(A1, LOW);
 
   /* With power switching between measurements, we need to know what kind of setup() this is.
       First, check if the firmware was updated.
@@ -157,27 +154,29 @@ void loop()
   nextAlarm = DateTime(RTC.now().unixtime() + sleepDuration_seconds);
   RTC.enableAlarm(nextAlarm);
   setBBSQW(); //enable battery-backed alarm
-  
+
   //Replace data fields with new sensor data.
   data.logTime = RTC.now().unixtime();
   pressure_sensor.readSensor();
-  data.hydro_p = pressure_sensor.pressure()*10; //bar^10-4
-  data.water_temp = pressure_sensor.temperature()*100; //C^10-2
-  data.tuBackground = vcnl.readAmbient();
-  data.tuReading = vcnl.readProximity();
+  data.abs_P = pressure_sensor.pressure() * 10; //bar^10-4
+  data.water_temp = pressure_sensor.temperature() * 100; //C^10-2
+  data.tuAmbient = vcnl.readAmbient();
+  data.tuBackscatter = vcnl.readProximity();
   data.battery = analogRead(A2);
 
-  sprintf(messageBuffer, "%u,%u,%u,%u,%i,%u", data.logTime, data.tuBackground, data.tuReading, data.hydro_p, data.water_temp, data.battery);
-    
+  sprintf(messageBuffer, "%lu,%u,%u,%lu,%i,%u", data.logTime, data.tuAmbient, data.tuBackscatter, data.abs_P, data.water_temp, data.battery);
+
   writeDataToSD();
 
-  Serial.println(messageBuffer);
+  serialSend(messageBuffer);
 
   //ensure a 5 second margin for the next alarm before shutting down.
   if (sleepDuration_seconds > 5) {
     sensorSleep(nextAlarm);
   }
   else {
+    Serial.flush();
     LowPower.powerDown(SLEEP_500MS, ADC_OFF, BOD_ON);
+    LowPower.powerDown(SLEEP_250MS, ADC_OFF, BOD_ON);
   }
 }

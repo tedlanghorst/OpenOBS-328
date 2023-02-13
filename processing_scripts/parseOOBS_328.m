@@ -46,7 +46,7 @@ else
     end
 end
 
-d.battery_V = d.battery_V ./ 2^10 .* 3.3 .* 2;
+d.battery_V = d.battery ./ 2^10 .* 3.3 .* 2;
 
 %%
 
@@ -77,9 +77,9 @@ set(gcf,'Units','normalized')
 set(gcf,'Position',[0.1 0.1 0.8 0.8])
 hold on
 
-plot(d.dt,d.backscatter)
-% yyaxis right
-% plot(d.time,d.battery_V)
+plot(d.dt,d.ambient_light)
+yyaxis right
+plot(d.dt,d.battery_V)
 
 % figure
 % set(gcf,'Units','normalized')
