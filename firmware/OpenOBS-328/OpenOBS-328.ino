@@ -5,7 +5,7 @@
 #include <Wire.h>               //standard library
 #include <SPI.h>                //standard library
 #include <EEPROM.h>             //standard library
-#include <SdFat.h>              //Version 2.0.7 https://github.com/greiman/SdFat //uses 908 bytes of memory
+#include <SdFat.h>            //Version 2.0.7 https://github.com/greiman/SdFat //uses 908 bytes of memory
 #include "src/libs/DS3231/DS3231.h"
 #include "src/libs/Adafruit_VCNL4010/Adafruit_VCNL4010.h"
 #include "src/libs/MS5803_14/MS5803_14.h" 
