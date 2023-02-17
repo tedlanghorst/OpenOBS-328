@@ -6,10 +6,10 @@
 #include <SPI.h>                //standard library
 #include <EEPROM.h>             //standard library
 #include <SdFat.h>              //Version 2.0.7 https://github.com/greiman/SdFat //uses 908 bytes of memory
-#include <DS3231.h>             //Updated Jan 2, 2017 https://github.com/kinasmith/DS3231
-#include "Adafruit_VCNL4010.h"
-#include <MS5803_14.h>          // https://github.com/millerlp/MS5803_14
-#include <LowPower.h>
+#include "src/libs/DS3231/DS3231.h"
+#include "src/libs/Adafruit_VCNL4010/Adafruit_VCNL4010.h"
+#include "src/libs/MS5803_14/MS5803_14.h" 
+#include "src/libs/LowPower/LowPower.h"
 
 
 //firmware data
@@ -125,9 +125,10 @@ void setup() {
   //if we had any errors turn off battery power and stop program.
   //set another alarm to try again- intermittent issues shouldnt end entire deploy.
   //RTC errors likely are fatal though. Will it even wake if RTC fails?
-  if (!(startup.b && 0xFF)) {
-    //    nextAlarm = DateTime(RTC.now().unixtime() + sleepDuration_seconds);
-    //    sensorSleep(nextAlarm);
+  if (!(startup.b == 0b00001111)) {
+        Serial.println(F("$Startup failed*66"));
+        nextAlarm = DateTime(RTC.now().unixtime() + sleepDuration_seconds);
+        sensorSleep(nextAlarm);
   }
 
   //if we have established a connection to the java gui,
