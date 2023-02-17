@@ -1,0 +1,23 @@
+{
+  "name": "DS3231 w/unixtime",
+  "keywords": "RTC, DS3231, DateTime",
+  "description": "Arduino Library for DS3231 RTC with DateTime and unixtime",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/kinasmith/DS3231.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Kina Smith",
+      "email": "kina@kinasmith.com",
+      "url": "http://www.kinasmith.com",
+      "maintainer": true
+    }
+  ],
+  "dependencies": {},
+  "version": "1.0.0",
+  "frameworks": "arduino",
+  "platforms": "*"
+}
