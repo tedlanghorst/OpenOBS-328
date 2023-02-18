@@ -2,10 +2,10 @@
 
 */
 
-#include <Wire.h>               //standard library
-#include <SPI.h>                //standard library
-#include <EEPROM.h>             //standard library
-#include <SdFat.h>            //Version 2.0.7 https://github.com/greiman/SdFat //uses 908 bytes of memory
+#include <Wire.h>     //standard library
+#include <SPI.h>      //standard library
+#include <EEPROM.h>   //standard library
+#include <SdFat.h>    //tested with Version 2.0.7 //uses 908 bytes of memory
 #include "src/libs/DS3231/DS3231.h"
 #include "src/libs/Adafruit_VCNL4010/Adafruit_VCNL4010.h"
 #include "src/libs/MS5803_14/MS5803_14.h" 
@@ -53,6 +53,7 @@ typedef struct module_t {
   bool clk: 1;
   bool turb: 1;
   bool pt: 1;
+  bool sn: 1;
 };
 typedef union startup_t {
   module_t module;
@@ -106,6 +107,23 @@ void setup() {
     startup.module.clk = true; //assume true if logger woke up.
   }
 
+  //Check if SN has been changed from the default 0xFFFF.
+  //If it has not, then loop through asking for a new one.
+  while (serialNumber == 0xFFFF;){
+    Serial.println(F("Missing serial number. Enter a valid SN [1-65534]:"));
+    while(Serial.available()==0){}; //wait for input
+    uint16_t tmp_SN = Serial.parseInt();
+    if (tmp_SN==0 || tmp_SN ==0xFFFF){
+      Serial.println(F("Invalid SN"));
+    } 
+    else {
+      EEPROM.put(SN_ADDRESS,tmp_SN);
+      EEPROM.get(SN_ADDRESS,serialNumber);
+      Serial.print(F("SN successfully set to: "));
+      Serial.println(serialNumber);
+    }
+  }
+
   //intialize & check all the modules
   startup.module.sd = sd.begin(pChipSelect, SPI_SPEED);
   if (!startup.module.sd) serialSend("SDINIT,0");
@@ -125,7 +143,7 @@ void setup() {
   //if we had any errors turn off battery power and stop program.
   //set another alarm to try again- intermittent issues shouldnt end entire deploy.
   //RTC errors likely are fatal though. Will it even wake if RTC fails?
-  if (!(startup.b == 0b00001111)) {
+  if (!(startup.b == 0b00011111)) {
         Serial.println(F("$Startup failed*66"));
         nextAlarm = DateTime(RTC.now().unixtime() + sleepDuration_seconds);
         sensorSleep(nextAlarm);
