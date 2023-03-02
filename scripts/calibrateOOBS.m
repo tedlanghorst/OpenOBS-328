@@ -95,16 +95,16 @@ if exist('a','var')
     measured(1,:) = [mean(a{:,2}), std(a{:,2})]; 
 end
 if exist('b','var') 
-    measured(1,:) = [mean(b{:,2}), std(b{:,2})]; 
+    measured(2,:) = [mean(b{:,2}), std(b{:,2})]; 
 end
 if exist('c','var') 
-    measured(1,:) = [mean(c{:,2}), std(c{:,2})]; 
+    measured(3,:) = [mean(c{:,2}), std(c{:,2})]; 
 end
 if exist('d','var') 
-    measured(1,:) = [mean(d{:,2}), std(d{:,2})]; 
+    measured(4,:) = [mean(d{:,2}), std(d{:,2})]; 
 end
 if exist('e','var') 
-    measured(1,:) = [mean(e{:,2}), std(e{:,2})]; 
+    measured(5,:) = [mean(e{:,2}), std(e{:,2})]; 
 end
 
 
