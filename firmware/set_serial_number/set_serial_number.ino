@@ -6,7 +6,7 @@ uint16_t tmp_SN;
 uint16_t serialNumber;
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(250000);
 
   EEPROM.get(SN_ADDRESS,serialNumber);
 

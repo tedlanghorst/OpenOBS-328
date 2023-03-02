@@ -46,7 +46,9 @@ else
     end
 end
 
-d.battery_V = d.battery ./ 2^10 .* 3.3 .* 2;
+if any("battery" == string(d.Properties.VariableNames))
+    d.battery_V = d.battery ./ 2^10 .* 3.3 .* 2;
+end
 
 %%
 
@@ -77,7 +79,7 @@ set(gcf,'Units','normalized')
 set(gcf,'Position',[0.1 0.1 0.8 0.8])
 hold on
 
-plot(d.dt,d.ambient_light)
+plot(d.dt,d.backscatter)
 yyaxis right
 plot(d.dt,d.battery_V)
 

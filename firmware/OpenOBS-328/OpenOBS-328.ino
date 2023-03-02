@@ -15,7 +15,7 @@
 //firmware data
 const DateTime uploadDT = DateTime((__DATE__), (__TIME__)); //saves compile time into progmem
 const char contactInfo[] PROGMEM = "If found, please contact tlang@live.unc.edu";
-const char dataColumnLabels[] PROGMEM = "time,pressure,ambient_light,backscatter,water_temp,battery";
+const char dataColumnLabels[] PROGMEM = "time,ambient_light,backscatter,pressure,water_temp,battery";
 uint16_t serialNumber;
 
 //connected pins
@@ -28,7 +28,7 @@ uint16_t serialNumber;
 
 //gui communications vars
 bool guiConnected = false;
-const uint16_t COMMS_TRY = 3;    //ms delay to try gui connection
+const uint8_t COMMS_TRY = 3;    //ms delay to try gui connection
 const int MAX_CHAR = 60;            //max num character in messages
 char messageBuffer[MAX_CHAR];       //buffer for sending and receiving comms
 
@@ -53,7 +53,6 @@ typedef struct module_t {
   bool clk: 1;
   bool turb: 1;
   bool pt: 1;
-  bool sn: 1;
 };
 typedef union startup_t {
   module_t module;
@@ -109,7 +108,7 @@ void setup() {
 
   //Check if SN has been changed from the default 0xFFFF.
   //If it has not, then loop through asking for a new one.
-  while (serialNumber == 0xFFFF;){
+  while (serialNumber == 0xFFFF || serialNumber == 0){
     Serial.println(F("Missing serial number. Enter a valid SN [1-65534]:"));
     while(Serial.available()==0){}; //wait for input
     uint16_t tmp_SN = Serial.parseInt();
@@ -143,7 +142,7 @@ void setup() {
   //if we had any errors turn off battery power and stop program.
   //set another alarm to try again- intermittent issues shouldnt end entire deploy.
   //RTC errors likely are fatal though. Will it even wake if RTC fails?
-  if (!(startup.b == 0b00011111)) {
+  if (!(startup.b == 0b00001111)) {
         Serial.println(F("$Startup failed*66"));
         nextAlarm = DateTime(RTC.now().unixtime() + sleepDuration_seconds);
         sensorSleep(nextAlarm);
@@ -160,7 +159,7 @@ void setup() {
     nextAlarm = DateTime(currentTime + delayedStart_seconds);
     sensorSleep(nextAlarm);
   }
-
+  
   updateFilename();
   sprintf(messageBuffer, "FILE,OPEN,%s\0", filename);
   serialSend(messageBuffer);
@@ -168,7 +167,7 @@ void setup() {
 
 
 void loop()
-{
+{ 
   //set the next alarm right away. Check it hasn't passed later.
   nextAlarm = DateTime(RTC.now().unixtime() + sleepDuration_seconds);
   RTC.enableAlarm(nextAlarm);
