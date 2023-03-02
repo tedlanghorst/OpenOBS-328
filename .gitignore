@@ -273,3 +273,10 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# MATLAB
+# Windows default autosave extension
+*.asv
+
+# OSX / *nix default autosave extension
+*.m~
