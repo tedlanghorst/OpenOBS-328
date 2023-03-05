@@ -32,10 +32,11 @@
 
 class MS_5803 {
 public:
-	// Constructor for the class. 
-	// The argument is the desired oversampling resolution, which has 
-	// values of 256, 512, 1024, 2048, 4096
-    MS_5803(uint16_t Resolution = 512);
+    // Constructor for the class. 
+    // The arguments are I2C adddress and oversampling resolution, 
+    // valid addresses are: 0x76 and 0x77.
+    // valid resolutions are: 256, 512, 1024, 2048, 4096
+    MS_5803(byte I2C_Address = 0x76, uint16_t Resolution = 512);
     // Initialize the sensor 
     boolean initializeMS_5803(boolean Verbose = true);
     // Reset the sensor
@@ -64,9 +65,8 @@ public:
     unsigned long D1val() const 	{return D1;}
     unsigned long D2val() const		{return D2;}
     
-    
 private:
-    
+
     float mbar; // Store pressure in mbar. 
     float tempC; // Store temperature in degrees Celsius
 //    float tempF; // Store temperature in degrees Fahrenheit
@@ -83,6 +83,8 @@ private:
     unsigned long MS_5803_ADC(char commandADC);
     // Oversampling resolution
     uint16_t _Resolution;
+    // I2C Address
+    byte _I2C_Address;
 };
 
 #endif 

@@ -28,13 +28,13 @@ uint16_t serialNumber;
 
 //gui communications vars
 bool guiConnected = false;
-const uint8_t COMMS_TRY = 3;    //ms delay to try gui connection
+const uint8_t COMMS_TRY = 3;        //number of attemps for gui connection
 const int MAX_CHAR = 60;            //max num character in messages
 char messageBuffer[MAX_CHAR];       //buffer for sending and receiving comms
 
 //sensors
 Adafruit_VCNL4010 vcnl;
-MS_5803 pressure_sensor = MS_5803(4096);
+MS_5803 pressure_sensor = MS_5803(0x76, 4096);
 
 //data storage variables
 typedef struct single_record_t {

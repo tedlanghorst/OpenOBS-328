@@ -27,10 +27,6 @@
 #include "MS5803_14.h"
 #include <Wire.h>
 
-// For I2C, set the CSB Pin (pin 3) high for address 0x76, and pull low
-// for address 0x77. If you use 0x77, change the value on the line below:
-#define MS5803_I2C_ADDRESS    0x76
-
 #define CMD_RESET		0x1E	// ADC reset command
 #define CMD_ADC_READ	0x00	// ADC read command
 #define CMD_ADC_CONV	0x40	// ADC conversion command
@@ -71,9 +67,10 @@ const uint64_t POW_2_37 = 137438953472ULL; // 2^37 = 137438953472
 
 //-------------------------------------------------
 // Constructor
-MS_5803::MS_5803(uint16_t Resolution) {
-	// The argument is the oversampling resolution, which may have values
-	// of 256, 512, 1024, 2048, or 4096.
+MS_5803::MS_5803(byte I2C_Address, uint16_t Resolution) {
+	_I2C_Address = I2C_Address;
+
+	// oversampling resolution, which may have values of: 256, 512, 1024, 2048, or 4096.
 	_Resolution = Resolution;
 }
 
@@ -84,25 +81,36 @@ boolean MS_5803::initializeMS_5803(boolean Verbose) {
     resetSensor(); 
     
     if (Verbose) {
-    	// Display the oversampling resolution or an error message
-    	if (_Resolution == 256 | _Resolution == 512 | _Resolution == 1024 | _Resolution == 2048 | _Resolution == 4096){
+    	// Display the constructor settings or an error message
+    	if (_I2C_Address == 0x76 || _I2C_Address == 0x77){
+		Serial.print("I2C Address: ");
+		Serial.println(_I2C_Address);
+	} else { 
+		Serial.println("*******************************************");
+		Serial.println("Error: specify a valid I2C address");
+		Serial.println("Choices are 0x76 or 0x77");
+		Serial.println("*******************************************");
+	}
+	if (_Resolution == 256 | _Resolution == 512 | _Resolution == 1024 | _Resolution == 2048 | _Resolution == 4096){
         	Serial.print("Oversampling setting: ");
         	Serial.println(_Resolution);    		
     	} else {
-			Serial.println("*******************************************");
-			Serial.println("Error: specify a valid oversampling value");
-			Serial.println("Choices are 256, 512, 1024, 2048, or 4096");
-			Serial.println("*******************************************");
+		Serial.println("*******************************************");
+		Serial.println("Error: specify a valid oversampling value");
+		Serial.println("Choices are 256, 512, 1024, 2048, or 4096");			
+		Serial.println("*******************************************");
     	}
-
+	//ensure the messages are sent before potentially invalid settings are used below.
+	Serial.flush(); 
     }
-	// Read sensor coefficients
+
+    // Read sensor coefficients
     for (int i = 0; i < 8; i++ ){
     	// The PROM starts at address 0xA0
-    	Wire.beginTransmission(MS5803_I2C_ADDRESS);
+    	Wire.beginTransmission(_I2C_Address);
     	Wire.write(0xA0 + (i * 2));
     	Wire.endTransmission();
-    	Wire.requestFrom(MS5803_I2C_ADDRESS, 2);
+    	Wire.requestFrom(_I2C_Address, 2);
     	while(Wire.available()) {
     		HighByte = Wire.read();
     		LowByte = Wire.read();
@@ -130,7 +138,7 @@ boolean MS_5803::initializeMS_5803(boolean Verbose) {
     }
 	
     // check that coefficients are not all 0. 
-    // If they are, CRC will pass despite unresponsive sensor.
+    // without this check, CRC will pass despite unresponsive sensor.
     bool empty_coeffs = true;
     for (int i = 0; i<8; i++){
 	if (sensorCoeffs[i] !=0){
@@ -294,7 +302,7 @@ unsigned long MS_5803::MS_5803_ADC(char commandADC) {
 	// a long integer on 8-bit Arduinos.
     long result = 0;
     // Send the command to do the ADC conversion on the chip
-	Wire.beginTransmission(MS5803_I2C_ADDRESS);
+	Wire.beginTransmission(_I2C_Address);
     Wire.write(CMD_ADC_CONV + commandADC);
     Wire.endTransmission();
     // Wait a specified period of time for the ADC conversion to happen
@@ -319,11 +327,11 @@ unsigned long MS_5803::MS_5803_ADC(char commandADC) {
             break;
     }
     // Now send the read command to the MS5803 
-    Wire.beginTransmission(MS5803_I2C_ADDRESS);
+    Wire.beginTransmission(_I2C_Address);
     Wire.write((byte)CMD_ADC_READ); // added cast
     Wire.endTransmission();
     // Then request the results. This should be a 24-bit result (3 bytes)
-    Wire.requestFrom(MS5803_I2C_ADDRESS, 3);
+    Wire.requestFrom(_I2C_Address, 3);
     while(Wire.available()) {
     	HighByte = Wire.read();
     	MidByte = Wire.read();
@@ -337,7 +345,7 @@ unsigned long MS_5803::MS_5803_ADC(char commandADC) {
 //----------------------------------------------------------------
 // Sends a power on reset command to the sensor.
 void MS_5803::resetSensor() {
-    	Wire.beginTransmission(MS5803_I2C_ADDRESS);
+    	Wire.beginTransmission(_I2C_Address);
         Wire.write(CMD_RESET);
         Wire.endTransmission();
     	delay(10);
