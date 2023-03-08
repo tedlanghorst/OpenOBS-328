@@ -28,7 +28,7 @@ data.dt = datetime(data.time, 'ConvertFrom', 'posixtime','Format','dd-MM-yyyy HH
 
 %try the autocalibration routine
 hasPressure = any(strncmp('pressure',data.Properties.VariableNames,8));
-autoCal = 0;
+autoCal = 0;backscatter
 if hasPressure
     %remove noise from pressure and find likely submerged periods
     data.pressure(data.pressure>2E4) = NaN; %remove any unreasonably high values
@@ -71,9 +71,9 @@ if autoCal
             'VerticalAlignment','baseline')
     end
 end
+plot(data.dt,data.backscatter,'b.','markersize',10);
 text(0.05,0.9,sprintf(autoCalText),'Units','normalized','FontSize',14)
 
-plot(data.dt,data.backscatter,'b.','markersize',10);
 
 % plot(data.dt,TF,'markersize',10);
 title(sprintf("Serial no. %03d", sn))
@@ -121,7 +121,7 @@ save_path = sprintf(strcat(gen_path,"%03d"),sn);
 if ~exist(save_path, 'dir')
     mkdir(save_path)
 end
-% save(fullfile(save_path,file(1:8)),"measured","standards","NTU","lm","data")
+save(fullfile(save_path,file(1:8)),"measured","standards","NTU","lm","data")
 
 %% look at a bunch of cal data
 date_string = "20230227";
