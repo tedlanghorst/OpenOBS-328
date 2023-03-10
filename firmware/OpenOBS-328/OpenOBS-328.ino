@@ -62,7 +62,7 @@ startup_t startup;
 
 //time settings
 long currentTime = 0;
-long sleepDuration_seconds = 10;
+long sleepDuration_seconds = 0;
 long delayedStart_seconds = 0;
 DateTime nextAlarm;
 DS3231 RTC; //create RTC object
@@ -125,22 +125,26 @@ void setup() {
 
   //intialize & check all the modules
   startup.module.sd = sd.begin(pChipSelect, SPI_SPEED);
-  sprintf(messageBuffer,"SDINIT,%u",startup.module.sd);
-  serialSend(messageBuffer);
+  if (!startup.module.sd){
+    serialSend("SDINIT,0");
+  }
 
-  sprintf(messageBuffer,"CLKINIT,%u",startup.module.clk);
-  serialSend(messageBuffer);
+  if (!startup.module.clk){
+    serialSend("CLKINIT,0");
+  }
 
   startup.module.turb = vcnl.begin();
   vcnl.setLEDcurrent(5);
   vcnl.setFrequency(VCNL4010_250);
-  sprintf(messageBuffer,"TURBINIT,%u",startup.module.turb);
-  serialSend(messageBuffer);
+  if (!startup.module.turb){
+    serialSend("TURBINIT,0");
+  }
 
   //initialize the pressure sensor
   startup.module.pt = pressure_sensor.initializeMS_5803(false);
-  sprintf(messageBuffer,"PTINIT,%u",startup.module.pt);
-  serialSend(messageBuffer);
+  if (!startup.module.pt){
+    serialSend("PTINIT,0");
+  }
 
 
   //if we had any errors turn off battery power and stop program.
@@ -193,7 +197,7 @@ void loop()
   serialSend(messageBuffer);
 
   //ensure a 5 second margin for the next alarm before shutting down.
-  if (nextAlarm.unixtime() - RTC.now().unixtime() > 5) {
+  if ((long(nextAlarm.unixtime() - RTC.now().unixtime())) > 5) {
     sensorSleep(nextAlarm);
   }
   else {
