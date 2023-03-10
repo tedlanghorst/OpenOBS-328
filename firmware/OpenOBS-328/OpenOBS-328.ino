@@ -8,8 +8,11 @@
 #include <SdFat.h>    //tested with Version 2.0.7 //uses 908 bytes of memory
 #include "src/libs/DS3231/DS3231.h"
 #include "src/libs/Adafruit_VCNL4010/Adafruit_VCNL4010.h"
-#include "src/libs/MS5803_14/MS5803_14.h" 
 #include "src/libs/LowPower/LowPower.h"
+
+//only include 1 of the libraries, depending on the MS5803 variant you use.
+#include "src/libs/MS5803_14/MS5803_14.h" 
+//#include "src/libs/MS5803_14/MS5803_05.h" 
 
 
 //firmware data
