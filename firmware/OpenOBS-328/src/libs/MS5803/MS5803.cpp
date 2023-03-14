@@ -72,7 +72,7 @@ MS_5803::MS_5803(uint8_t Version, byte I2C_Address, uint16_t Resolution) {
 	//MS5803 version, currently only supports 2, 5, and 14 bar.
 	_Version = Version;
 	
-	//I2C resolution, which may have values of 0x66 or 0x67.
+	//I2C resolution, which may have values of 0x76 or 0x77.
 	_I2C_Address = I2C_Address;
 
 	// oversampling resolution, which may have values of: 256, 512, 1024, 2048, or 4096.
