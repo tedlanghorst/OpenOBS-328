@@ -1,7 +1,3 @@
-/* TODO
-
-*/
-
 #include <Wire.h>     //standard library
 #include <SPI.h>      //standard library
 #include <EEPROM.h>   //standard library
@@ -11,7 +7,7 @@
 #include "src/libs/LowPower/LowPower.h"
 
 //only include 1 of the libraries, depending on the MS5803 variant you use.
-#include "src/libs/MS5803_14/MS5803_14.h" 
+#include "src/libs/MS5803/MS5803.h" 
 //#include "src/libs/MS5803_14/MS5803_05.h" 
 
 
@@ -37,7 +33,7 @@ char messageBuffer[MAX_CHAR];       //buffer for sending and receiving comms
 
 //sensors
 Adafruit_VCNL4010 vcnl;
-MS_5803 pressure_sensor = MS_5803(0x76, 4096);
+MS_5803 pressure_sensor = MS_5803(14, 0x76, 4096);
 
 //data storage variables
 typedef struct single_record_t {
@@ -86,9 +82,9 @@ void setup() {
   EEPROM.get(SN_ADDRESS, serialNumber);
 
   /* With power switching between measurements, we need to know what kind of setup() this is.
-      First, check if the firmware was updated.
-      Next, check if the GUI connection forced a reset.
-      If neither, we assume this is a power cycle during deployment and use stored settings.
+     First, check if the firmware was updated.
+     Next, check if the GUI connection forced a reset.
+     If neither, we assume this is a power cycle during deployment and use stored settings.
   */
   //if firmware was updated, take those settings and time.
   uint32_t storedTime;

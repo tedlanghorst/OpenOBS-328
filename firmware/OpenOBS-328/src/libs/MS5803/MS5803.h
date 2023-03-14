@@ -1,11 +1,11 @@
-/*	MS5803_14
+/*	MS5803
  * 	An Arduino library for the Measurement Specialties MS5803 family
  * 	of pressure sensors. This library uses I2C to communicate with the
  * 	MS5803 using the Wire library from Arduino.
  *	
- *	This library only works with the MS5803-14BA model sensor. It DOES NOT
- *	work with the other pressure-range models such as the MS5803-30BA or
- *	MS5803-01BA. Those models will return incorrect pressure and temperature 
+ *	This library only works with the MS5803 2, 5, and 14 bar range model sensors. 
+ * 	It DOES NOT work with the other pressure-range models such as the MS5803-30BA 
+ * 	or MS5803-01BA. Those models will return incorrect pressure and temperature 
  *	readings if used with this library. See http://github.com/millerlp for
  *	libraries for the other models. 
  *	 
@@ -21,7 +21,8 @@
  * 	Please see accompanying LICENSE.md file for details on reuse and 
  * 	redistribution.
  * 	
- * 	Copyright Luke Miller, April 1 2014
+ * 	Based on libraries from Luke Miller. 
+ * 	Modified by Ted Langhorst, March 2023.
  */
 
 
@@ -36,7 +37,7 @@ public:
     // The arguments are I2C adddress and oversampling resolution, 
     // valid addresses are: 0x76 and 0x77.
     // valid resolutions are: 256, 512, 1024, 2048, 4096
-    MS_5803(byte I2C_Address = 0x76, uint16_t Resolution = 512);
+    MS_5803(uint8_t Version = 14, byte I2C_Address = 0x76, uint16_t Resolution = 512);
     // Initialize the sensor 
     boolean initializeMS_5803(boolean Verbose = true);
     // Reset the sensor
@@ -69,11 +70,6 @@ private:
 
     float mbar; // Store pressure in mbar. 
     float tempC; // Store temperature in degrees Celsius
-//    float tempF; // Store temperature in degrees Fahrenheit
-//    float psiAbs; // Store pressure in pounds per square inch, absolute
-//    float psiGauge; // Store gauge pressure in pounds per square inch (psi)
-//    float inHgPress;	// Store pressure in inches of mercury
-//    float mmHgPress;	// Store pressure in mm of mercury
     unsigned long D1;	// Store D1 value
     unsigned long D2;	// Store D2 value
     int32_t mbarInt; // pressure in mbar, initially as a signed long integer
@@ -85,6 +81,8 @@ private:
     uint16_t _Resolution;
     // I2C Address
     byte _I2C_Address;
+	// Pressure range version
+	uint8_t _Version;
 };
 
 #endif 
