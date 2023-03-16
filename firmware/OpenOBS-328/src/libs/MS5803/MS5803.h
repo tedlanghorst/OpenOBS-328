@@ -39,7 +39,7 @@ public:
     // valid resolutions are: 256, 512, 1024, 2048, 4096
     MS_5803(uint8_t Version = 14, byte I2C_Address = 0x76, uint16_t Resolution = 512);
     // Initialize the sensor 
-    boolean initializeMS_5803(boolean Verbose = true);
+    boolean initializeMS_5803();
     // Reset the sensor
     void resetSensor();
     // Read the sensor
@@ -47,32 +47,20 @@ public:
     //*********************************************************************
     // Additional methods to extract temperature, pressure (mbar), and the 
     // D1,D2 values after readSensor() has been called
-    
+	
     // Return temperature in degrees Celsius.
-    float temperature() const       {return tempC;}  
+    int16_t getTemperature() const       {return (int16_t)T;}  
     // Return pressure in mbar.
-    float pressure() const          {return mbar;}
-//    // Return temperature in degress Fahrenheit.
-//    float temperatureF() const		{return tempF;}
-//    // Return pressure in psi (absolute)
-//    float psia() const				{return psiAbs;}
-//    // Return pressure in psi (gauge)
-//    float psig() const				{return psiGauge;}
-//    // Return pressure in inHg
-//    float inHg() const				{return inHgPress;}
-//    // Return pressure in mmHg
-//    float mmHg() const				{return mmHgPress;}
+    uint32_t getPressure() const          {return (uint32_t)P;}
     // Return the D1 and D2 values, mostly for troubleshooting
     unsigned long D1val() const 	{return D1;}
     unsigned long D2val() const		{return D2;}
     
 private:
-
-    float mbar; // Store pressure in mbar. 
-    float tempC; // Store temperature in degrees Celsius
+    int32_t P; // pressure [bar*10^-5], initially as a signed long integer for math purposes.
+	int32_t T; // temperature [C*10^-2], initially as a signed long integer for math purposes.
     unsigned long D1;	// Store D1 value
     unsigned long D2;	// Store D2 value
-    int32_t mbarInt; // pressure in mbar, initially as a signed long integer
     // Check data integrity with CRC4
     unsigned char MS_5803_CRC(unsigned int n_prom[]); 
     // Handles commands to the sensor.

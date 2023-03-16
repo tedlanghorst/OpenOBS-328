@@ -2,15 +2,16 @@
 # Syntax Coloring Map
 #######################################
 
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+MS_5803	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 initializeMS_5803	KEYWORD2
 readSensor	KEYWORD2
-temperature	KEYWORD2
-pressure	KEYWORD2
-psia			KEYWORD2
-psig			KEYWORD2
-mmHg			KEYWORD2
-inHg			KEYWORD2
+getTemperature	KEYWORD2
+getPressure	KEYWORD2

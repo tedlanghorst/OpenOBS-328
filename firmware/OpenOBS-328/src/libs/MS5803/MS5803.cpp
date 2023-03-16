@@ -49,7 +49,6 @@ static uint32_t     D2 = 0;    // Store uncompensated temperature value
 // They should be signed 32-bit integer initially 
 // i.e. signed long from -2147483648 to 2147483647
 static int32_t	dT = 0;
-static int32_t 	TEMP = 0;
 // These values need to be signed 64 bit integers 
 // (long long = int64_t)
 static int64_t	Offset = 0;
@@ -80,44 +79,44 @@ MS_5803::MS_5803(uint8_t Version, byte I2C_Address, uint16_t Resolution) {
 }
 
 //-------------------------------------------------
-boolean MS_5803::initializeMS_5803(boolean Verbose) {
+boolean MS_5803::initializeMS_5803() {
     Wire.begin();
     // Reset the sensor during startup
     resetSensor(); 
     
-    if (Verbose) {
+    #ifdef DEBUG_SERIAL
     	// Display the constructor settings or an error message
 		if (_Version == 2 || _Version == 5 || _Version == 14){
-			Serial.print("MS5803 Version: ");
-			Serial.print(_Version);
-			Serial.println(" Bar maximum");
+			DEBUG_SERIAL.print("MS5803 Version: ");
+			DEBUG_SERIAL.print(_Version);
+			DEBUG_SERIAL.println(" Bar maximum");
 		} else { 
-			Serial.println("*******************************************");
-			Serial.println("Error: specify a valid MS5803 version");
-			Serial.println("Library currently only supports 2, 5, and 14 Bar versions.");
-			Serial.println("*******************************************");
+			DEBUG_SERIAL.println("*******************************************");
+			DEBUG_SERIAL.println("Error: specify a valid MS5803 version");
+			DEBUG_SERIAL.println("Library currently only supports 2, 5, and 14 Bar versions.");
+			DEBUG_SERIAL.println("*******************************************");
 		}
 		if (_I2C_Address == 0x76 || _I2C_Address == 0x77){
-			Serial.print("I2C Address: ");
-			Serial.println(_I2C_Address);
+			DEBUG_SERIAL.print("I2C Address: ");
+			DEBUG_SERIAL.println(_I2C_Address);
 		} else { 
-			Serial.println("*******************************************");
-			Serial.println("Error: specify a valid I2C address");
-			Serial.println("Choices are 0x76 or 0x77");
-			Serial.println("*******************************************");
+			DEBUG_SERIAL.println("*******************************************");
+			DEBUG_SERIAL.println("Error: specify a valid I2C address");
+			DEBUG_SERIAL.println("Choices are 0x76 or 0x77");
+			DEBUG_SERIAL.println("*******************************************");
 		}
 		if (_Resolution == 256 | _Resolution == 512 | _Resolution == 1024 | _Resolution == 2048 | _Resolution == 4096){
-				Serial.print("Oversampling setting: ");
-				Serial.println(_Resolution);    		
+				DEBUG_SERIAL.print("Oversampling setting: ");
+				DEBUG_SERIAL.println(_Resolution);    		
 		} else {
-			Serial.println("*******************************************");
-			Serial.println("Error: specify a valid oversampling value");
-			Serial.println("Choices are 256, 512, 1024, 2048, or 4096");			
-			Serial.println("*******************************************");
+			DEBUG_SERIAL.println("*******************************************");
+			DEBUG_SERIAL.println("Error: specify a valid oversampling value");
+			DEBUG_SERIAL.println("Choices are 256, 512, 1024, 2048, or 4096");			
+			DEBUG_SERIAL.println("*******************************************");
 		}
 		//ensure the messages are sent before potentially invalid settings are used below.
-		Serial.flush(); 
-    }
+		DEBUG_SERIAL.flush(); 
+    #endif
 
     // Read sensor coefficients
     for (int i = 0; i < 8; i++ ){
@@ -131,26 +130,26 @@ boolean MS_5803::initializeMS_5803(boolean Verbose) {
     		LowByte = Wire.read();
     	}
     	sensorCoeffs[i] = (((unsigned int)HighByte << 8) + LowByte);
-    	if (Verbose){
+    	#ifdef DEBUG_SERIAL
 			// Print out coefficients 
-			Serial.print("C");
-			Serial.print(i);
-			Serial.print(" = ");
-			Serial.println(sensorCoeffs[i]);
-			delay(10);
-    	}
+			DEBUG_SERIAL.print("C");
+			DEBUG_SERIAL.print(i);
+			DEBUG_SERIAL.print(" = ");
+			DEBUG_SERIAL.println(sensorCoeffs[i]);
+			DEBUG_SERIAL.flush(); 
+    	#endif
     }
     // The last 4 bits of the 7th coefficient form a CRC error checking code.
     unsigned char p_crc = sensorCoeffs[7];
     // Use a function to calculate the CRC value
     unsigned char n_crc = MS_5803_CRC(sensorCoeffs); 
     
-    if (Verbose) {
-		Serial.print("p_crc: ");
-		Serial.println(p_crc);
-		Serial.print("n_crc: ");
-		Serial.println(n_crc);
-    }
+    #ifdef DEBUG_SERIAL
+		DEBUG_SERIAL.print("p_crc: ");
+		DEBUG_SERIAL.println(p_crc);
+		DEBUG_SERIAL.print("n_crc: ");
+		DEBUG_SERIAL.println(n_crc);
+    #endif
 	
     // check that coefficients are not all 0. 
     // without this check, CRC will pass despite unresponsive sensor.
@@ -196,12 +195,12 @@ void MS_5803::readSensor() {
 	// cast both parts of the equation below as signed values so that we can
 	// get a negative answer if needed
     dT = (int32_t)D2 - ( (int32_t)sensorCoeffs[5] * 256 );
-    // Use integer division to calculate TEMP. It is necessary to cast
+    // Use integer division to calculate T. It is necessary to cast
     // one of the operands as a signed 64-bit integer (int64_t) so there's no 
     // rollover issues in the numerator.
-    TEMP = 2000 + ((int64_t)dT * sensorCoeffs[6]) / 8388608LL;
-    // Recast TEMP as a signed 32-bit integer
-    TEMP = (int32_t)TEMP;
+    T = 2000 + ((int64_t)dT * sensorCoeffs[6]) / 8388608LL;
+    // Recast T as a signed 32-bit integer
+    T = (int32_t)T;
 
     
     // All operations from here down are done as integer math until we make
@@ -211,33 +210,33 @@ void MS_5803::readSensor() {
     // Do 2nd order temperature compensation (see pg 9 of MS5803 data sheet)
     // I have tried to insert the fixed values wherever possible 
     // (i.e. 2^31 is hard coded as 2147483648).
-    if (TEMP < 2000) { // If temperature is below 20.0C
+    if (T < 2000) { // If temperature is below 20.0C
 		switch(_Version){
 			case 14:
 				T2 = 3 * ((int64_t)dT * dT) / POW_2_33 ;
 				T2 = (int32_t)T2; // recast as signed 32bit integer
-				OFF2 = 3 * ((TEMP-2000) * (TEMP-2000)) / 2 ;
-				Sens2 = 5 * ((TEMP-2000) * (TEMP-2000)) / 8 ; 	
+				OFF2 = 3 * ((T-2000) * (T-2000)) / 2 ;
+				Sens2 = 5 * ((T-2000) * (T-2000)) / 8 ; 	
 				break;
 			case 5:
 				T2 = 3 * ((int64_t)dT * dT)  / POW_2_33 ;
 				T2 = (int32_t)T2; // recast as signed 32bit integer
-				OFF2 = 3 * ((TEMP-2000) * (TEMP-2000)) / 8 ;
-				Sens2 = 7 * ((TEMP-2000) * (TEMP-2000)) / 8 ;
+				OFF2 = 3 * ((T-2000) * (T-2000)) / 8 ;
+				Sens2 = 7 * ((T-2000) * (T-2000)) / 8 ;
 				break;
 			case 2:
 				T2 = ((int64_t)dT * dT) / 2147483648LL ; // 2^31 = 2147483648
 				T2 = (int32_t)T2; // recast as signed 32bit integer
-				OFF2 = (61 * ((TEMP-2000) * (TEMP-2000))) / 16 ;
-				Sens2 = 2 * ((TEMP-2000) * (TEMP-2000)) ;
+				OFF2 = (61 * ((T-2000) * (T-2000))) / 16 ;
+				Sens2 = 2 * ((T-2000) * (T-2000)) ;
 				break;
 		}
-    } else { // if TEMP is > 2000 (20.0C)
+    } else { // if T is > 2000 (20.0C)
 		switch(_Version){
 			case 14:
 				T2 = 7 * ((uint64_t)dT * dT) / POW_2_37;
 				T2 = (int32_t)T2; // recast as signed 32bit integer
-				OFF2 = 1 * ((TEMP-2000) * (TEMP-2000)) / 16;
+				OFF2 = 1 * ((T-2000) * (T-2000)) / 16;
 				Sens2 = 0;
 				break;
 			case 5:
@@ -254,18 +253,18 @@ void MS_5803::readSensor() {
     }
     
     // Additional compensation for very low temperatures (< -15C)
-    if (TEMP < -1500) {
+    if (T < -1500) {
 		switch(_Version){
 			case 14:
-				OFF2 = OFF2 + 7 * ((TEMP+1500)*(TEMP+1500));
-				Sens2 = Sens2 + 4 * ((TEMP+1500)*(TEMP+1500));
+				OFF2 = OFF2 + 7 * ((T+1500)*(T+1500));
+				Sens2 = Sens2 + 4 * ((T+1500)*(T+1500));
 				break;
 			case 5: 
 				// No additional correction for 5 bar version.
 				break;
 			case 2:
-				OFF2 = OFF2 + 20 * ((TEMP+1500)*(TEMP+1500));
-				Sens2 = Sens2 + 12 * ((TEMP+1500)*(TEMP+1500));
+				OFF2 = OFF2 + 20 * ((T+1500)*(T+1500));
+				Sens2 = Sens2 + 12 * ((T+1500)*(T+1500));
 				break;
 		}
     }
@@ -289,29 +288,24 @@ void MS_5803::readSensor() {
 			break;
 	}
   
-    // Adjust TEMP, Offset, Sensitivity values based on the 2nd order 
+    // Adjust T, Offset, Sensitivity values based on the 2nd order 
     // temperature correction above.
-    TEMP = TEMP - T2; // both should be int32_t
+    T = T - T2; // both should be int32_t
     Offset = Offset - OFF2; // both should be int64_t
     Sensitivity = Sensitivity - Sens2; // both should be int64_t
  
 	// Convert final values to human-readable floats.
 	switch(_Version){
 		case 14:
-			mbarInt = ((D1 * Sensitivity) / 2097152 - Offset) / 32768;
-			mbar = (float)mbarInt / 10;
+			P = ((D1 * Sensitivity) / 2097152 - Offset) / 32768 * 10;
 			break;
 		case 5: 
-			mbarInt = ((D1 * Sensitivity) / 2097152 - Offset) / 32768;
-			mbar = (float)mbarInt / 100;
+			P = ((D1 * Sensitivity) / 2097152 - Offset) / 32768;
 			break;
 		case 2:
-			mbarInt = ((D1 * Sensitivity) / 2097152 - Offset) / 32768;
-			mbar = (float)mbarInt / 100;  
+			P = ((D1 * Sensitivity) / 2097152 - Offset) / 32768;
 			break;	
 	}
-    tempC  = (float)TEMP / 100; 
-  
 }
 
 //------------------------------------------------------------------
