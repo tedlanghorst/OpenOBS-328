@@ -5,11 +5,9 @@
 #include "src/libs/DS3231/DS3231.h"
 #include "src/libs/Adafruit_VCNL4010/Adafruit_VCNL4010.h"
 #include "src/libs/LowPower/LowPower.h"
-
-//only include 1 of the libraries, depending on the MS5803 variant you use.
 #include "src/libs/MS5803/MS5803.h" 
-//#include "src/libs/MS5803_14/MS5803_05.h" 
 
+//#define DEBUG_SERIAL Serial
 
 //firmware data
 const DateTime uploadDT = DateTime((__DATE__), (__TIME__)); //saves compile time into progmem
@@ -26,47 +24,42 @@ uint16_t serialNumber;
 #define UPLOAD_TIME_ADDRESS 502
 
 //gui communications vars
-bool guiConnected = false;
-const uint8_t COMMS_TRY = 3;        //number of attemps for gui connection
-const int MAX_CHAR = 60;            //max num character in messages
+#define COMMS_TRY 3        //number of attemps for gui connection
+#define MAX_CHAR 60            //max num character in messages
 char messageBuffer[MAX_CHAR];       //buffer for sending and receiving comms
+bool guiConnected = false;
 
 //sensors
 Adafruit_VCNL4010 vcnl;
 MS_5803 pressure_sensor = MS_5803(14, 0x76, 4096);
 
 //data storage variables
-typedef struct single_record_t {
+struct {
   uint32_t logTime;
   uint32_t abs_P;
   uint16_t tuAmbient;
   uint16_t tuBackscatter;
   int16_t water_temp;
   uint16_t battery;
-}; //16 bytes
-single_record_t data;
+} data; //16 bytes
 
-//initialization variable
-typedef struct module_t {
-  bool sd: 1;
-  bool clk: 1;
-  bool turb: 1;
-  bool pt: 1;
-};
-typedef union startup_t {
-  module_t module;
+//initialization variables
+union {
   byte b;
-};
-startup_t startup;
+  struct {
+    bool sd: 1;
+    bool clk: 1;
+    bool turb: 1;
+    bool pt: 1;
+  } module;
+} startup;
 
 //time settings
 long currentTime = 0;
-long sleepDuration_seconds = 0;
+long sleepDuration_seconds = 5;
 long delayedStart_seconds = 0;
 DateTime nextAlarm;
 DS3231 RTC; //create RTC object
-
-uint32_t lastRequestTime = 0;
 
 //SD vars
 #define SPI_SPEED SD_SCK_MHZ(50)
@@ -104,6 +97,9 @@ void setup() {
     EEPROM.get(SLEEP_ADDRESS, sleepDuration_seconds);
     startup.module.clk = true; //assume true if logger woke up.
   }
+  if(sleepDuration_seconds < 5){
+    sleepDuration_seconds = 0;
+  }
 
   //Check if SN has been changed from the default 0xFFFF.
   //If it has not, then loop through asking for a new one.
@@ -134,13 +130,12 @@ void setup() {
 
   startup.module.turb = vcnl.begin();
   vcnl.setLEDcurrent(5);
-  vcnl.setFrequency(VCNL4010_250);
   if (!startup.module.turb){
     serialSend("TURBINIT,0");
   }
 
   //initialize the pressure sensor
-  startup.module.pt = pressure_sensor.initializeMS_5803(false);
+  startup.module.pt = pressure_sensor.initializeMS_5803();
   if (!startup.module.pt){
     serialSend("PTINIT,0");
   }
@@ -183,8 +178,8 @@ void loop()
   //Replace data fields with new sensor data.
   data.logTime = RTC.now().unixtime();
   pressure_sensor.readSensor();
-  data.abs_P = pressure_sensor.pressure() * 10; //bar^10-4
-  data.water_temp = pressure_sensor.temperature() * 100; //C^10-2
+  data.abs_P = pressure_sensor.getPressure(); //bar^10-5
+  data.water_temp = pressure_sensor.getTemperature(); //C^10-2
   data.tuAmbient = vcnl.readAmbient();
   data.tuBackscatter = vcnl.readProximity();
   data.battery = analogRead(A2);
@@ -195,8 +190,8 @@ void loop()
 
   serialSend(messageBuffer);
 
-  //ensure a 5 second margin for the next alarm before shutting down.
-  if ((long(nextAlarm.unixtime() - RTC.now().unixtime())) > 5) {
+  //ensure a margin for the next alarm before shutting down.
+  if ((long(nextAlarm.unixtime() - RTC.now().unixtime())) > 3) {
     sensorSleep(nextAlarm);
   }
   else {
