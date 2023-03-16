@@ -54,11 +54,7 @@ boolean Adafruit_VCNL4010::begin(uint8_t addr, TwoWire *theWire) {
   if ((rev & 0xF0) != 0x20) {
     return false;
   }
-
-  setLEDcurrent(20);             // 200 mA
-  setFrequency(VCNL4010_16_625); // 16.625 readings/second
-
-  write8(VCNL4010_INTCONTROL, 0x08);
+  
   return true;
 }
 
