@@ -5,4 +5,15 @@
 layout: home
 ---
 
-**TEST**
+Welcome to the OpenOBS-328 documentation. 
+
+Browse the pages for information about: 
+
+* [**the project**](./about)
+* [**sensor construction**](./build)
+* [**calibration**](./calibration)
+* [**deployments**](./deploy)
+* [**data processing**](./data)
+
+
+<!--https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/testing-your-github-pages-site-locally-with-jekyll-->
