@@ -3,19 +3,21 @@ layout: page
 title: Build
 permalink: /build/
 ---
+# Introduction
+{:.no_toc}
 
 **This guide covers the construction of two variants of the OpenOBS:**
 * **OpenOBS-328. A self contained turbidity and level sensor & logger.**
 * **OpenOBS-Iridium. A bank-installed logger that can transmit data via Iridium satellite connection with a separate sensor deployed in the river.**
 
 
-## Table of Contents 
+# Table of Contents 
 {:.no_toc}
 * TOC
 {:toc}
 
----
-## Tools & Materials
+
+# Tools & Materials
 * Soldering iron
 * Solder
 * No clean solder paste
@@ -33,16 +35,16 @@ permalink: /build/
 * SCIPGRIP 16 acrylic cement
 
 ---
-## Parts
+# Parts
 [OpenOBS-328](https://docs.google.com/spreadsheets/d/11F4owaMOkx01ESch3bgcQnwAiDcHpwIU8byPSdr5rsE/edit#gid=601615659)
 
 [OpenOBS-Iridium](https://docs.google.com/spreadsheets/d/11F4owaMOkx01ESch3bgcQnwAiDcHpwIU8byPSdr5rsE/edit#gid=685555300)
 
 ---
-## Programming 
+# Programming 
 These two sections provide background information for programming OpenOBS devices. In the logger assembly sections later on we will assume you understand these concepts and have set up your computer to be able to program the new device.
 
-### ISP & Bootloading
+## ISP & Bootloading
 **Introduction**
 When we order new PCBs with microcontrollers on them, they are a blank slate with default configurations and no code running. The bootloader is firmware that we ‘burn’ on the microcontroller that defines some settings and subsequently allows us to upload Arduino code via the USB connection. You can think of this kind of like the BIOS of a regular computer; it doesn’t do much on its own, but it lets us install an operating system and then run programs etc. Because this step sets up the protocol for uploading from USB, we have to send this firmware to the microcontroller through the In System Programmer (ISP) connections.
 
@@ -135,7 +137,7 @@ Once you’ve installed the new boards options, you can click on Tools -> Boards
 We can also send our Arduino program to the microcontroller directly through the ISP, rather than installing a bootloader and then programming through USB. The advantage to this method is that we do not need the hardware for a USB connection, and we save about 2K of program memory by not installing our program on top of the bootloader. We will only use ISP programming for the sensor end of the OpenOBS-Iridium variant, because once we verify the sensor is working, we will encase it in epoxy and not have access to reprogram it anyway.
 
 
-### USB
+## USB
 
 After installing the Arduino bootloader via the ISP programming, we can now upload code via the micro-USB connection. 
 
@@ -157,9 +159,9 @@ After installing the Arduino bootloader via the ISP programming, we can now uplo
 
 	2.3 If the serial number has not been set, the serial monitor will prompt you to set it now by typing it at the top of the window. If you need to change it in the future, use the firmware script titled “set_serial_number.ino”, follow the prompts in the serial monitor, and then reupload the regular sensor firmware.
 
-## Logger Assembly
+# Logger Assembly
 
-### OpenOBS-328
+## OpenOBS-328
 
 The logger PCBs come mostly assembled. There are just 2 parts that need to be soldered to the back side of the board.
 
@@ -173,9 +175,9 @@ The logger PCBs come mostly assembled. There are just 2 parts that need to be so
 
 4. Clean the residue from the solder flux around all the new joints using >90% isopropyl alcohol.
 
-### OpenOBS-Iridium
-## Sensor Head
-### 3D printing housing
+## OpenOBS-Iridium
+# Sensor Head
+## 3D printing housing
 
 The sensor housing is one of the OpenOBS’s end caps, and holds the proximity sensor and the pressure sensor. The housing has two chambers which are filled with clear epoxy after insertion of the sensors. The epoxy makes the end cap watertight, and also allows light to travel between the proximity sensor chip and the water.
 
@@ -187,8 +189,8 @@ Upload the provided .stl file to the 3D printer’s interface and slice. Slicing
 * No internal support. Supports prevent overhangs (materials above a hollow space) from drooping or collapsing before the extruded material cools and hardens, but also need to be removed from the internal spaces after printing. On our printers the parts are good enough without supports, but this may not work for all printers/settings/materials etc.
 * Set fill density somewhere between 50 and 100%. Reduces hollow spaces.
 
-### Wiring
-#### Pressure sensor
+## Wiring
+### Pressure sensor
 
 1. Squeeze some solder paste on the pads of the SMD adapter board. The right amount of paste is more important than keeping the paste separate on each pad. The surface tension when you melt the solder should ‘snap’ the puddles of solder onto the pads.
 1. Place the pressure sensor on the adapter board. Make sure the orientation is correct- there is a dot in one corner of both the adapter and the sensor that indicates orientation.
@@ -200,7 +202,7 @@ Upload the provided .stl file to the 3D printer’s interface and slice. Slicing
 1. Solder the wires in place as shown below. The wires should come in from the back and hang down straight-ish at this point. Trim the wires and resistor/capacitor legs so they are well below the top of the sensor. These need to be fully covered in epoxy.
 1. A bit of heat shrink on the wires below the adapter board keeps things tidy, but not necessary.
 
-#### Turbidity sensor
+### Turbidity sensor
 
 1. These steps are the same for both the OpenOBS-328 and the OpenOBS-Iridium except for the first step.
 1. OpenOBS-328: cut one of the 50 cm QWIIC cables in half (or use the other half from last time; the point here is to have a set of wires with a connector on one end and bare wires on the other).
@@ -223,8 +225,8 @@ If you don’t know how to check that the sensor is working, go to section XXX t
 1. Use hot glue to plug up the hole at the base of the pressure sensor slot.
 
 
-### Epoxy potting
-#### Turbidity sensor
+## Epoxy potting
+### Turbidity sensor
 
 1. The sensor head needs to be situated with the flat side (front) facing down in order to pour the epoxy. Place a silicon pad (shiny side toward the sensor) between the sensor head and a mobile flat surface (like a slab of stone). The silicone pad ensures that the sensor face comes out smooth. Clamp or tape securely to the slab, then maneuver the slab so the bottom of the sensor head is facing up and you can pour epoxy into the proximity sensor slot. 
 1. Prepare the epoxy by weighing out two parts Vivid Scientific Epoxy 128 (red label) and one part Epoxy 762 (green label) in an aluminum weighing dish. 12 g Epoxy 128 and 6 g Epoxy 762 are enough to fill 3 proximity sensor slots. Use a popsicle stick to gently combine the two epoxies.
@@ -237,14 +239,14 @@ If you don’t know how to check that the sensor is working, go to section XXX t
 1. Once the epoxy is bubble free, pour slowly into the proximity sensor slot until epoxy reaches the brim. Take care that epoxy gets between the chip and the silicone pad. Allow the epoxy to cure for 24 hours before unclamping/removing tape.
 
 
-#### Pressure sensor
+### Pressure sensor
 
 1. Clamp or tape the sensor head securely to a slab so the top of the sensor head is facing up (hot glue facing down).
 1. Add heat shrink to protect PS from epoxy
 1. Prepare epoxy as before. 12 g Epoxy 128 and 6 g Epoxy 762 are enough to fill 3 pressure sensor slots. 
 1. Once the epoxy is bubble free, pour slowly into the pressure sensor slot until epoxy reaches the brim of the heatshrink. Remove the heat shrink so it won't set into the epoxy, but take care not to drip epoxy onto the white circle. Allow the epoxy to cure for 24 hours before unclamping/removing tape. After curing, the sensor head is complete.
 
-## Final Assembly
+# Final Assembly
 1. Cut 15cm of 1”- diameter PVC.
 1. In a well ventilated space (i.e. fume hood), attach the completed sensor head to the PVC using SCIGRIP 16 Fast Set Clear Medium Bodied Solvent Cement. Apply to all points of contact between the endcap and the PVC to ensure a watertight seal. Allow the adhesive to cure for 24 hours.
 1. Epoxy inside the PVC to prevent leaks at the junction of the sensor head with the PVC?
@@ -252,6 +254,7 @@ If you don’t know how to check that the sensor is working, go to section XXX t
 1. Install disk to PCB to prevent wire catching
 1. Endcap
 
-
+---
 Lillian Cooper and Ted Langhorst.
-Updated 2/23/2023
+
+Updated 3/18/2023
