@@ -4,7 +4,7 @@ title: Deploy
 permalink: /deploy/
 ---
 
-# Introduction
+## Introduction
 {:.no_toc}
 
 This guide will take you through programming an OpenOBS-328 sensor for deployment. You will need a computer (preferably windows), a micro usb cable, an OpenOBS-328, and an AA-sized Li-ion or LiSOCL2 battery. If you have a windows computer, you can use the graphical user interface (GUI) to quickly deploy or update the firmware. Alternatively, you can compile and upload the source code directly.
@@ -12,17 +12,17 @@ This guide will take you through programming an OpenOBS-328 sensor for deploymen
 **Most of this guide describes setting up your computer, which requires an internet connection for downloading files and troubleshooting issues. You will only need to do these steps once per computer.**
 
 
-# Table of Contents 
+## Table of Contents 
 {:.no_toc}
 * TOC
 {:toc}
 
-# Programming
+## Programming
 At this stage, your OpenOBS-328 should have the firmware installed, but still we need to update the current time and send over our deployment settings. The GUI is the easiest and fastest way to upload settings, or even flash pre-compiled firmware, but only works on Windows computers. On other platforms, or if you need more control over the logger firmware, you can edit the firmware, recompile, and upload using the Arduino code editor.
 
 ---
-## GUI
-### Setup
+### GUI
+#### Setup
 1. All of the latest OpenOBS GUI files and documentation are available on the [project github](https://github.com/tedlanghorst/OpenOBS-GUI). Download the github repository and then navigate to *OpenOBS-GUI/bin/* and try to run the *OpenOBS_328_GUI.exe* application. The program will only run on a Windows computer with the .NET 5 Desktop Runtime. If you don’t have the correct runtime, an error will pop up and direct you to the download page.
 
 1. Connect an OpenOBS-328 sensor to your computer with a micro USB cable to test your setup.
@@ -36,7 +36,7 @@ At this stage, your OpenOBS-328 should have the firmware installed, but still we
 
 1. At this point you have successfully set up the deployment GUI. Good job! If you use the same USB port in the future, the COM port should be the same every time you connect an OpenOBS.
 
-### Deploying
+#### Deploying
 1. Open the OpenOBS and slide the circuit board out of the PVC housing. Install a 3.6V Li-SOCl2 or 3.7V Li-ion AA-size battery. A regular 1.5V AA battery (even the lithium types) will not work. The USB connection provides power while plugged in, so you will not have any indication that the battery is working while programming the sensor. 
 1. Connect the OpenOBS Arduino and the computer with a micro USB cable.
 1. Open the deployment GUI program.
@@ -48,7 +48,7 @@ At this stage, your OpenOBS-328 should have the firmware installed, but still we
 
     ![programmed sensor](./images/GUI.PNG)
 
-## Arduino Code
+### Arduino Code
 1. This option is nearly identical to the steps required to set up a newly-constructed sensor. Follow the programming directions on the [build page](./2_build.markdown#programming).
 1. Change the variable *sleepDuration_seconds* to set the measurement interval. 
 1. Change *delayedStart_seconds* if desired.
