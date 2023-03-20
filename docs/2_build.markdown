@@ -47,7 +47,7 @@ These two sections provide background information for programming OpenOBS device
 **Introduction**
 When we order new PCBs with microcontrollers on them, they are a blank slate with default configurations and no code running. The bootloader is firmware that we ‘burn’ on the microcontroller that defines some settings and subsequently allows us to upload Arduino code via the USB connection. You can think of this kind of like the BIOS of a regular computer; it doesn’t do much on its own, but it lets us install an operating system and then run programs etc. Because this step sets up the protocol for uploading from USB, we have to send this firmware to the microcontroller through the In System Programmer (ISP) connections.
 
-You can find additional background info [here](https://linuxhint.com/bootloader-arduino/) if you want to read more.
+You can find additional background info [here](https://linuxhint.com/bootloader-arduino/) if you want to read more!
 
 **Connections**
 You can buy specialized devices that act as an ISP, but it is easy enough to just use another Arduino that already has a bootloader installed to burn a new device. Read through [this tutorial](https://docs.arduino.cc/built-in-examples/arduino-isp/ArduinoISP) for how ISP uploading works and how to use an Arduino as the programmer. Don’t worry about all the examples they give on how to use different “programmers” and “hosts”, just understand the basic idea. We will follow the 8-step guide section at the end of the tutorial. At step 5, it says: 
