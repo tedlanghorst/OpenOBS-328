@@ -5,11 +5,17 @@ permalink: /deploy/
 ---
 
 ## Introduction
+{:.no_toc}
 
-This guide will take you through programming an OpenOBS-328 sensor for deployment. You will need a computer (preferably windows), a micro usb cable, an OpenOBS-328, and an AA-sized Li-ion or LiSOCL2 battery. If you have a windows computer, you can use the graphical user interface (GUI) to quickly deploy or update the firmware. Alternatively, you can compile and upload the source code directly.
+This guide will take you through programming an OpenOBS-328 sensor for deployment. You will need a computer (preferably windows), a micro usb cable, an OpenOBS-328, and a AA-sized Li-ion or LiSOCL2 battery. If you have a windows computer, you can use the graphical user interface (GUI) to quickly deploy or update the firmware. Alternatively, you can compile and upload the source code directly.
 
 **Most of this guide describes setting up your computer, which requires an internet connection for downloading files and troubleshooting issues. You will only need to do these steps once per computer.**
 
+
+## Table of Contents 
+{:.no_toc}
+* TOC
+{:toc}
 
 ## Programming
 At this stage, your OpenOBS-328 should have the firmware installed, but still we need to update the current time and send over our deployment settings. The GUI is the easiest and fastest way to upload settings, or even flash pre-compiled firmware, but only works on Windows computers. On other platforms, or if you need more control over the logger firmware, you can edit the firmware, recompile, and upload using the Arduino code editor.
