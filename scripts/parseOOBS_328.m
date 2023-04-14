@@ -46,12 +46,16 @@ else
     end
 end
 
-if any("battery" == string(d.Properties.VariableNames))
+
+if any(strcmp('battery',d.Properties.VariableNames))
     d.battery_V = d.battery ./ 2^10 .* 3.3 .* 2;
 end
 
 %convert timestamp
 d.dt = datetime(d.time, 'ConvertFrom', 'posixtime','Format','dd-MM-yyyy HH:mm:ss.SSSS');
+d = sortrows(d,'dt');
+
+%%
 
 %find and apply the most recent calibration file
 calDir = dir(sprintf("%s%03u/*.mat",calPath,sn));
@@ -78,12 +82,27 @@ close all
 
 figure
 set(gcf,'Units','normalized')
-set(gcf,'Position',[0.1 0.1 0.8 0.8])
+set(gcf,'Position',[.25 .4 .2 .2])
 hold on
 
-plot(d.dt,d.ambient_light)
+
+plot(d.dt,d.backscatter)
 yyaxis right
 plot(d.dt,d.battery_V)
+tiledlayout(2,1,'TileSpacing','compact','Padding','compact')
+ax(1) = nexttile;
+plot(d.dt,d.scattered_light,'Linewidth',1.5)
+set(gca,'YLim',[2820,2920])
+ylabel("Backscatter")
+title("Tanana Lakes - River")
+
+ax(2) = nexttile;
+plot(d.dt,d.ambient_light,'Linewidth',1.5)
+set(gca,'YLim',[0,250])
+ylabel("Ambient light")
+
+
+exportgraphics(gcf,'/Users/Ted/GDrive/Tanana OBS Project/Travel and field work/January2023/Data/TananaLakesRiver.png','Resolution',600)
 
 % figure
 % set(gcf,'Units','normalized')
