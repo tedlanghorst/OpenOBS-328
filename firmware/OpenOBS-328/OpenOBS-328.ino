@@ -7,11 +7,16 @@
 #include "src/libs/LowPower/LowPower.h"
 #include "src/libs/MS5803/MS5803.h" 
 
+// Likely variables to change
+#define MS5803_VERSION 5
+long sleepDuration_seconds = 5;
+const char contactInfo[] PROGMEM = "If found, please contact tlang@live.unc.edu";
+//
+
 //#define DEBUG_SERIAL Serial
 
 //firmware data
 const DateTime uploadDT = DateTime((__DATE__), (__TIME__)); //saves compile time into progmem
-const char contactInfo[] PROGMEM = "If found, please contact tlang@live.unc.edu";
 const char dataColumnLabels[] PROGMEM = "time,ambient_light,backscatter,pressure,water_temp,battery";
 uint16_t serialNumber;
 
@@ -31,7 +36,7 @@ bool guiConnected = false;
 
 //sensors
 Adafruit_VCNL4010 vcnl;
-MS_5803 pressure_sensor = MS_5803(14, 0x76, 4096);
+MS_5803 pressure_sensor = MS_5803(MS5803_VERSION, 0x76, 4096);
 
 //data storage variables
 struct {
@@ -56,7 +61,6 @@ union {
 
 //time settings
 long currentTime = 0;
-long sleepDuration_seconds = 5;
 long delayedStart_seconds = 0;
 DateTime nextAlarm;
 DS3231 RTC; //create RTC object
@@ -140,7 +144,6 @@ void setup() {
     serialSend("PTINIT,0");
   }
 
-
   //if we had any errors turn off battery power and stop program.
   //set another alarm to try again- intermittent issues shouldnt end entire deploy.
   //RTC errors likely are fatal though. Will it even wake if RTC fails?
@@ -150,7 +153,7 @@ void setup() {
         sensorSleep(nextAlarm);
   }
 
-  //if we have established a connection to the java gui,
+  //if we have established a connection to the gui,
   //send a ready message and wait for a settings response.
   //otherwise, use the settings from EEPROM.
   if (guiConnected) {
