@@ -28,10 +28,10 @@ data.dt = datetime(data.time, 'ConvertFrom', 'posixtime','Format','dd-MM-yyyy HH
 
 %try the autocalibration routine
 hasPressure = any(strncmp('pressure',data.Properties.VariableNames,8));
-autoCal = 0;backscatter
+autoCal = 0;
 if hasPressure
     %remove noise from pressure and find likely submerged periods
-    data.pressure(data.pressure>2E4) = NaN; %remove any unreasonably high values
+    data.pressure(data.pressure>2E5) = NaN; %remove any unreasonably high values
     pressureTrend = movmedian(data.pressure,length(data.pressure)/10,'omitnan');
     pressureDetrend = data.pressure-pressureTrend;
     pressureDetrend(pressureDetrend<0) = 0;
@@ -48,6 +48,9 @@ if hasPressure
         autoCal = 1;
         autoCalText = ['Automatic calibration samples found using pressure data.\n' ...
         'Use the brush tool to fix and export any or all standards ''a'' through ''e''.'];
+    else
+         autoCalText = ['Automatic calibration failed.\n' ...
+        'Use the brush tool to highlight and export standards ''a'' through ''e''.'];
     end
 else
     autoCalText = ['Automatic calibration requires pressure data.\n' ...

@@ -50,13 +50,8 @@ if any("battery" == string(d.Properties.VariableNames))
     d.battery_V = d.battery ./ 2^10 .* 3.3 .* 2;
 end
 
-%%
-
-
-
 %convert timestamp
 d.dt = datetime(d.time, 'ConvertFrom', 'posixtime','Format','dd-MM-yyyy HH:mm:ss.SSSS');
-
 
 %find and apply the most recent calibration file
 calDir = dir(sprintf("%s%03u/*.mat",calPath,sn));
@@ -70,6 +65,13 @@ else
     d.NTU_sd = predict(lm,d.R0_V_sd);
 end
 
+% total time in measurement
+fprintf("Total record time: %0.1f days\n",days(max(d.dt)-min(d.dt)))
+
+%%
+
+
+
 
 % plots
 close all
@@ -79,7 +81,7 @@ set(gcf,'Units','normalized')
 set(gcf,'Position',[0.1 0.1 0.8 0.8])
 hold on
 
-plot(d.dt,d.backscatter)
+plot(d.dt,d.ambient_light)
 yyaxis right
 plot(d.dt,d.battery_V)
 
