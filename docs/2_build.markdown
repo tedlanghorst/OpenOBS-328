@@ -133,7 +133,7 @@ Once you’ve installed the new boards options, you can click on Tools -> Boards
 
 
 **Programming with ISP**
-We can also send our Arduino program to the microcontroller directly through the ISP, rather than installing a bootloader and then programming through USB. The advantage to this method is that we do not need the hardware for a USB connection, and we save about 2K of program memory by not installing our program on top of the bootloader. We will only use ISP programming for the sensor end of the OpenOBS-Iridium variant, because once we verify the sensor is working, we will encase it in epoxy and not have access to reprogram it anyway.
+We can also send our Arduino program to the microcontroller directly through the ISP, rather than installing a bootloader and then programming through USB. The advantage to this method is that we do not need the hardware for a USB connection. We will only use ISP programming for the sensor end of the OpenOBS-Iridium variant, because once we verify the sensor is working, we will encase it in epoxy.
 
 
 ## USB
@@ -142,7 +142,7 @@ After installing the Arduino bootloader via the ISP programming, we can now uplo
 
 1. Setup
 
-	1.1 If you already have the Arduino IDE and know how to connect and upload code, skip ahead to the next step. Otherwise, download and install the free Arduino IDE and follow this guide to get familiar with the IDE and learn how to upload code. 
+	1.1 If you already have the [Arduino IDE](https://www.arduino.cc/en/software) and know how to connect and upload code, skip ahead to the next step. Otherwise, download and install the free Arduino IDE and follow [this guide](https://learn.adafruit.com/ladyadas-learn-arduino-lesson-number-1/upload-your-first-sketch) to get familiar with the IDE and learn how to upload code. 
 
 	1.2 Review the section “Setting board options” earlier in this section and use Table 1 to pick the correct board in the Arduino IDE.
 	
@@ -156,7 +156,7 @@ After installing the Arduino bootloader via the ISP programming, we can now uplo
 
 	2.2 Open the Serial Monitor (Tools -> Serial Monitor) and verify that the OpenOBS is starting up and communicating. Change the baud rate to 250000 in the bottom right corner of the Serial Monitor if it is not already set.
 
-	2.3 If the serial number has not been set, the serial monitor will prompt you to set it now by typing it at the top of the window. If you need to change it in the future, use the firmware script titled “set_serial_number.ino”, follow the prompts in the serial monitor, and then reupload the regular sensor firmware.
+	2.3 If the serial number has not been set, the serial monitor will prompt you to set it now by typing it at the top of the window. If you need to change it in the future, use the .ino script titled “set_serial_number.ino”, follow the prompts in the serial monitor, and then reupload the regular sensor firmware.
 
 ## Logger Assembly
 
@@ -166,7 +166,7 @@ The logger PCBs come mostly assembled. There are just 2 parts that need to be so
 
 1. First, solder the QWIIC connector for the sensors. Start by adding a small dab of solder on one of the big corner pads. Let the solder solidify, and use some tweezers to grab the QWIIC connector. Remelt the solder with the iron and slide the connector in place, check that the metal legs on the back line up with the small gold pads. Solder these fine pads on the back, making sure not to short multiple pins together. If they do end up connected, try ‘swiping’ some of the solder away with a clean iron tip. If that isn’t working, then use a solder wick to remove some solder and try again. Solder the other corner pad (these give most of the mechanical strength).
 
-<!--![](./images/IMG_2414.JPG)-->
+![image](./images/qwiic.png)
 
 2. Insert the battery holder on the back. There are markings on the board and the holder for positive and negative. 
 
@@ -236,7 +236,9 @@ If you don’t know how to check that the sensor is working, go to section XXX t
 
 	**Vacuum chamber:** Expands bubbles and brings them to the surface. 
 
-	**Heat gun:** Reduces the viscosity of the epoxy, allowing bubbles to rise to the surface and burst. Note: Although the heat setting for soldering purposes is 250 ℃, the heat gun should be set to ~150 ℃ when working with the epoxy.
+	**Heat gun:** Reduces the viscosity of the epoxy, allowing bubbles to rise to the surface and burst. Note: Although the heat setting for soldering purposes is 250 ℃, the heat gun should be set to ~120 ℃ when working with the epoxy. Too much heat will make the epoxy set rapidly.
+
+  ![image](./images/epoxy_bubbles.png)
 
 1. Once the epoxy is bubble free, pour slowly into the proximity sensor slot until epoxy reaches the brim. Take care that epoxy gets between the chip and the silicone pad. Allow the epoxy to cure for 24 hours before unclamping/removing tape.
 
@@ -251,10 +253,8 @@ If you don’t know how to check that the sensor is working, go to section XXX t
 ## Final Assembly
 1. Cut 15cm of 1”- diameter PVC.
 1. In a well ventilated space (i.e. fume hood), attach the completed sensor head to the PVC using SCIGRIP 16 Fast Set Clear Medium Bodied Solvent Cement. Apply to all points of contact between the endcap and the PVC to ensure a watertight seal. Allow the adhesive to cure for 24 hours.
-1. Epoxy inside the PVC to prevent leaks at the junction of the sensor head with the PVC?
-1. Hot glue sensor wires to PCB … anywhere else?
-1. Install disk to PCB to prevent wire catching
-1. Endcap
+1. Epoxy inside the PVC to prevent leaks at the junction of the sensor head with the PVC.
+
 
 ---
 Lillian Cooper and Ted Langhorst.

@@ -8,8 +8,8 @@
 #include "src/libs/MS5803/MS5803.h" 
 
 // Likely variables to change
-#define MS5803_VERSION 5
-long sleepDuration_seconds = 5;
+#define MS5803_VERSION 14
+long sleepDuration_seconds = 30;
 const char contactInfo[] PROGMEM = "If found, please contact tlang@live.unc.edu";
 //
 

@@ -3,18 +3,22 @@
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
 layout: home
-permalink: /docs/
+permalink: 
 ---
 
 Welcome to the OpenOBS-328 documentation. 
 
-Browse the pages for information about: 
+Browse the pages for information about:
 
 * [**the project**](./about)
-* [**sensor construction**](./build)
+* [**building sensors**](./build)
 * [**calibration**](./calibration)
 * [**deployments**](./deploy)
 * [**data processing**](./data)
+
+**View the full [repository](https://www.github.com/tedlanghorst/OpenOBS-328)**
+
+![image](./images/physicalDesign.png)
 
 
 <!--https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/testing-your-github-pages-site-locally-with-jekyll-->

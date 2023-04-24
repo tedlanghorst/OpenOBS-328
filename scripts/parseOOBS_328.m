@@ -72,37 +72,17 @@ end
 % total time in measurement
 fprintf("Total record time: %0.1f days\n",days(max(d.dt)-min(d.dt)))
 
-%%
-
-
-
-
-% plots
+%% plots
 close all
 
 figure
-set(gcf,'Units','normalized')
-set(gcf,'Position',[.25 .4 .2 .2])
 hold on
-
-
-plot(d.dt,d.backscatter)
+plot(d.dt,d.ambient_light)
 yyaxis right
 plot(d.dt,d.battery_V)
-tiledlayout(2,1,'TileSpacing','compact','Padding','compact')
-ax(1) = nexttile;
-plot(d.dt,d.scattered_light,'Linewidth',1.5)
-set(gca,'YLim',[2820,2920])
-ylabel("Backscatter")
-title("Tanana Lakes - River")
-
-ax(2) = nexttile;
-plot(d.dt,d.ambient_light,'Linewidth',1.5)
-set(gca,'YLim',[0,250])
-ylabel("Ambient light")
 
 
-exportgraphics(gcf,'/Users/Ted/GDrive/Tanana OBS Project/Travel and field work/January2023/Data/TananaLakesRiver.png','Resolution',600)
+% exportgraphics(gcf,'/Users/Ted/GDrive/Tanana OBS Project/Travel and field work/January2023/Data/TananaLakesRiver.png','Resolution',600)
 
 % figure
 % set(gcf,'Units','normalized')

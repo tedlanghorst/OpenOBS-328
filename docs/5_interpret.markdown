@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Data
-permalink: /data/
+title: Interpret
+permalink: /interpret/
 ---
 
 ## Data format
@@ -24,7 +24,8 @@ After the data header, we have columns of data that represent
 * ambient light (light from 400-700 nm. Appx. equal to 1-2 Lux per unit)
 * backscatter (uncalibrated backscatter intensity. Linear w.r.t. turbidity)
 * pressure (bar * $10^{-5}$)
-* battery (multiply by $\frac{3.3}{2^{9}}$ to get Volts)
+* water temperature (C * $10^{-2}$)
+* battery level (multiply by $3.3*{2^{-9}}$ to get Volts)
 
 *There is an intermittent bug in the firmware that occasionally omits the header. If this happens, don't worry. The data rows are unaffected and you can copy a header over from another day (make sure you keep the serial number the same).*
 
