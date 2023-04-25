@@ -12,9 +12,7 @@ OpenOBS is an academic research project to develop an open source, affordable, a
 # History 
 The project began at the University of North Carolina at Chapel Hill (UNC) under the direction of Dr. Evan Goldstein and Dr. Emily Eidam in 2019. After a long period of design and testing, we started producing dozens of sensors and published [the first OpenOBS manuscript](https://aslopubs.onlinelibrary.wiley.com/doi/abs/10.1002/lom3.10469) in Limnology and Oceanography Methods. By 2022, we had built almost 90 sensors and deployed them many times in North Carolina and Alaska, USA. Constructing each sensor was labor intensive and often required troubleshooting problems after assembly. Further, readings were highly sensitive to ambient light and affected by changes in temperature. 
 
-<p align="center" width="100%">
-    <img width="100%" src="./images/OBS1.png">
-</p>
+![image](./images/OBS1.png)
 
 *The Original OpenOBS sensor ([GitHub repo](https://github.com/tedlanghorst/OpenOBS)).*
 
@@ -24,9 +22,7 @@ Development of the OpenOBS-328 began in Fall 2022 when Dr. Emily Eidam was award
 
 &nbsp;
 
-<p align="center" width="100%">
-    <img width="100%" src="./images/OpenOBS-328-front.png">
-</p>
+![image](./images/OpenOBS-328-front.png)
 
 *The new OpenOBS-328 sensor.*
 
