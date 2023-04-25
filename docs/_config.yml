@@ -30,8 +30,6 @@ github_username:  tedlanghorst
 
 # Build settings
 theme: minima
-markdown: GFM
-
 
 # Exclude from processing.
 # The following items will not be processed, by default.
