@@ -179,13 +179,13 @@ The logger PCBs come mostly assembled. There are just 2 parts that need to be so
 Work in progress...
 
 ## Sensor Head
-### 3D printing housing
-
 The sensor housing is one of the OpenOBS’s end caps, and holds the proximity sensor and the pressure sensor. The housing has two chambers which are filled with clear epoxy after insertion of the sensors. The epoxy makes the end cap watertight, and also allows light to travel between the proximity sensor chip and the water.
+
+### 3D printing housing
 
 The sensor housing is produced by 3D printing a custom [**.stl file**](https://drive.google.com/file/d/1blsicZMW83UDPJwxpu_2UrOp7uc6YAOs/view).  
 
-Upload the provided .stl file to the 3D printer’s interface and slice. Slicing cuts the file into manageable layers for the printer to work with. Printing settings will vary depending on the brand of 3D printer, and certain presets like the extrusion temperature should remain at the default value. We use the following settings for Ultimaker 3 and S3 printers found at UNC:
+Upload the provided .stl file to the 3D printer’s interface and slice the file into machine code that can be printed.  Printing settings will vary depending on the brand of 3D printer, and certain presets like the extrusion temperature should remain at the default value. We use the following settings for Ultimaker 3 and S3 printers found at UNC:
 
 * Add a brim. Prevents the object from sliding during printing.
 * No internal support. Supports prevent overhangs (materials above a hollow space) from drooping or collapsing before the extruded material cools and hardens, but also need to be removed from the internal spaces after printing. On our printers the parts are good enough without supports, but this may not work for all printers/settings/materials etc.
@@ -207,8 +207,8 @@ Upload the provided .stl file to the 3D printer’s interface and slice. Slicing
 #### Turbidity sensor
 
 1. These steps are the same for both the OpenOBS-328 and the OpenOBS-Iridium except for the first step.
-1. OpenOBS-328: cut one of the 50 cm QWIIC cables in half (or use the other half from last time; the point here is to have a set of wires with a connector on one end and bare wires on the other).
-1. OpenOBS-Iridium: cut another set of 4, 6 cm long, 30 AWG wires in red, black, blue, and yellow.
+    - **OpenOBS-328:** cut one of the 50 cm QWIIC cables in half (or use the other half from last time; the point here is to have a set of wires with a connector on one end and bare wires on the other).
+    - **OpenOBS-Iridium:** cut another set of 4, 6 cm long, 30 AWG wires in red, black, blue, and yellow.
 1. Separate the four strands and strip their ends. Strip the ends of the pressure sensor wires now too.
 1. Put the pressure sensor assembly in the 3d printed sensor head 
 1. Twist the matching colors together from one end of each new wire and the free end of the pressure sensor wires. Solder them in place on the proximity sensor. Bring the wires in from the back. I found it easiest to twist one pair, solder it, and then repeat with the next pair. Match the wire colors to the right solder point on the proximity sensor using this table:
@@ -222,10 +222,8 @@ Upload the provided .stl file to the 3D printer’s interface and slice. Slicing
 
 1. Slide the proximity sensor into the head by pushing on the end of the PCB with a skinny tool. A scrap of protoboard works really well. It will take some force to get it all the way down, and if the tool slips off the PCB, it’s very possible to break the wires you just soldered on.
 1. Finally, test the connections. If you are building an OpenOBS-328, you can simply plug the connector into one of the logger PCBs. If you have built the sensor with shore bare wires for the OpenOBS-Iridium you can use alligator clips to connect to a test board. This is your last chance to fix anything before potting it in epoxy! 
-
-If you don’t know how to check that the sensor is working, go to section XXX that covers uploading code to the logger and opening the serial monitor to read its output. Once you have a working logger you can just open the serial monitor for each new sensor. If the logger starts up correctly and does not write out “PTINIT,0”, or “TURBINIT,0” or similar- you are good! 
+    >If you don’t know how to check that the sensor is working, go to the [programming section](./2_build.markdown#usb) that covers uploading code to the logger and opening the serial monitor to read its output. Once you have a working logger you can just open the serial monitor for each new sensor. If the logger starts up correctly and does not write out “PTINIT,0”, or “TURBINIT,0” or similar- you are good! 
 1. Use hot glue to plug up the hole at the base of the pressure sensor slot.
-
 
 ### Epoxy potting
 #### Turbidity sensor

@@ -6,15 +6,14 @@ layout: home
 permalink: 
 ---
 
-Welcome to the OpenOBS-328 documentation. 
 
 Browse the pages for information about:
 
 * [**the project**](./about)
 * [**building sensors**](./build)
-* [**calibration**](./calibration)
+* [**calibration**](./calibrate)
 * [**deployments**](./deploy)
-* [**data processing**](./data)
+* [**data processing**](./interpret)
 
 **View the full [repository](https://www.github.com/tedlanghorst/OpenOBS-328)**
 

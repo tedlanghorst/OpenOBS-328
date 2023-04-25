@@ -5,7 +5,7 @@ permalink: /calibrate/
 ---
 
 ## Turbidity calibration
-We do a 5 point calibration with tap water for 0 NTUs and Formazin dilutions at 100, 250, 500, and 1000 NTUs. Set the logger to run in [continuous mode](./4_deploy.markdown#deploying) (~1.1 Hz sampling) and hold it in a beaker of each NTU standard for ~30 seconds. If you're comfortable with Matlab and have a license, try the [auto-calibration script](../scripts/calibrateOOBS.m) to process the data. 
+We do a 5 point calibration with tap water for 0 NTUs and Formazin dilutions at 100, 250, 500, and 1000 NTUs. Set the logger to run in [continuous mode](./4_deploy.markdown#deploying) (~1.1 Hz sampling) and hold it in a beaker of each NTU standard for ~30 seconds. If you're comfortable with Matlab and have a license, try the [auto-calibration script](https://github.com/tedlanghorst/OpenOBS-328/blob/main/scripts/calibrateOOBS.m) to process the data. 
 
 ## Sediment calibration
 
