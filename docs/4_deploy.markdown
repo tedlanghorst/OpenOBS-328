@@ -32,7 +32,7 @@ At this stage, your OpenOBS-328 should have the firmware installed, but still we
     * If you still can not find the COM port, you may need to reflash the firmware on the sensor. Try following the steps in the next [next section.](#arduino-code)
 1. After connecting to an OpenOBS, the sensor will go through a startup and self checkout before letting you program it. Any errors will be displayed on the right side of the GUI along with possible solutions. If there are no errors, the “Send Settings” button will be enabled and turn green while the sensor waits for you to choose the deployment settings:
 
-    ![Connected GUI](./images/GUI_send.PNG)
+    ![Connected GUI](./assets/images/GUI_send.PNG)
 
 1. At this point you have successfully set up the deployment GUI. Good job! If you use the same USB port in the future, the COM port should be the same every time you connect an OpenOBS.
 
@@ -46,7 +46,7 @@ At this stage, your OpenOBS-328 should have the firmware installed, but still we
 1. Selecting the battery from the dropdown will give you an estimate of the battery life. Be conservative with these numbers, they are extrapolations of short term measurements and not yet fully tested.
 1. Click “Send Settings”. The OpenOBS will print out raw data when it logs while connected, refer to the [data page](./5_data.markdown) to interpret it. 
 
-    ![programmed sensor](./images/GUI.PNG)
+    ![programmed sensor](./assets/images/GUI.PNG)
 
 ### Arduino Code
 1. This option is nearly identical to the steps required to set up a newly-constructed sensor. Follow the programming directions on the [build page](./2_build.markdown#programming).

@@ -166,7 +166,7 @@ The logger PCBs come mostly assembled. There are just 2 parts that need to be so
 
 1. First, solder the QWIIC connector for the sensors. Start by adding a small dab of solder on one of the big corner pads. Let the solder solidify, and use some tweezers to grab the QWIIC connector. Remelt the solder with the iron and slide the connector in place, check that the metal legs on the back line up with the small gold pads. Solder these fine pads on the back, making sure not to short multiple pins together. If they do end up connected, try ‘swiping’ some of the solder away with a clean iron tip. If that isn’t working, then use a solder wick to remove some solder and try again. Solder the other corner pad (these give most of the mechanical strength).
 
-![image](./images/qwiic.png)
+![image](./assets/images/qwiic.png)
 
 2. Insert the battery holder on the back. There are markings on the board and the holder for positive and negative. 
 
@@ -228,7 +228,7 @@ Upload the provided .stl file to the 3D printer’s interface and slice the file
 ### Epoxy potting
 #### Turbidity sensor
 
-1. The sensor head needs to be situated with the flat side (front) facing down in order to pour the epoxy. Place a silicon pad (shiny side toward the sensor) between the sensor head and a mobile flat surface (like a slab of stone). The silicone pad ensures that the sensor face comes out smooth. Clamp or tape securely to the slab, then maneuver the slab so the bottom of the sensor head is facing up and you can pour epoxy into the proximity sensor slot. 
+1. The sensor head needs to be situated with the flat side (front) facing down in order to pour the epoxy. Place a silicon pad (shiny side toward the sensor) between the sensor head and a mobile flat surface (like a slab of stone). The epoxy will not stick to the silicone pad and leaves a smooth surface. Clamp or tape securely to the slab, then maneuver the slab so the bottom of the sensor head is facing up and you can pour epoxy into the proximity sensor slot. 
 1. Prepare the epoxy by weighing out two parts Vivid Scientific Epoxy 128 (red label) and one part Epoxy 762 (green label) in an aluminum weighing dish. 12 g Epoxy 128 and 6 g Epoxy 762 are enough to fill 3 proximity sensor slots. Use a popsicle stick to gently combine the two epoxies.
 1. At this stage, the epoxy will contain bubbles, which will interfere with the passage of light to and from the proximity sensor. The bubbles are removed by two methods. Alternate between these two methods 2-3x until the epoxy is bubble-free.
 
@@ -236,7 +236,7 @@ Upload the provided .stl file to the 3D printer’s interface and slice the file
 
 	**Heat gun:** Reduces the viscosity of the epoxy, allowing bubbles to rise to the surface and burst. Note: Although the heat setting for soldering purposes is 250 ℃, the heat gun should be set to ~120 ℃ when working with the epoxy. Too much heat will make the epoxy set rapidly.
 
-  ![image](./images/epoxy_bubbles.png)
+  ![image](./assets/images/epoxy_bubbles.png)
 
 1. Once the epoxy is bubble free, pour slowly into the proximity sensor slot until epoxy reaches the brim. Take care that epoxy gets between the chip and the silicone pad. Allow the epoxy to cure for 24 hours before unclamping/removing tape.
 

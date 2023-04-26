@@ -6,18 +6,23 @@ layout: home
 permalink: 
 ---
 
+Welcome to the **OpenOBS** documentation sites! Browse the pages for information about:
 
-Browse the pages for information about:
+* [**The project**](./about)
+* [**Building sensors**](./build)
+* [**Calibration**](./calibrate)
+* [**Field deployments**](./deploy)
+* [**Data processing**](./interpret)
 
-* [**the project**](./about)
-* [**building sensors**](./build)
-* [**calibration**](./calibrate)
-* [**deployments**](./deploy)
-* [**data processing**](./interpret)
+
+If you find an error or have a problem with any part of the project, please let us know by [opening a new issue](https://github.com/tedlanghorst/OpenOBS-328/issues/new). This leaves a public record of outstanding issues and solutions that can help others. 
+
+
+
 
 **View the full [repository](https://www.github.com/tedlanghorst/OpenOBS-328)**
 
-![image](./images/physicalDesign.png)
+![image](./assets/images/physicalDesign.png)
 
 
 <!--https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/testing-your-github-pages-site-locally-with-jekyll-->

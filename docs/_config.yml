@@ -29,7 +29,11 @@ url: "https://tedlanghorst.github.io" # the base hostname & protocol for your si
 github_username:  tedlanghorst
 
 # Build settings
-theme: minima
+markdown: GFM
+
+plugins: 
+  - jekyll-seo-tag
+
 
 # Exclude from processing.
 # The following items will not be processed, by default.
