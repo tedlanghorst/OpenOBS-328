@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Build
-permalink: /build/
+title: Materials
+permalink: /materials/
 ---
 ## Introduction
 The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly reduced in larger quantities ($40 at 100 qty). You will also need tools and equipment to build your sensors, which we have tried to reduce to the essentials here. These costs are substantial, especially if you are trying to build just a few sensors. If you don't have a lot of this equipment and aren't looking to invest in these tools, look into community resources. For example, the Univeristy of North Caorlina at Chapel Hill has a 'makerspace' with most of these tool available. Similar spaces and tool sharing communities exist outside of univiersities. 
