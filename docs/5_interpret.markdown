@@ -23,11 +23,11 @@ After the data header, we have columns of data that represent
 * time (Posix/Unix time. seconds since Jan 1, 1970)
 * ambient light (light from 400-700 nm. Appx. equal to 1-2 Lux per unit)
 * backscatter (uncalibrated backscatter intensity. Linear w.r.t. turbidity)
-* pressure (bar * $10^{-5}$)
-* water temperature (C * $10^{-2}$)
-* battery level (multiply by $3.3*{2^{-9}}$ to get Volts)
+* pressure (bar * 10⁻⁵)
+* water temperature (C * 10⁻²)
+* battery level (multiply by 3.3*2⁻⁹ to get Volts)
 
-*There is an intermittent bug in the firmware that occasionally omits the header. If this happens, don't worry. The data rows are unaffected and you can copy a header over from another day (make sure you keep the serial number the same).*
+>There is an intermittent bug in the firmware that occasionally omits the header. If this happens, don't worry. The data rows are unaffected and you can copy a header over from another day (make sure you keep the serial number the same).
 
 ## Processing scripts
-Some basic processing scripts for Matlab and Python are found [here](http://www.github.com). I try to keep these updated but variations in sensor versions and development can make it messy. Check over the data headers and conversions if you use them.
+Some basic processing scripts for Matlab and Python are found [here](https://github.com/tedlanghorst/OpenOBS-328/tree/main/scripts). I try to keep these updated but variations in sensor versions and development can make it messy. Check over the data headers and conversions if you use them.

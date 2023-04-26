@@ -1,11 +1,12 @@
 clear
 clc
 
-calPath = "/Users/Ted/GDrive/OpenOBS_v2/Calibrations/";
+calPath = "/Users/Ted/GDrive/OpenOBS-328/Calibrations/";
 [files,path] = uigetfile('/*.TXT','multiselect','on');
 
 if isa(files,'char')
     filepath = fullfile(path,files);
+    outpath = fullfile(path,[files(1:end-4) '.csv']);
     %look for the sensor serial number in header.
     fid = fopen(filepath);
     for j = 1:5 %scan first 5 lines
@@ -20,6 +21,7 @@ if isa(files,'char')
 
 else
     d = table();
+    outpath = fullfile(path,[files{1}(1:end-4) '.csv']);
     for i = 1:numel(files)
         filepath = fullfile(path,files{i});
         %look for the sensor serial number in header.
@@ -32,7 +34,6 @@ else
             end 
         end
         fclose(fid);
-    
         d = vertcat(d,readtable(filepath));
     end
 end
@@ -52,10 +53,8 @@ if any(strcmp('battery',d.Properties.VariableNames))
 end
 
 %convert timestamp
-d.dt = datetime(d.time, 'ConvertFrom', 'posixtime','Format','dd-MM-yyyy HH:mm:ss.SSSS');
+d.datetime = datetime(d.time, 'ConvertFrom', 'posixtime','Format','dd-MM-yyyy HH:mm:ss.SSSS');
 d = sortrows(d,'dt');
-
-%%
 
 %find and apply the most recent calibration file
 calDir = dir(sprintf("%s%03u/*.mat",calPath,sn));
@@ -65,8 +64,11 @@ else
     [~,mostRecent] = max([calDir.datenum]);
     calFile = fullfile(calDir(mostRecent).folder,calDir(mostRecent).name);
     load(calFile,"lm");
-    d.NTU = predict(lm,d.R0_V);
-    d.NTU_sd = predict(lm,d.R0_V_sd);
+    d.NTU = predict(lm,d.backscatter);
+end
+
+if any("pressure" == string(d.Properties.VariableNames))
+    d.pressure_mbar = d.pressure./10;
 end
 
 % total time in measurement
@@ -74,22 +76,20 @@ fprintf("Total record time: %0.1f days\n",days(max(d.dt)-min(d.dt)))
 
 %% plots
 close all
-
 figure
 hold on
-plot(d.dt,d.ambient_light)
+yyaxis left
+plot(d.datetime,d.backscatter)
+plot(d.datetime,d.ambient_light)
+ylabel("light sensor")
 yyaxis right
-plot(d.dt,d.battery_V)
+plot(d.datetime,d.pressure_mbar)
+ylabel("pressure (mbar)")
+title(filepath)
 
 
-% exportgraphics(gcf,'/Users/Ted/GDrive/Tanana OBS Project/Travel and field work/January2023/Data/TananaLakesRiver.png','Resolution',600)
-
-% figure
-% set(gcf,'Units','normalized')
-% set(gcf,'Position',[0.3 0.3 0.5 0.4])
-% plot(rs.dt,rs.NTU,'.')
-% title("Lab Calibrated NTUs")
-% ylabel('NTU')
+% writetable(d,outpath);
+% exportgraphics(gcf,[outpath(1:end-4),'.png'],'Resolution',600)
 
 
 
