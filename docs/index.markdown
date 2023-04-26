@@ -6,7 +6,7 @@ layout: home
 permalink: 
 ---
 
-Welcome to the **OpenOBS** documentation sites! Browse the pages for information about:
+Welcome to the OpenOBS documentation site! Browse the pages for information about:
 
 * [**The project**](./about)
 * [**Building sensors**](./build)
@@ -15,14 +15,13 @@ Welcome to the **OpenOBS** documentation sites! Browse the pages for information
 * [**Data processing**](./interpret)
 
 
-If you find an error or have a problem with any part of the project, please let us know by [opening a new issue](https://github.com/tedlanghorst/OpenOBS-328/issues/new). This leaves a public record of outstanding issues and solutions that can help others. 
+If you find an error or have a problem with any part of the project, please let us know by [**opening a new issue**](https://github.com/tedlanghorst/OpenOBS-328/issues/new). This leaves a public record of outstanding issues and solutions that can help others. 
 
-
-
-
-**View the full [repository](https://www.github.com/tedlanghorst/OpenOBS-328)**
+---
+&nbsp;
 
 ![image](./assets/images/physicalDesign.png)
 
+View the full [**repository**](https://www.github.com/tedlanghorst/OpenOBS-328)
 
 <!--https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/testing-your-github-pages-site-locally-with-jekyll-->
