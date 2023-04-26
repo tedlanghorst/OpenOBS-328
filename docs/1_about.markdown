@@ -4,8 +4,6 @@ title: About
 permalink: /about/
 ---
 
-#
-
 OpenOBS is an academic research project to develop an open source, affordable, and accurate turbidity and water level sensor using common electronics components. The combination of turbidity (which can be calibrated to the concentration of suspended particulate matter) and water level are key components of monitoring a river system. Increased flow in the river raises the water level, and at the same time, washes sediment and other matter downstream. OpenOBS-328 allows us to cheaply and effectively monitor both of these effects. While comparable commercial sensors cost upwards of $2000, OpenOBS can be built for about $50 and a couple hours of work. 
 
 
@@ -20,7 +18,7 @@ The project began at the University of North Carolina at Chapel Hill (UNC) under
 
 &nbsp;
 
-Development of the OpenOBS-328 began in Fall 2022 when Dr. Emily Eidam was awarded an NSF grant which provided funding to continue developement of the OpenOBS sensor. This included the addition of the pressure sensor and a variant that transmits data in real time. At this point, we decided to move on from many of the old design decisions and approach the problem again with our new knowledge. We changed from a discrete implementation of a photodiode and signal amplifier to an integrated solution (the VCNL4010), which uses the same measurement principles and handles all the analog sensing. We also transitioned from hand-soldering modules to a printed circuit board (PCB), to an entirely assembled PCB that integrated the same functions in a smaller package.
+Development of the OpenOBS-328 began in Fall 2022 when Dr. Emily Eidam was awarded an NSF grant which provided funding to continue developement of the OpenOBS sensor. This included the addition of the pressure sensor and a variant that transmits data in real time. At this point, we decided to move on from many of the old design decisions and approach the problem again with our new knowledge. We changed from a discrete implementation of a photodiode and signal amplifier to an integrated solution (the VCNL4010), which uses the same measurement principles and handles all the analog sensing. We also transitioned from hand-soldering modules on a printed circuit board (PCB) to an entirely assembled PCB that integrated the same functions in a smaller package.
 
 &nbsp;
 
