@@ -141,6 +141,7 @@ boolean MS_5803::initializeMS_5803() {
     }
     // The last 4 bits of the 7th coefficient form a CRC error checking code.
     unsigned char p_crc = sensorCoeffs[7];
+	p_crc &= 0b00001111;
     // Use a function to calculate the CRC value
     unsigned char n_crc = MS_5803_CRC(sensorCoeffs); 
     

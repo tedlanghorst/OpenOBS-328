@@ -54,7 +54,7 @@ end
 
 %convert timestamp
 d.datetime = datetime(d.time, 'ConvertFrom', 'posixtime','Format','dd-MM-yyyy HH:mm:ss.SSSS');
-d = sortrows(d,'dt');
+d = sortrows(d,'datetime');
 
 %find and apply the most recent calibration file
 calDir = dir(sprintf("%s%03u/*.mat",calPath,sn));
@@ -72,7 +72,7 @@ if any("pressure" == string(d.Properties.VariableNames))
 end
 
 % total time in measurement
-fprintf("Total record time: %0.1f days\n",days(max(d.dt)-min(d.dt)))
+fprintf("Total record time: %0.1f days\n",days(max(d.datetime)-min(d.datetime)))
 
 %% plots
 close all

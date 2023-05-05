@@ -35,7 +35,14 @@ The logger PCBs come mostly assembled. There are just 2 parts that need to be so
 
 ### OpenOBS-Iridium
 
-Work in progress...
+The Iridium logger PCBs come mostly assembled. There are just 2 parts that need to be soldered to the board. 
+
+1. Solder the WAGO wire connectors on with the levers facing towards the top of the board. 
+
+1. Second is the variable output buck converter for the 12V battery supply. As indicated on the PCB, we need to set the output to 5V before installing or we will let the smoke out of our electronics when we connect the battery!   
+    - connect a 12V power supply or battery to the input of the buck converter using alligator clips. Measure the output with a multimeter and turn the potentiometer screw until it reads 5V +/- 0.05V. You will probably find they are set quite high from the factory and need several counter-clockwise turns before it even starts to decrease from the input voltage. 
+    - Orient the input and output of the buck converter on the PCB and solder the four corners. A bit of solid wire or old resistor leg can help transfer the heat and solder between the pads.
+    - Put a big glob of hot glue over the potentiometer to keep the screw set at 5V output. 
 
 ## Sensor Head
 The sensor housing is one of the OpenOBS’s end caps, and holds the proximity sensor and the pressure sensor. The housing has two chambers which are filled with clear epoxy after insertion of the sensors. The epoxy makes the end cap watertight, and also allows light to travel between the proximity sensor chip and the water.
@@ -55,34 +62,52 @@ Upload the provided .stl file to the 3D printer’s interface and slice the file
 
 1. Squeeze some solder paste on the pads of the SMD adapter board. The right amount of paste is more important than keeping the paste separate on each pad. The surface tension when you melt the solder should ‘snap’ the puddles of solder onto the pads.
 1. Place the pressure sensor on the adapter board. Make sure the orientation is correct- there is a dot in one corner of both the adapter and the sensor that indicates orientation.
-1. Use a hot air gun at 250°C to heat both sides of the sensor and completely melt the solder. The paste is a mixture of solder and flux. You’ll see the flux melt first but keep heating to melt the solder. Aim at one side and periodically rotate the board to avoid blowing hot air directly at the white gel cap. Sometimes the hot air pushes the sensor around; check that the position is still good before removing the heat.
+1. Use a hot air gun at 250°C to heat both sides of the sensor and completely melt the solder. The paste is a mixture of solder and flux. You’ll see the flux melt first but keep heating to melt the solder. Aim at one side and periodically rotate the board to avoid blowing hot air directly at the white gel cap. Sometimes the hot air pushes the sensor around; check that it is still in position before removing the heat.
 1. Place a 10k resistor across pins 3 and 6.
 1. Place a 0.1µF (100nF) capacitor across pins 2 and 5.
 1. Bend the resistor leg on pin 6 around to touch pin 5 as well. We want these to be connected after we solder (see photos/diagram below). 
 1. Cut 6 cm lengths of red, black, blue, and yellow 30 AWG wire.
-1. Solder the wires in place as shown below. The wires should come in from the back and hang down straight-ish at this point. Trim the wires and resistor/capacitor legs so they are well below the top of the sensor. These need to be fully covered in epoxy.
+1. Solder the wires in place as shown below. The wires should come in from below and hang down straight-ish at this point. Trim the wires and resistor/capacitor legs so they are well below the top of the sensor. These need to be fully covered in epoxy.
 1. A bit of heat shrink on the wires below the adapter board keeps things tidy, but not necessary.
 
 #### Turbidity sensor
 
-1. These steps are the same for both the OpenOBS-328 and the OpenOBS-Iridium except for the first step.
-    - **OpenOBS-328:** cut one of the 50 cm QWIIC cables in half (or use the other half from last time; the point here is to have a set of wires with a connector on one end and bare wires on the other).
-    - **OpenOBS-Iridium:** cut another set of 4, 6 cm long, 30 AWG wires in red, black, blue, and yellow.
+1. These steps are the same for both the OpenOBS-328 and the OpenOBS-Iridium except for this first step.
+    - **OpenOBS-328:** cut one of the 50 cm QWIIC cables in half (or use the other half from last time).
+    - **OpenOBS-Iridium:** cut another set of 6 cm long, 30 AWG wires in red, black, blue, and yellow.
 1. Separate the four strands and strip their ends. Strip the ends of the pressure sensor wires now too.
 1. Put the pressure sensor assembly in the 3d printed sensor head 
-1. Twist the matching colors together from one end of each new wire and the free end of the pressure sensor wires. Solder them in place on the proximity sensor. Bring the wires in from the back. I found it easiest to twist one pair, solder it, and then repeat with the next pair. Match the wire colors to the right solder point on the proximity sensor using this table:
+1. Twist the matching colors together from one end of each new wire and the free end of the pressure sensor wires. Solder them in place on the proximity sensor. Bring the wires in from the back. I found it easiest to twist one pair, solder it, and then repeat with the next pair. Match the wire colors to the right solder point on the proximity sensor using the Qwiic standard:
+      >If you are using the [Adafruit VCNL4010 module](https://www.adafruit.com/product/466), connect the red wire to **Vin**, NOT **3vo**! They made a weird choice with their schematic here.
 
-	| Color  | Signal |
-	|--------|--------|
-	| <text style="color:red" > Red  </text> | Vin |
-	| <text style="color:black" > Black  </text> | GND |
-	| <text style="color:yellow" > Yellow  </text> | SCL |
-	| <text style="color:blue" > Blue  </text> | SDA |
+    <table>
+    <thead>
+      <tr>
+        <td rowspan="4"><img src="./assets/images/QwiicPinoutGraphic.jpg" height="200"> </td>
+        <td><b><font color="yellow">SCL</font></b></td>
+        <td>yellow</td>
+      </tr>
+      <tr>
+        <td><b><font color="blue">SDA</font></b></td>
+        <td>blue</td>
+      </tr>
+      <tr>
+        <td><b><font color="red">3V3 </font></b></td>
+        <td>red</td>
+      </tr>
+      <tr>
+        <td><b><font color="black">GND</font></b></td>
+        <td>black</td>
+      </tr>
+    </thead>
+    </table>
 
-1. Slide the proximity sensor into the head by pushing on the end of the PCB with a skinny tool. A scrap of protoboard works really well. It will take some force to get it all the way down, and if the tool slips off the PCB, it’s very possible to break the wires you just soldered on.
-1. Finally, test the connections. If you are building an OpenOBS-328, you can simply plug the connector into one of the logger PCBs. If you have built the sensor with shore bare wires for the OpenOBS-Iridium you can use alligator clips to connect to a test board. This is your last chance to fix anything before potting it in epoxy! 
-    >If you don’t know how to check that the sensor is working, go to the [programming section](./2_build.markdown#usb) that covers uploading code to the logger and opening the serial monitor to read its output. Once you have a working logger you can just open the serial monitor for each new sensor. If the logger starts up correctly and does not write out “PTINIT,0”, or “TURBINIT,0” or similar- you are good! 
-1. Use hot glue to plug up the hole at the base of the pressure sensor slot.
+    *Image from [Sparkfun](https://www.sparkfun.com/qwiic)*
+
+1. Slide the proximity sensor into the head by pushing on the end of the PCB with a skinny tool. A scrap of protoboard works really well. It might take some force to get it all the way down, and if the tool slips off the PCB, it’s very possible to break the wires you just soldered on.
+1. Finally, test the connections. If you are building an OpenOBS-328, you can simply plug the connector into one of the logger PCBs. If you have built the sensor with short bare wires for the OpenOBS-Iridium you can use alligator clips to connect to a test board. This is your last chance to fix anything before potting it in epoxy! 
+    >If you don’t know how to check that the sensor is working, go to the [programming section](#usb) that covers uploading code to the logger and opening the serial monitor to read its output. Once you have a working logger you can just plug in each new sensor. If the logger starts up correctly and does not write out “PTINIT,0”, or “TURBINIT,0” or similar- you are good! 
+1. Use hot glue to plug the hole at the base of the pressure sensor slot. This will keep the epoxy from leaking down.
 
 ### Epoxy potting
 #### Turbidity sensor
@@ -113,19 +138,20 @@ Upload the provided .stl file to the 3D printer’s interface and slice the file
 These two sections provide background information for programming OpenOBS devices. In the logger assembly sections later on we will assume you understand these concepts and have set up your computer to be able to program the new device.
 
 ### ISP & Bootloading
-**Introduction**
+
+#### *Introduction*
 When we order new PCBs with microcontrollers on them, they are a blank slate with default configurations and no code running. The bootloader is firmware that we ‘burn’ on the microcontroller that defines some settings and subsequently allows us to upload Arduino code via the USB connection. You can think of this kind of like the BIOS of a regular computer; it doesn’t do much on its own, but it lets us install an operating system and then run programs etc. Because this step sets up the protocol for uploading from USB, we have to send this firmware to the microcontroller through the In System Programmer (ISP) connections.
 
 You can find additional background info [here](https://linuxhint.com/bootloader-arduino/) if you want to read more!
 
-**Connections**
+#### *Connections*
 You can buy specialized devices that act as an ISP, but it is easy enough to just use another Arduino that already has a bootloader installed to burn a new device. Read through [this tutorial](https://docs.arduino.cc/built-in-examples/arduino-isp/ArduinoISP) for how ISP uploading works and how to use an Arduino as the programmer. Don’t worry about all the examples they give on how to use different “programmers” and “hosts”, just understand the basic idea. We will follow the 8-step guide section at the end of the tutorial. At step 5, it says: 
 
-Select the item in the Tools > Board menu that corresponds to the board on which you want to burn the bootloader (not the board that you're using as the programmer). See the board descriptions on the environment page for details.
+  > Select the item in the Tools > Board menu that corresponds to the board on which you want to burn the bootloader (not the board that you're using as the programmer). See the board descriptions on the environment page for details.
 
 We have a custom circuit and the standard Arduino board options will not work for us. The next section covers how to add new, custom options. 
 
-**Setting board options**
+#### *Board options* 
 We will use the [MiniCore](https://github.com/MCUdude/MiniCore) and [MegaCore](https://github.com/MCUdude/MegaCore) set of boards for our custom circuit. See the instructions for both under “Board Manager Installation” for how to make these options available in the Arduino IDE ([minicore install link](https://github.com/MCUdude/MiniCore#how-to-install); [megacore install link](https://github.com/MCUdude/MegaCore#how-to-install))
 
 Once you have installed the new boards options, you can click on Tools -> Boards -> MiniCore -> ATmega328 (for OpenOBS-328 and the OpenOBS-Iridium sensor) or Tools -> Boards -> MegaCore -> ATmega2560 (for the OpenOBS-Iridium logger) from the top menu. Now, under tools -> boards there will be many new options for our microcontroller. Use the following settings whenever uploading any code:
@@ -145,7 +171,7 @@ Once you have installed the new boards options, you can click on Tools -> Boards
 <table class="tg">
 <thead>
   <tr>
-    <th class="tg-0pky"><span style="font-weight:700;font-style:normal;text-decoration:none;color:#000;background-color:transparent">OpenOBS variants</span></th>
+    <th class="tg-0pky"><span style="font-weight:700;font-style:normal;text-decoration:none;color:#000;background-color:transparent"></span></th>
     <th class="tg-c3ow"><span style="font-weight:700;font-style:normal;text-decoration:none;color:#000;background-color:transparent">OpenOBS-328</span></th>
     <th class="tg-c3ow"><span style="font-weight:700;font-style:normal;text-decoration:none;color:#000;background-color:transparent">OpenOBS-Iridium Sensor</span></th>
     <th class="tg-c3ow"><span style="font-weight:700;font-style:normal;text-decoration:none;color:#000;background-color:transparent">OpenOBS-Iridium Logger</span></th>

@@ -35,12 +35,13 @@ if hasPressure
     pressureTrend = movmedian(data.pressure,length(data.pressure)/10,'omitnan');
     pressureDetrend = data.pressure-pressureTrend;
     pressureDetrend(pressureDetrend<0) = 0;
-    TF = find(ischange(pressureDetrend,'Threshold',500));
+    pressureThreshold = double(pressureDetrend > 100);
+    TF = find(ischange(pressureThreshold));
     
     %remove any brief changes in pressure, likely noise.
     shortChanges = find(diff(TF)<10);
     if any(shortChanges)
-    TF(shortChanges:shortChanges+1) = [];
+        TF(shortChanges:shortChanges+1) = [];
     end
 
     %if we get the right number of periods, we'll try autocal.
@@ -127,7 +128,7 @@ end
 save(fullfile(save_path,file(1:8)),"measured","standards","NTU","lm","data")
 
 %% look at a bunch of cal data
-date_string = "20230227";
+date_string = "20230503";
 sn_ignore = [];
 
 cal_path = dir(fullfile(gen_path,"*",date_string+".mat"));

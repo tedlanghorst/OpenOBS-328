@@ -8,8 +8,8 @@
 #include "src/libs/MS5803/MS5803.h" 
 
 // Likely variables to change
-#define MS5803_VERSION 14
-long sleepDuration_seconds = 30;
+#define MS5803_VERSION 5
+long sleepDuration_seconds = 0; 
 const char contactInfo[] PROGMEM = "If found, please contact tlang@live.unc.edu";
 //
 
@@ -124,25 +124,17 @@ void setup() {
 
   //intialize & check all the modules
   startup.module.sd = sd.begin(pChipSelect, SPI_SPEED);
-  if (!startup.module.sd){
-    serialSend("SDINIT,0");
-  }
+  if (!startup.module.sd) serialSend("SDINIT,0");
 
-  if (!startup.module.clk){
-    serialSend("CLKINIT,0");
-  }
+  if (!startup.module.clk) serialSend("CLKINIT,0");
 
   startup.module.turb = vcnl.begin();
   vcnl.setLEDcurrent(5);
-  if (!startup.module.turb){
-    serialSend("TURBINIT,0");
-  }
+  if (!startup.module.turb) serialSend("TURBINIT,0");
 
   //initialize the pressure sensor
   startup.module.pt = pressure_sensor.initializeMS_5803();
-  if (!startup.module.pt){
-    serialSend("PTINIT,0");
-  }
+  if (!startup.module.pt) serialSend("PTINIT,0");
 
   //if we had any errors turn off battery power and stop program.
   //set another alarm to try again- intermittent issues shouldnt end entire deploy.
@@ -181,8 +173,8 @@ void loop()
   //Replace data fields with new sensor data.
   data.logTime = RTC.now().unixtime();
   pressure_sensor.readSensor();
-  data.abs_P = pressure_sensor.getPressure(); //bar^10-5
-  data.water_temp = pressure_sensor.getTemperature(); //C^10-2
+  data.abs_P = pressure_sensor.getPressure(); //bar*10^-5
+  data.water_temp = pressure_sensor.getTemperature(); //C*10^-2
   data.tuAmbient = vcnl.readAmbient();
   data.tuBackscatter = vcnl.readProximity();
   data.battery = analogRead(A2);
