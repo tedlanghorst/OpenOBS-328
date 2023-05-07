@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Interpret
-permalink: /interpret/
+title: Data
+permalink: /data/
 ---
 
 ## Data format
@@ -37,7 +37,7 @@ The data transmitted from the Iridium loggers is the same as stored on the micro
 
 The Iridium loggers batch these data and transmits 3 sets of 16 bytes (48 bytes) at once, to fit nicely in the 50 byte Iridium package. When you receive the data, it will have some header info and then a string of characters representing the bytes in hexadecimal. You will need to process the data according to the image above before using it.
 
-Below is an example script in python that parses the data using the ctypes package and carefully recreating our data structure and union with a byte array. This mimicks what happens when we package the data on the Iridium logger end, except instead of putting measurements into the records in our transmission packet, we put the data string into the packet. Then, we can access the measurements records through the packet union object.
+Below is an example script in python that parses the data using the ctypes package and carefully recreating our data structure and union with a byte array. This mimicks what happens when we package the data before transmitting, except instead of putting measurements into the records in our transmission packet, we put the data string into the packet. Then, we can access the measurements records through the packet union object.
 
 ~~~python
 import ctypes as ct

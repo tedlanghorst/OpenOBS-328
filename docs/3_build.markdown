@@ -33,16 +33,27 @@ The logger PCBs come mostly assembled. There are just 2 parts that need to be so
 
 4. Clean the residue from the solder flux around all the new joints using >90% isopropyl alcohol.
 
+
 ### OpenOBS-Iridium
 
 The Iridium logger PCBs come mostly assembled. There are just 2 parts that need to be soldered to the board. 
 
 1. Solder the WAGO wire connectors on with the levers facing towards the top of the board. 
 
+    ![](./assets/images/Iridium_connectors.JPG)
+
 1. Second is the variable output buck converter for the 12V battery supply. As indicated on the PCB, we need to set the output to 5V before installing or we will let the smoke out of our electronics when we connect the battery!   
     - connect a 12V power supply or battery to the input of the buck converter using alligator clips. Measure the output with a multimeter and turn the potentiometer screw until it reads 5V +/- 0.05V. You will probably find they are set quite high from the factory and need several counter-clockwise turns before it even starts to decrease from the input voltage. 
+
+      Bad! | Good!
+      |:--:|:--:|
+      ![image](./assets/images/buck_high.JPG)|![image](./assets/images/buck_set.JPG)
+
+    - Remove the red LED that indicates the power is on. It will only waste power when deployed and is not needed.
+
     - Orient the input and output of the buck converter on the PCB and solder the four corners. A bit of solid wire or old resistor leg can help transfer the heat and solder between the pads.
     - Put a big glob of hot glue over the potentiometer to keep the screw set at 5V output. 
+      ![image](./assets/images/Iridium_glob.JPG)
 
 ## Sensor Head
 The sensor housing is one of the OpenOBS’s end caps, and holds the proximity sensor and the pressure sensor. The housing has two chambers which are filled with clear epoxy after insertion of the sensors. The epoxy makes the end cap watertight, and also allows light to travel between the proximity sensor chip and the water.
@@ -78,12 +89,13 @@ Upload the provided .stl file to the 3D printer’s interface and slice the file
 1. Separate the four strands and strip their ends. Strip the ends of the pressure sensor wires now too.
 1. Put the pressure sensor assembly in the 3d printed sensor head 
 1. Twist the matching colors together from one end of each new wire and the free end of the pressure sensor wires. Solder them in place on the proximity sensor. Bring the wires in from the back. I found it easiest to twist one pair, solder it, and then repeat with the next pair. Match the wire colors to the right solder point on the proximity sensor using the Qwiic standard:
-      >If you are using the [Adafruit VCNL4010 module](https://www.adafruit.com/product/466), connect the red wire to **Vin**, NOT **3vo**! They made a weird choice with their schematic here.
+
+    >If you are using the [Adafruit VCNL4010 module](https://www.adafruit.com/product/466), connect the red wire to **Vin**, NOT **3vo**! They made a weird choice with their schematic here.
 
     <table>
     <thead>
       <tr>
-        <td rowspan="4"><img src="./assets/images/QwiicPinoutGraphic.jpg" height="200"> </td>
+        <td rowspan="4"><img src="https://tedlanghorst.github.io/OpenOBS-328/assets/images/QwiicPinoutGraphic.jpg" height="200"> </td>
         <td><b><font color="yellow">SCL</font></b></td>
         <td>yellow</td>
       </tr>
@@ -103,6 +115,7 @@ Upload the provided .stl file to the 3D printer’s interface and slice the file
     </table>
 
     *Image from [Sparkfun](https://www.sparkfun.com/qwiic)*
+    
 
 1. Slide the proximity sensor into the head by pushing on the end of the PCB with a skinny tool. A scrap of protoboard works really well. It might take some force to get it all the way down, and if the tool slips off the PCB, it’s very possible to break the wires you just soldered on.
 1. Finally, test the connections. If you are building an OpenOBS-328, you can simply plug the connector into one of the logger PCBs. If you have built the sensor with short bare wires for the OpenOBS-Iridium you can use alligator clips to connect to a test board. This is your last chance to fix anything before potting it in epoxy! 
@@ -140,12 +153,18 @@ These two sections provide background information for programming OpenOBS device
 ### ISP & Bootloading
 
 #### *Introduction*
-When we order new PCBs with microcontrollers on them, they are a blank slate with default configurations and no code running. The bootloader is firmware that we ‘burn’ on the microcontroller that defines some settings and subsequently allows us to upload Arduino code via the USB connection. You can think of this kind of like the BIOS of a regular computer; it doesn’t do much on its own, but it lets us install an operating system and then run programs etc. Because this step sets up the protocol for uploading from USB, we have to send this firmware to the microcontroller through the In System Programmer (ISP) connections.
+When we order new PCBs with microcontrollers on them, they are a blank slate with default configurations and no code running. The bootloader is firmware that we ‘burn’ on the microcontroller that defines some settings and subsequently allows us to upload Arduino code via the USB connection. You can think of this kind of like the BIOS of a regular computer; it doesn’t do much on its own, but it lets us install an operating system and then run programs etc. Because this step sets up the protocol for uploading from USB, we have to send this firmware to the microcontroller through the In System Programming (ISP) connections.
 
 You can find additional background info [here](https://linuxhint.com/bootloader-arduino/) if you want to read more!
 
 #### *Connections*
-You can buy specialized devices that act as an ISP, but it is easy enough to just use another Arduino that already has a bootloader installed to burn a new device. Read through [this tutorial](https://docs.arduino.cc/built-in-examples/arduino-isp/ArduinoISP) for how ISP uploading works and how to use an Arduino as the programmer. Don’t worry about all the examples they give on how to use different “programmers” and “hosts”, just understand the basic idea. We will follow the 8-step guide section at the end of the tutorial. At step 5, it says: 
+You can buy specialized devices that act as an ISP, but it is easy enough to just use another Arduino that already has a bootloader installed to burn a new device. Here is an easy to make ISP device using an Arduino Nano clone. Besides the 6 pogo connectors, you will need to attach a wire from pin D10 to the RST pin and then cut the RST trace on the PCB. The capacitor between ground and reset can help with stability, but not always necessary. 
+
+D10 wire | D10 to RST | RST trace cut
+|:------:|:----------:|:-----------:|
+![](./assets/images/ISP_1.JPG)|![](./assets/images/ISP_2.JPG)|![](./assets/images/ISP_3.JPG)
+
+Read through [this tutorial](https://docs.arduino.cc/built-in-examples/arduino-isp/ArduinoISP) for how ISP uploading works and how to use an Arduino as the programmer. Don’t worry about all the examples they give on how to use different “programmers” and “hosts”, just understand the basic idea. We will follow the 8-step guide section at the end of the tutorial. At step 5, it says: 
 
   > Select the item in the Tools > Board menu that corresponds to the board on which you want to burn the bootloader (not the board that you're using as the programmer). See the board descriptions on the environment page for details.
 
