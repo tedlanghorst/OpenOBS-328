@@ -8,12 +8,10 @@
 #include "src/libs/MS5803/MS5803.h" 
 
 // Likely variables to change
-#define MS5803_VERSION 5
+#define MS5803_VERSION 14 //comment or remove if you aren't using the pressure sensor
 long sleepDuration_seconds = 0; 
 const char contactInfo[] PROGMEM = "If found, please contact tlang@live.unc.edu";
 //
-
-//#define DEBUG_SERIAL Serial
 
 //firmware data
 const DateTime uploadDT = DateTime((__DATE__), (__TIME__)); //saves compile time into progmem
@@ -22,6 +20,7 @@ uint16_t serialNumber;
 
 //connected pins
 #define pChipSelect 10              //chip select pin for SD card
+#define pBatteryDivider A2
 
 //EEPROM addresses
 #define SLEEP_ADDRESS 0
@@ -36,7 +35,9 @@ bool guiConnected = false;
 
 //sensors
 Adafruit_VCNL4010 vcnl;
-MS_5803 pressure_sensor = MS_5803(MS5803_VERSION, 0x76, 4096);
+#ifdef MS5803_VERSION
+  MS_5803 pressure_sensor = MS_5803(MS5803_VERSION, 0x76, 4096);
+#endif
 
 //data storage variables
 struct {
@@ -133,16 +134,18 @@ void setup() {
   if (!startup.module.turb) serialSend("TURBINIT,0");
 
   //initialize the pressure sensor
-  startup.module.pt = pressure_sensor.initializeMS_5803();
-  if (!startup.module.pt) serialSend("PTINIT,0");
+  #ifdef MS5803_VERSION
+    startup.module.pt = pressure_sensor.initializeMS_5803();
+    if (!startup.module.pt) serialSend("PTINIT,0");
+  #endif
 
   //if we had any errors turn off battery power and stop program.
   //set another alarm to try again- intermittent issues shouldnt end entire deploy.
   //RTC errors likely are fatal though. Will it even wake if RTC fails?
   if (!(startup.b == 0b00001111)) {
-        Serial.println(F("$Startup failed*66"));
-        nextAlarm = DateTime(RTC.now().unixtime() + sleepDuration_seconds);
-        sensorSleep(nextAlarm);
+    Serial.println(F("$Startup failed*66"));
+    nextAlarm = DateTime(RTC.now().unixtime() + sleepDuration_seconds);
+    sensorSleep(nextAlarm);
   }
 
   //if we have established a connection to the gui,
@@ -172,15 +175,16 @@ void loop()
 
   //Replace data fields with new sensor data.
   data.logTime = RTC.now().unixtime();
-  pressure_sensor.readSensor();
-  data.abs_P = pressure_sensor.getPressure(); //bar*10^-5
-  data.water_temp = pressure_sensor.getTemperature(); //C*10^-2
   data.tuAmbient = vcnl.readAmbient();
   data.tuBackscatter = vcnl.readProximity();
-  data.battery = analogRead(A2);
+  data.battery = analogRead(pBatteryDivider);
+  #ifdef MS5803_VERSION
+    pressure_sensor.readSensor();
+    data.abs_P = pressure_sensor.getPressure(); //bar*10^-5
+    data.water_temp = pressure_sensor.getTemperature(); //C*10^-2
+  #endif
 
   sprintf(messageBuffer, "%lu,%u,%u,%lu,%i,%u", data.logTime, data.tuAmbient, data.tuBackscatter, data.abs_P, data.water_temp, data.battery);
-
   writeDataToSD();
 
   serialSend(messageBuffer);
