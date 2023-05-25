@@ -137,6 +137,8 @@ void setup() {
   #ifdef MS5803_VERSION
     startup.module.pt = pressure_sensor.initializeMS_5803();
     if (!startup.module.pt) serialSend("PTINIT,0");
+  #else
+    startup.module.pt = true;
   #endif
 
   //if we had any errors turn off battery power and stop program.
