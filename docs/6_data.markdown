@@ -59,17 +59,21 @@ class single_record(ct.LittleEndianStructure):
                 ("batteryVoltage",ct.c_uint32,8)]  
     
 class transmission_packet(ct.Union):
-    _fields_ = [("record", single_record*(nBytes//sizeof(single_record))),
+    _fields_ = [("record", single_record*(nBytes//ct.sizeof(single_record))),
                 ("data", ct.c_ubyte*nBytes)]
     
 
 #Create a packet object and put our data in as a byte array.
 packet = transmission_packet()
-packet.data = (c_ubyte * nBytes)(*dataBytes)
+packet.data = (ct.c_ubyte * nBytes)(*dataBytes)
 
 #example data access
 print(packet.record[0].logtime)
-~~~
+
+#show all the data
+for r in packet.record:
+    for f in r._fields_:
+        print('{:<20s}{:d}'.format(f[0], getattr(r, f[0])))~~~
 
 ## Processing scripts
 Some basic processing scripts for Matlab and Python are found [here](https://github.com/tedlanghorst/OpenOBS-328/tree/main/scripts). I try to keep these updated but variations in sensor versions and development can make it messy. Check over the data headers and conversions if you use them.
