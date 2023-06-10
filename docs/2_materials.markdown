@@ -44,7 +44,6 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
 .tg .tg-1tol{border-color:#000000;font-weight:bold;text-align:left;vertical-align:middle}
 .tg .tg-4e6d{border-color:#000000;color:#00E;text-align:left;text-decoration:underline;vertical-align:top}
 .tg .tg-noSides{border-left:0px; border-right:0px}
-.tg .tg-topLeft{border-width:0px}
 </style>
 <table class="tg">
 <colgroup>
@@ -56,7 +55,7 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
 </colgroup>
 <thead>
   <tr>
-    <th class="tg-topLeft"></th>
+    <th class="tg-jdb5"></th>
     <th class="tg-jdb5">Item</th>
     <th class="tg-jdb5">Appx. Cost</th>
     <th class="tg-jdb5">Links</th>

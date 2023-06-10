@@ -40,6 +40,7 @@ The Iridium loggers batch these data and transmits 3 sets of 16 bytes (48 bytes)
 Below is an example script in python that parses the data using the ctypes package and carefully recreating our data structure and union with a byte array. This mimicks what happens when we package the data before transmitting, except instead of putting measurements into the records in our transmission packet, we put the data string into the packet. Then, we can access the measurements records through the packet union object.
 
 ~~~python
+
 import ctypes as ct
 
 #example data
@@ -73,7 +74,9 @@ print(packet.record[0].logtime)
 #show all the data
 for r in packet.record:
     for f in r._fields_:
-        print('{:<20s}{:d}'.format(f[0], getattr(r, f[0])))~~~
+        print('{:<20s}{:d}'.format(f[0], getattr(r, f[0])))
+
+~~~
 
 ## Processing scripts
 Some basic processing scripts for Matlab and Python are found [here](https://github.com/tedlanghorst/OpenOBS-328/tree/main/scripts). I try to keep these updated but variations in sensor versions and development can make it messy. Check over the data headers and conversions if you use them.

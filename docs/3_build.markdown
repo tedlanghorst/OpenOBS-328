@@ -158,12 +158,6 @@ When we order new PCBs with microcontrollers on them, they are a blank slate wit
 You can find additional background info [here](https://linuxhint.com/bootloader-arduino/) if you want to read more!
 
 #### *Connections*
-You can buy specialized devices that act as an ISP, but it is easy enough to just use another Arduino that already has a bootloader installed to burn a new device. Here is an easy to make ISP device using an Arduino Nano clone. Besides the 6 pogo connectors, you will need to attach a wire from pin D10 to the RST pin and then cut the RST trace on the PCB. The capacitor between ground and reset can help with stability, but not always necessary. 
-
-D10 wire | D10 to RST | RST trace cut
-|:------:|:----------:|:-----------:|
-![](./assets/images/ISP_1.JPG)|![](./assets/images/ISP_2.JPG)|![](./assets/images/ISP_3.JPG)
-
 Read through [this tutorial](https://docs.arduino.cc/built-in-examples/arduino-isp/ArduinoISP) for how ISP uploading works and how to use an Arduino as the programmer. Don’t worry about all the examples they give on how to use different “programmers” and “hosts”, just understand the basic idea. We will follow the 8-step guide section at the end of the tutorial. At step 5, it says: 
 
   > Select the item in the Tools > Board menu that corresponds to the board on which you want to burn the bootloader (not the board that you're using as the programmer). See the board descriptions on the environment page for details.
