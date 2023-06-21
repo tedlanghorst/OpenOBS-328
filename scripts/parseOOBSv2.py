@@ -12,7 +12,8 @@ from tkinter import Tk
 import matplotlib as plt
 import numpy as np
 
-# %% load the data
+
+# load the data
 root = Tk()
 filenames = fd.askopenfilenames()
 root.destroy()
@@ -44,7 +45,7 @@ df = pd.concat((pd.read_csv(f,header=3) for f in goodFileList))
 
 
 
-df.columns = ['unixTime','background','reading']
+df.columns = ['unixTime','background','reading','pressure','waterTemp','battery']
 df['time'] = pd.to_datetime(df['unixTime'],unit='s')
 
 

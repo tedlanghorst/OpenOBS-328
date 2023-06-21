@@ -77,6 +77,7 @@ if autoCal
 end
 plot(data.dt,data.backscatter,'b.','markersize',10);
 text(0.05,0.9,sprintf(autoCalText),'Units','normalized','FontSize',14)
+ylabel("Backscatter");
 
 
 % plot(data.dt,TF,'markersize',10);
@@ -115,7 +116,7 @@ end
 lm = fitlm(measured(:,1),standards);
 NTU = predict(lm,measured(:,1));
         
-eb = errorbar(standards,measured(:,1),measured(:,2));
+eb = errorbar(standards,measured(:,1),measured(:,2).*3);
 eb.LineWidth = 1;
 xlabel("Standard (NTU)");
 ylabel("Measured (DN)");
@@ -128,7 +129,7 @@ end
 save(fullfile(save_path,file(1:8)),"measured","standards","NTU","lm","data")
 
 %% look at a bunch of cal data
-date_string = "20230503";
+date_string = "20230602";
 sn_ignore = [];
 
 cal_path = dir(fullfile(gen_path,"*",date_string+".mat"));
@@ -155,7 +156,7 @@ for i = 1:numel(cal_path)
     
     subplot(1,2,1)
     hold on
-    plot(standards,measured(:,1),'-','Linewidth',1.5)
+    plot(standards,measured(:,1),'o-','Linewidth',1)
     
     subplot(1,2,2)
     hold on

@@ -23,7 +23,7 @@ permalink: /build/
 
 The logger PCBs come mostly assembled. There are just 2 parts that need to be soldered to the back side of the board.
 
-1. First, solder the QWIIC connector for the sensors. Start by adding a small dab of solder on one of the big corner pads. Let the solder solidify, and use some tweezers to grab the QWIIC connector. Remelt the solder with the iron and slide the connector in place, check that the metal legs on the back line up with the small gold pads. Solder these fine pads on the back, making sure not to short multiple pins together. If they do end up connected, try ‘swiping’ some of the solder away with a clean iron tip. If that isn’t working, then use a solder wick to remove some solder and try again. Solder the other corner pad (these give most of the mechanical strength).
+1. Solder the QWIIC connector for the sensors. Start by adding a small dab of solder on one of the big corner pads. Let the solder solidify, and use some tweezers to grab the QWIIC connector. Remelt the solder with the iron and slide the connector in place, check that the metal legs on the back line up with the small gold pads. Solder these fine pads on the back, making sure not to short multiple pins together. If they do end up connected, try ‘swiping’ some of the solder away with a clean iron tip. If that isn’t working, then use a solder wick to remove some solder and try again. Solder the other corner pad (these give most of the mechanical strength).
 
 ![image](./assets/images/qwiic.png)
 
@@ -42,7 +42,7 @@ The Iridium logger PCBs come mostly assembled. There are just 2 parts that need 
 
     ![](./assets/images/Iridium_connectors.JPG)
 
-1. Second is the variable output buck converter for the 12V battery supply. As indicated on the PCB, we need to set the output to 5V before installing or we will let the smoke out of our electronics when we connect the battery!   
+1. Next is the variable output buck converter for the 12V battery supply. As indicated on the PCB, we need to set the output to 5V before installing or we will let the smoke out of our electronics when we connect the battery!   
     - connect a 12V power supply or battery to the input of the buck converter using alligator clips. Measure the output with a multimeter and turn the potentiometer screw until it reads 5V +/- 0.05V. You will probably find they are set quite high from the factory and need several counter-clockwise turns before it even starts to decrease from the input voltage. 
 
       Bad! | Good!

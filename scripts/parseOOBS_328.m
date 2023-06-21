@@ -21,7 +21,6 @@ if isa(files,'char')
 
 else
     d = table();
-    outpath = fullfile(path,[files{1}(1:end-4) '.csv']);
     for i = 1:numel(files)
         filepath = fullfile(path,files{i});
         %look for the sensor serial number in header.
@@ -36,6 +35,8 @@ else
         fclose(fid);
         d = vertcat(d,readtable(filepath));
     end
+    filename = sn + "-" + files{1}(1:end-4) + "-" + files{end}(1:end-4);
+    outpath = fullfile(path,filename);
 end
 
 if numel(unique(sn)) ~= 1
@@ -49,7 +50,7 @@ end
 
 
 if any(strcmp('battery',d.Properties.VariableNames))
-    d.battery_V = d.battery ./ 2^10 .* 3.3 .* 2;
+    d.battery_V = d.battery ./ 2^10 .* 3.3 .*11;
 end
 
 %convert timestamp
@@ -68,28 +69,46 @@ else
 end
 
 if any("pressure" == string(d.Properties.VariableNames))
-    d.pressure_mbar = d.pressure./10;
+    d.pressure_mbar = d.pressure./100;
+    d.depth = 1E5 * (d.pressure_mbar./1000-1)/(1000*9.80665);
+    d.water_temp_C = d.water_temp./100;
 end
+
 
 % total time in measurement
 fprintf("Total record time: %0.1f days\n",days(max(d.datetime)-min(d.datetime)))
 
 %% plots
 close all
-figure
-hold on
-yyaxis left
-plot(d.datetime,d.backscatter)
-plot(d.datetime,d.ambient_light)
-ylabel("light sensor")
-yyaxis right
-plot(d.datetime,d.pressure_mbar)
-ylabel("pressure (mbar)")
-title(filepath)
+
+tiledlayout(4,1);
+nexttile
+plot(d.datetime,d.NTU)
+% set(gca,'YLim',[0,1000])
+ylabel("NTU")
+title(["OpenOBS SN: " + sn])
 
 
-% writetable(d,outpath);
-% exportgraphics(gcf,[outpath(1:end-4),'.png'],'Resolution',600)
+nexttile
+plot(d.datetime,d.depth)
+set(gca,'YLim',[0,1])
+ylabel("appx. depth (m)")
+
+nexttile
+plot(d.datetime,d.water_temp_C)
+ylabel("temp (C)")
+
+nexttile
+plot(d.datetime,d.battery_V)
+ylabel("battery (V)")
+set(gca,'YLim',[3.3,4.2])
+
+
+set(gcf,'Units','normalized')
+set(gcf,'Position',[0.3 0.05 0.35 0.8])
+
+writetable(d,outpath+".csv");
+exportgraphics(gcf,outpath+'.png','Resolution',600)
 
 
 

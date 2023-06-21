@@ -74,13 +74,13 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
     <td class="tg-73oq">Light sensor</td>
     <td class="tg-wp8o">2.5</td>
     <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/turbidity" target="_blank" rel="noopener noreferrer">Gerber files</a></td>
-    <td class="tg-73oq">JLCPCB ordering instruction</td>
+    <td class="tg-73oq">JLCPCB ordering instructions</td>
   </tr>
   <tr>
     <td class="tg-73oq">pressure PCB</td>
     <td class="tg-wp8o">0.4</td>
     <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/pressure" target="_blank" rel="noopener noreferrer">Gerber files</a></td>
-    <td class="tg-73oq">JLCPCB ordering instruction</td>
+    <td class="tg-73oq">JLCPCB ordering instructions</td>
   </tr>
   <tr>
     <td class="tg-73oq">pressure sensor</td>
@@ -103,13 +103,13 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
   <tr>
     <td class="tg-73oq">epoxy</td>
     <td class="tg-wp8o">0.5</td>
-    <td class="tg-73oq"><a href="https://www.amazon.com/VViViD-Optically-Clear-2-Part-Coating/dp/B0797KW5JD/ref=sr_1_2?crid=3DGB62750R6T6&keywords=VViViD+Optically+Clear+2-Part+Epoxy+Hard+Gloss+Coating+Resin&qid=1683411866&sprefix=vvivid+optically+clear+2-part+epoxy+hard+gloss+coating+resin+750g+small+pack+%2Caps%2C99&sr=8-2" target="_blank" rel="noopener noreferrer">750g</a><br><a href="https://www.amazon.com/VViViD-Optically-Clear-2-Part-Coating/dp/B07RM5Z991/ref=sr_1_5?crid=3DGB62750R6T6&keywords=VViViD+Optically+Clear+2-Part+Epoxy+Hard+Gloss+Coating+Resin&qid=1683411946&sprefix=vvivid+optically+clear+2-part+epoxy+hard+gloss+coating+resin+750g+small+pack+%2Caps%2C99&sr=8-5" target="_blank" rel="noopener noreferrer">1500g</a></td>
+    <td class="tg-73oq"><a href="https://www.amazon.com/dp/B07RM5Z991" target="_blank" rel="noopener noreferrer">750g</a><br><a href="https://www.amazon.com/dp/B079Y9QFQS/" target="_blank" rel="noopener noreferrer">1500g</a></td>
     <td class="tg-73oq">20g per sensor</td>
   </tr>
   <tr>
     <td class="tg-73oq">1" PVC</td>
     <td class="tg-wp8o">0.4</td>
-    <td class="tg-73oq"><a href="https://www.lowes.com/pd/Charlotte-Pipe-1-in-dia-x-10-ft-L-200-PSI-SDR-21-PVC-Pipe/1000080801" target="_blank" rel="noopener noreferrer">Lowe's</a></td>
+    <td class="tg-73oq"><a href="https://www.lowes.com/pd/1-in-dia-x-10-ft-L-450-PSI-PVC-Pipe/3133091" target="_blank" rel="noopener noreferrer">Lowe's</a></td>
     <td class="tg-73oq">6" per sensor</td>
   </tr>
   <tr>
@@ -148,12 +148,12 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
     <td class="tg-73oq">qwiic cable</td>
     <td class="tg-wp8o">1</td>
     <td class="tg-73oq"><a href="https://octopart.com/prt-17257-sparkfun-115856491?r=sp" target="_blank" rel="noopener noreferrer">Octopart</a><br><a href="https://www.sparkfun.com/products/14429" target="_blank" rel="noopener noreferrer">Sparkfun</a></td>
-    <td class="tg-73oq">Cut in half, 1 part supplies 2 sensors.</td>
+    <td class="tg-73oq">Cut in half, 1 part supplies 2 sensors</td>
   </tr>
   <tr>
     <td class="tg-73oq">end plug</td>
     <td class="tg-wp8o">3.5</td>
-    <td class="tg-73oq"><a href="https://www.amazon.com/Dsnaduo-Automotive-Neoprene-Expansion-28mm/dp/B09P12JQRD/ref=pd_bxgy_vft_none_sccl_2/145-3546519-1924258?pd_rd_w=71jGh&content-id=amzn1.sym.7f0cf323-50c6-49e3-b3f9-63546bb79c92&pf_rd_p=7f0cf323-50c6-49e3-b3f9-63546bb79c92&pf_rd_r=3X7QQF87M0K1WG5FSKEE&pd_rd_wg=kG2Ph&pd_rd_r=2b97f4d7-f0c1-4cfa-ab36-4c1da310bbc5&pd_rd_i=B09P12JQRD&psc=1" target="_blank" rel="noopener noreferrer">Amazon</a></td>
+    <td class="tg-73oq"><a href="https://www.amazon.com/dp/B09P12JQRD" target="_blank" rel="noopener noreferrer">Amazon</a></td>
     <td class="tg-73oq"></td>
   </tr>
   <tr>
@@ -210,7 +210,7 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
 </table>
 
 ## ISP programmer
-You can buy specialized devices that act as an ISP, but it is easy enough to just use another Arduino that already has a bootloader installed to burn a new device. Here is an easy to make ISP device using an Arduino Nano clone. Besides the 6 pogo connectors, you will need to attach a wire from pin D10 to the RST pin and then cut the RST trace on the PCB. The capacitor between ground and reset can help with stability, but not always necessary. 
+You can buy specialized devices that act as an ISP, but it is easy enough to just use another Arduino that already has a bootloader installed to burn a new device. Here is an easy to make ISP device using an Arduino Nano clone. Besides the 6 pogo connectors, you will need to attach a wire from pin D10 to the RST pin and then cut (scratch out) the RST trace on the Nano. The capacitor between ground and reset can help with stability, but not always necessary. 
 
 D10 wire | D10 to RST | RST trace cut
 |:------:|:----------:|:-----------:|
