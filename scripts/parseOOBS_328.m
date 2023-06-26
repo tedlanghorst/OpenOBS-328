@@ -6,7 +6,7 @@ calPath = "/Users/Ted/GDrive/OpenOBS-328/Calibrations/";
 
 if isa(files,'char')
     filepath = fullfile(path,files);
-    outpath = fullfile(path,[files(1:end-4) '.csv']);
+    outpath = fullfile(path,files(1:end-4));
     %look for the sensor serial number in header.
     fid = fopen(filepath);
     for j = 1:5 %scan first 5 lines
@@ -70,7 +70,7 @@ end
 
 if any("pressure" == string(d.Properties.VariableNames))
     d.pressure_mbar = d.pressure./100;
-    d.depth = 1E5 * (d.pressure_mbar./1000-1)/(1000*9.80665);
+    d.depth = NaN(length(d.pressure),1);%1E5 * (d.pressure_mbar./1000-1)/(1000*9.80665);
     d.water_temp_C = d.water_temp./100;
 end
 
@@ -82,33 +82,33 @@ fprintf("Total record time: %0.1f days\n",days(max(d.datetime)-min(d.datetime)))
 close all
 
 tiledlayout(4,1);
-nexttile
+ax(1) = nexttile;
 plot(d.datetime,d.NTU)
 % set(gca,'YLim',[0,1000])
 ylabel("NTU")
 title(["OpenOBS SN: " + sn])
 
 
-nexttile
-plot(d.datetime,d.depth)
-set(gca,'YLim',[0,1])
-ylabel("appx. depth (m)")
+ax(2) = nexttile;
+plot(d.datetime,d.pressure_mbar)
+% set(gca,'YLim',[0,1])
+ylabel("pressure (mbar)")
 
-nexttile
+ax(3) = nexttile;
 plot(d.datetime,d.water_temp_C)
 ylabel("temp (C)")
 
-nexttile
+ax(4) = nexttile;
 plot(d.datetime,d.battery_V)
 ylabel("battery (V)")
 set(gca,'YLim',[3.3,4.2])
 
-
+linkaxes(ax,'x')
 set(gcf,'Units','normalized')
 set(gcf,'Position',[0.3 0.05 0.35 0.8])
 
 writetable(d,outpath+".csv");
-exportgraphics(gcf,outpath+'.png','Resolution',600)
+exportgraphics(gcf,outpath+".png",'Resolution',600)
 
 
 
