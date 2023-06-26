@@ -8,7 +8,7 @@
 #include "src/libs/MS5803/MS5803.h" 
 
 // Likely variables to change
-#define MS5803_VERSION 14 //comment or remove if you aren't using the pressure sensor
+#define MS5803_VERSION 5 //comment or remove if you aren't using the pressure sensor
 long sleepDuration_seconds = 0; 
 const char contactInfo[] PROGMEM = "If found, please contact tlang@live.unc.edu";
 //
@@ -159,6 +159,8 @@ void setup() {
 
   if (delayedStart_seconds > 0) {
     nextAlarm = DateTime(currentTime + delayedStart_seconds);
+    RTC.enableAlarm(nextAlarm);
+    setBBSQW(); //enable battery-backed alarm
     sensorSleep(nextAlarm);
   }
   
