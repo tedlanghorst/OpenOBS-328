@@ -60,26 +60,39 @@ The sensor housing is one of the OpenOBS’s end caps, and holds the proximity s
 
 ### 3D printing housing
 
-The sensor housing is produced by 3D printing a custom [**.stl file**](https://drive.google.com/file/d/1blsicZMW83UDPJwxpu_2UrOp7uc6YAOs/view).  
+The sensor housing is produced by 3D printing. [**files located here**](https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/3D_print/custom_pcbs).  
 
-Upload the provided .stl file to the 3D printer’s interface and slice the file into machine code that can be printed.  Printing settings will vary depending on the brand of 3D printer, and certain presets like the extrusion temperature should remain at the default value. We use the following settings for Ultimaker 3 and S3 printers found at UNC:
+Upload the provided .stl file to the 3D printer’s interface and slice the file into machine code that can be printed.  Printing settings will vary depending on your printer and materials. Here are the settings I use with a Prusa MK3S+ printer, the PrusaSlicer, and PETG filament:
 
-* Add a brim. Prevents the object from sliding during printing.
-* No internal support. Supports prevent overhangs (materials above a hollow space) from drooping or collapsing before the extruded material cools and hardens, but also need to be removed from the internal spaces after printing. On our printers the parts are good enough without supports, but this may not work for all printers/settings/materials etc.
-* Set fill density somewhere between 50 and 100%. Reduces hollow spaces.
+* 0.2mm layer height
+* 5 perimeters (greatly increases strength)
+* External perimeters print first (better dimensional accuracy)
+* Supports on the external overhangs only (internal overhangs can be bridged)
+* Classic perimeter generator (results in a complete path around the pressure sensor which helps prevent epoxy leaks)
+
+If you have a prusa mk3s+ (or a clone), you can use the presliced gcode included on github which prints 8 heads at once. Do not try to use this gcode if you have another printer.
+    ![Alt text](assets/images/8x_3d_print.png)
+
+
+There is also a cap/filter for the pressure sensor that can be epoxied or glue in place at the very end. These are a quick and simple print, but I also recommend 0.2mm layers and several perimeters so that they are solid.
+
+
+
 
 ### Wiring
 #### Pressure sensor
 
-1. Squeeze some solder paste on the pads of the SMD adapter board. The right amount of paste is more important than keeping the paste separate on each pad. The surface tension when you melt the solder should ‘snap’ the puddles of solder onto the pads.
+1. Squeeze some solder paste on the pads of the SMD adapter board. The right amount of paste is more important than keeping the paste separate on each pad. The surface tension of the melted solder should ‘snap’ the puddles of solder onto the pads.
 1. Place the pressure sensor on the adapter board. Make sure the orientation is correct- there is a dot in one corner of both the adapter and the sensor that indicates orientation.
 1. Use a hot air gun at 250°C to heat both sides of the sensor and completely melt the solder. The paste is a mixture of solder and flux. You’ll see the flux melt first but keep heating to melt the solder. Aim at one side and periodically rotate the board to avoid blowing hot air directly at the white gel cap. Sometimes the hot air pushes the sensor around; check that it is still in position before removing the heat.
-1. Place a 10k resistor across pins 3 and 6.
-1. Place a 0.1µF (100nF) capacitor across pins 2 and 5.
-1. Bend the resistor leg on pin 6 around to touch pin 5 as well. We want these to be connected after we solder (see photos/diagram below). 
-1. Cut 6 cm lengths of red, black, blue, and yellow 30 AWG wire.
-1. Solder the wires in place as shown below. The wires should come in from below and hang down straight-ish at this point. Trim the wires and resistor/capacitor legs so they are well below the top of the sensor. These need to be fully covered in epoxy.
-1. A bit of heat shrink on the wires below the adapter board keeps things tidy, but not necessary.
+1. Flip the pressure sensor over to add a 100 nF capacitor and select the I2C address 0x76. 
+
+    ![image](assets/images/pressure_back.png)
+
+1. Solder the 4 pin flat flex cable in from the back of the PCB.
+
+    ![image](assets/images/flat_flex.png)
+
 
 #### Turbidity sensor
 
@@ -120,32 +133,34 @@ Upload the provided .stl file to the 3D printer’s interface and slice the file
 1. Slide the proximity sensor into the head by pushing on the end of the PCB with a skinny tool. A scrap of protoboard works really well. It might take some force to get it all the way down, and if the tool slips off the PCB, it’s very possible to break the wires you just soldered on.
 1. Finally, test the connections. If you are building an OpenOBS-328, you can simply plug the connector into one of the logger PCBs. If you have built the sensor with short bare wires for the OpenOBS-Iridium you can use alligator clips to connect to a test board. This is your last chance to fix anything before potting it in epoxy! 
     >If you don’t know how to check that the sensor is working, go to the [programming section](#usb) that covers uploading code to the logger and opening the serial monitor to read its output. Once you have a working logger you can just plug in each new sensor. If the logger starts up correctly and does not write out “PTINIT,0”, or “TURBINIT,0” or similar- you are good! 
-1. Use hot glue to plug the hole at the base of the pressure sensor slot. This will keep the epoxy from leaking down.
 
 ### Epoxy potting
 #### Turbidity sensor
-1. The sensor head needs to be situated upside down in order to pour the epoxy. Place a silicon pad (shiny side toward the sensor) between the sensor head and a mobile flat surface (a granite countertop sample works well). The epoxy will not stick to the silicone pad and leaves a smooth surface. Clamp or tape securely to the slab.
-1. Prepare the epoxy by weighing out two parts Vivid Scientific Epoxy 128 (red label) and one part Epoxy 762 (green label) in an aluminum weighing dish. 12 g Epoxy 128 and 6 g Epoxy 762 are enough to fill 3 proximity sensor slots. Use a popsicle stick to gently combine the two epoxies.
-1. At this stage, the epoxy will contain bubbles, which will interfere with the optical path of the proximity sensor. The bubbles are removed by two methods. Alternate between these two methods 2-3x until the epoxy is bubble-free.
-    - Vacuum chamber: Expands bubbles and brings them to the surface. 
+1. The sensor head needs to be situated upside down in order to pour the epoxy. Place a silicon pad (shiny side toward the sensor) between the sensor head and a flat surface (a granite countertop sample works well). The epoxy will not stick to the silicone pad and leaves a smooth surface. Clamp or tape the sensor head securely to the slab.
+1. Prepare the epoxy by weighing out two parts Vivid Scientific Epoxy 128 (red label) and one part Epoxy 762 (green label) in an aluminum weighing dish. One turbidity sensor requires about 4 g Epoxy 128 and 2 g Epoxy 762. Thoroughly mix the two parts to ensure it cures fully.
+1. At this stage, the epoxy will contain bubbles, which will interfere with the optical path of the proximity sensor. Remove the bubbles by alternating between these two methods 2-3x until the epoxy is clear:
+    - **Vacuum chamber** expands bubbles and brings them to the surface. 
 
-    - Heat gun: Reduces the viscosity of the epoxy, allowing bubbles to rise to the surface and burst. Note: Although the heat setting for soldering purposes is 250 ℃, the heat gun should be set to ~120 ℃ when working with the epoxy. Too much heat will make the epoxy set rapidly.
+    - **Heat gun** reduces the viscosity of the epoxy, allowing bubbles to rise to the surface and burst. Note: Although the heat setting for soldering purposes is 250 ℃, the heat gun should be set to ~120 ℃ when working with the epoxy. Too much heat will make the epoxy set rapidly.
 
     ![image](./assets/images/epoxy_bubbles.png)
     *Epoxy just after mixing (left) and after the vacuum/heat process (right)*
 
-1. Once the epoxy is bubble free, pour slowly into the proximity sensor slot. The level of the epoxy should go above the proximity sensor window but below the opening for the pressure sensor- we don't want epoxy dripping down on to the proximity sensor in this orientation. Allow the epoxy to cure for 12-24 hours before unclamping/removing tape.
+1. Once the epoxy is bubble free, slowly pour it into the proximity sensor slot. The level of the epoxy should go above the proximity sensor window but below the opening for the pressure sensor- we don't want epoxy dripping down on to the proximity sensor in this orientation. Allow the epoxy to cure for 12-24 hours before unclamping/removing tape.
 
 #### Pressure sensor
-1. Clamp or tape the sensor head securely to a slab so the top of the sensor head is facing up.
-1. Prepare epoxy as in the previous section. 12 g Epoxy 128 and 6 g Epoxy 762 are enough to fill 3 pressure sensor slots. 
-1. Once the epoxy is bubble free, pour slowly into the pressure sensor slot **without getting epoxy on the white gel membrane of the pressure sensor**. Pour enough epoxy to cover the electrical connections. Applying some heat to the epoxy will decrease the viscosity and give more control over the amount you pour. Allow the epoxy to cure for 12-24 hours before unclamping/removing tape. 
+1. Use hot glue to seal the hole at the base of the pressure sensor slot. This will keep the epoxy from leaking down.
+1. Set the sensor head upright so that the pressure sensor is facing up.
+1. Prepare epoxy as in the previous section. Again, one sensor requires about 4g Epoxy 128 and 2g Epoxy 762.
+1. Once the epoxy is bubble free, use a disposable pipette to fill the pressure sensor opening **to a level that covers the electronics but without getting epoxy on the white gel membrane of the pressure sensor**. Allow the epoxy to cure for 12-24 hours again.
+
+    ![Alt text](assets/images/pipette_epoxy.png)
 
 ## Final Assembly
-1. Cut a 6" length of 1” diameter PVC.
-1. In a well ventilated space (e.g. fume hood or outdoors), attach the completed sensor head to the PVC using PVC cement. Apply the cement all around the small diameter of the sensor head and then insert. Twist to spread the cement.
-1. Allow the cement to dry according to the can. 
-1. Pour epoxy inside the housing, down on the inside of the sensor head. This will prevent leaks at the junction of the sensor head with the PVC better than the PVC cement alone.
+1. Cut a 6" length of 1” diameter PVC. Wash it now if necessary.
+1. In a well ventilated space (e.g. fume hood, fan in a window, outdoors), attach the completed sensor head to the PVC using PVC cement. Apply the cement all around the small diameter of the sensor head and then insert. Twist to spread the cement.
+1. Allow the cement to dry for about 30 mins (or according to the instructions on the can). 
+1. Flip the sensor housing so the open end is up and pour about 10g of mixed epoxy inside the housing, down on the inside of the sensor head. This will prevent leaks at the junction of the sensor head with the PVC better than the PVC cement alone.
 
 ## Programming 
 These two sections provide background information for programming OpenOBS devices. In the logger assembly sections later on we will assume you understand these concepts and have set up your computer to be able to program the new device.
@@ -265,8 +280,3 @@ After installing the Arduino bootloader via the ISP programming, we can now uplo
 	2.2 Open the Serial Monitor (Tools -> Serial Monitor) and verify that the OpenOBS is starting up and communicating. Change the baud rate to 250000 in the bottom right corner of the Serial Monitor if it is not already set.
 
 	2.3 If the serial number has not been set, the serial monitor will prompt you to set it now by typing it at the top of the window. If you need to change it in the future, use the .ino script titled “set_serial_number.ino”, follow the prompts in the serial monitor, and then reupload the regular sensor firmware.
-
----
-Lillian Cooper and Ted Langhorst.
-
-Updated 3/18/2023
