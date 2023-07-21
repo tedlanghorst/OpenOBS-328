@@ -132,7 +132,7 @@ There is also a cap/filter for the pressure sensor that can be epoxied or glue i
 
 1. Slide the proximity sensor into the head by pushing on the end of the PCB with a long flat tool. A scrap of protoboard works really well. It might take some force to get it all the way down, and if the tool slips off the PCB it’s very possible to break the wires you just soldered on.
 1. Finally, test the connections. If you are building an OpenOBS-328, you can simply plug the connector into one of the logger PCBs. If you have built the sensor with short bare wires for the OpenOBS-Iridium you can use alligator clips to connect to a test board. This is your last chance to fix anything before potting it in epoxy! 
-    >:question: If you don’t know how to check that the sensor is working, go to the [programming section](#usb) that covers uploading code to the logger and opening the serial monitor to read its output. Once you have a working logger you can just plug in each new sensor. If the logger starts up correctly and starts printing reasonable data you are good to continue! 
+    >❓ If you don’t know how to check that the sensor is working, go to the [programming section](#usb) that covers uploading code to the logger and opening the serial monitor to read its output. Once you have a working logger you can just plug in each new sensor. If the logger starts up correctly and starts printing reasonable data you are good to continue! 
 
 ### Epoxy potting
 #### Turbidity sensor
@@ -157,7 +157,7 @@ There is also a cap/filter for the pressure sensor that can be epoxied or glue i
     - **Vacuum chamber** expands bubbles and brings them to the surface. 
 
     - **Heat gun** reduces the viscosity of the epoxy, allowing bubbles to rise to the surface and burst. 
-      >:warning: Although the heat setting for soldering purposes is 250 ℃, the heat gun should be set to ~120 ℃ when working with the epoxy. Too much heat will make the epoxy set rapidly.
+      >⚠️ Although the heat setting for soldering purposes is 250 ℃, the heat gun should be set to ~120 ℃ when working with the epoxy. Too much heat will make the epoxy set rapidly.
 
     ![image](./assets/images/epoxy_bubbles.png)
     *Epoxy just after mixing (left) and after the vacuum/heat process (right)*
@@ -216,7 +216,7 @@ D10 wire | D10 to RST | RST trace cut
 #### *Connections*
 The OpenOBS boards all use the standard AVR ISP 2x3 grid so we can use the customized Arduino Nano from above directly on the pads. The corner holes will help locate the pins, but be careful not to twist too much and break the pins.
 
->:warning: Never connect the powered ISP programmer to the board while the sensor head is attached. The programmer works at 5V, while the sensor heads are only rated to ~4V max. It likely will not immediately break the sensors but could do damage that will make them less reliable in the future.
+>⚠️ Never connect the powered ISP programmer to the board while the sensor head is attached. The programmer works at 5V, while the sensor heads are only rated to ~4V max. It likely will not immediately break the sensors but could do damage that will make them less reliable in the future.
 
 ![](./assets/images/OpenOBS-328_ISP.png)
 *Orientation of the Arduino Nano ISP and the OpenOBS-328*
@@ -328,10 +328,10 @@ After installing the Arduino bootloader via the ISP programming, we can now uplo
 
     Most important right now is the MS5803_VERSION variable, which can be either be 2, 5, or 14, depending on the version of the MS5803 pressure sensor you are pairing this logger with. If you are building the device without a pressure sensor, you can remove this line. 
 
-    >:warning: The sensor version is really important to get right. If it is wrong, the pressure and temperature data will be very hard to recover.
+    >⚠️ The sensor version is really important to get right. If it is wrong, the pressure and temperature data will be very hard to recover.
   
 1. Upload the sketch to the logger. Watch the IDE status bar for the code to be compiled and uploaded.
-    >:question: If you can't find the COM port for the OpenOBS, you likely need to install the [CH340 USB driver](https://learn.sparkfun.com/tutorials/how-to-install-ch340-drivers/all).
+    >❓ If you can't find the COM port for the OpenOBS, you likely need to install the [CH340 USB driver](https://learn.sparkfun.com/tutorials/how-to-install-ch340-drivers/all).
 
 1. Open the Serial Monitor (Tools -> Serial Monitor) and verify that the OpenOBS is starting up and communicating. Change the baud rate to 250000 in the bottom right corner of the Serial Monitor if it is not already set.
 
