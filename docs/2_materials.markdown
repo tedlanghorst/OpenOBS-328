@@ -4,8 +4,8 @@ title: Materials
 permalink: /materials/
 ---
 ## Introduction
-{:no_toc}
-The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly reduced in larger quantities ($40 at 100 qty). You will also need tools and equipment to build your sensors, which we have tried to reduce to the essentials here. These costs are substantial, especially if you are trying to build just a few sensors. If you don't have a lot of this equipment and aren't looking to invest in these tools, look into community resources. For example, the Univeristy of North Caorlina at Chapel Hill has a 'makerspace' with most of these tool available. Similar spaces and tool sharing communities exist outside of univiersities. 
+{:.no_toc}
+The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly reduced in larger quantities ($40 at 50 qty). You will also need tools and equipment to build your sensors, which we have tried to reduce to the essentials here. These costs are substantial, especially if you are trying to build just a few sensors. If you don't have a lot of this equipment and aren't looking to invest in these tools, look into community resources. For example, the Univeristy of North Caorlina at Chapel Hill has a 'makerspace' with most of these tool available. Similar spaces and tool sharing communities exist outside of univiersities. 
 
 ## Table of Contents 
 {:.no_toc}
@@ -20,15 +20,18 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
 * No clean solder paste
 * Vacuum pump
 * Vacuum chamber
+* disposable pipettes (3 mL size works well)
 * Hot glue gun
 * 3D printer
-* PVC pipe cutter
+* PVC pipe cutter (can use a saw)
+* PVC cement/solvent
 * Electronics tweezers
 * Fine flush cutters
 * Wire strippers (22-30 AWG)
-* 30 AWG wire (red, black, blue, yellow)
+* Electrical tape
 * micro USB cable
-* [ISP programmer](#isp-programmer)
+* Arduino Nano (or clone; [for ISP programmer](./3_build.markdown#isp-programmer))
+* Pogo pins (6 individual or 2x3 grid)
 
 ## Parts
 
@@ -67,7 +70,7 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
     <td class="tg-1tol" rowspan="9">Sensor head</td>
     <td class="tg-73oq">3D printed head</td>
     <td class="tg-wp8o">0.50</td>
-    <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/blob/main/hardware/3D_print/sensor_head_single.stl" target="_blank" rel="noopener noreferrer">.STL file</a></td>
+    <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/3D_print/custom_pcbs" target="_blank" rel="noopener noreferrer">files</a></td>
     <td class="tg-73oq"></td>
   </tr>
   <tr>
@@ -104,7 +107,7 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
     <td class="tg-73oq">epoxy</td>
     <td class="tg-wp8o">0.5</td>
     <td class="tg-73oq"><a href="https://www.amazon.com/dp/B07RM5Z991" target="_blank" rel="noopener noreferrer">750g</a><br><a href="https://www.amazon.com/dp/B079Y9QFQS/" target="_blank" rel="noopener noreferrer">1500g</a></td>
-    <td class="tg-73oq">20g per sensor</td>
+    <td class="tg-73oq">~20g per sensor</td>
   </tr>
   <tr>
     <td class="tg-73oq">1" PVC</td>
@@ -145,10 +148,13 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
     <td class="tg-73oq"></td>
   </tr>
   <tr>
-    <td class="tg-73oq">qwiic cable</td>
+    <td class="tg-73oq">qwiic cable (JST SH connector 4 pin 20cm length)</td>
     <td class="tg-wp8o">1</td>
-    <td class="tg-73oq"><a href="https://octopart.com/prt-17257-sparkfun-115856491?r=sp" target="_blank" rel="noopener noreferrer">Octopart</a><br><a href="https://www.sparkfun.com/products/14429" target="_blank" rel="noopener noreferrer">Sparkfun</a></td>
-    <td class="tg-73oq">Cut in half, 1 part supplies 2 sensors</td>
+    <td class="tg-73oq"><a href="https://octopart.com/prt-17257-sparkfun-115856491?r=sp" target="_blank" rel="noopener noreferrer">Octopart</a><br>
+    <a href="https://www.sparkfun.com/products/14429" target="_blank" rel="noopener noreferrer">Sparkfun</a><br>
+    <a href="https://www.aliexpress.us/item/3256803220110303.html" target="_blank" rel="noopener noreferrer">AliExpress</a>
+    </td>
+    <td class="tg-73oq">Can cut in half, need ~20 cm length. Double check options if using AliExpress. </td>
   </tr>
   <tr>
     <td class="tg-73oq">end plug</td>
@@ -208,10 +214,3 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
   </tr>
 </tbody>
 </table>
-
-## ISP programmer
-You can buy specialized devices that act as an ISP, but it is easy enough to just use another Arduino that already has a bootloader installed to burn a new device. Here is an easy to make ISP device using an Arduino Nano clone. Besides the 6 pogo connectors, you will need to attach a wire from pin D10 to the RST pin and then cut (scratch out) the RST trace on the Nano. The capacitor between ground and reset can help with stability, but not always necessary. 
-
-D10 wire | D10 to RST | RST trace cut
-|:------:|:----------:|:-----------:|
-![](./assets/images/ISP_1.JPG)|![](./assets/images/ISP_2.JPG)|![](./assets/images/ISP_3.JPG)

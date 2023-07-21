@@ -35,7 +35,7 @@ if hasPressure
     pressureTrend = movmedian(data.pressure,length(data.pressure)/10,'omitnan');
     pressureDetrend = data.pressure-pressureTrend;
     pressureDetrend(pressureDetrend<0) = 0;
-    pressureThreshold = double(pressureDetrend > 100);
+    pressureThreshold = double(pressureDetrend > 10);
     TF = find(ischange(pressureThreshold));
     
     %remove any brief changes in pressure, likely noise.
@@ -122,11 +122,11 @@ xlabel("Standard (NTU)");
 ylabel("Measured (DN)");
 
 
-save_path = sprintf(strcat(gen_path,"%03d"),sn);
-if ~exist(save_path, 'dir')
-    mkdir(save_path)
-end
-save(fullfile(save_path,file(1:8)),"measured","standards","NTU","lm","data")
+% save_path = sprintf(strcat(gen_path,"%03d"),sn);
+% if ~exist(save_path, 'dir')
+%     mkdir(save_path)
+% end
+% save(fullfile(save_path,file(1:8)),"measured","standards","NTU","lm","data")
 
 %% look at a bunch of cal data
 date_string = "20230602";
