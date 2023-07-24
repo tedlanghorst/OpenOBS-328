@@ -165,7 +165,7 @@ There is also a cap/filter for the pressure sensor that can be epoxied or glue i
 1. Once the epoxy is bubble free, slowly pour it into the proximity sensor slot. The level of the epoxy should go above the proximity sensor window but below the opening for the pressure sensor- we don't want epoxy dripping down on to the pressure sensor in this orientation. Allow the epoxy to cure for 12-24 hours before unclamping/removing tape.
 
     <p align="center">
-      <img src="https://tedlanghorst.github.io/OpenOBS-328/assets/images/epoxy_turbidity_final.png", width=50%>
+      <img src="https://tedlanghorst.github.io/OpenOBS-328/assets/images/Epoxy_turbidity_final.png", width=50%>
     </p>
     
     *Face of the turbidity sensor after curing (older version but similar).*
