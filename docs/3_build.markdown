@@ -100,7 +100,7 @@ There is also a cap/filter for the pressure sensor that can be epoxied or glue i
 1. Solder the pressure sensor and turbidity sensor together using the set of 4 holes closer to the turbdity sensor. Make sure the orientation is correct so that the turbidity sensor slides into the housing facing out.
 
     <p align="center">
-      <img src="./assets/images/wiring_flatflex.JPG", width=50%>
+      <img src="https://tedlanghorst.github.io/OpenOBS-328/assets/images/wiring_flatflex.JPG", width=50%>
     </p>
 
 1. Solder the QWIIC cable on to the other set of 4 holes towards the edge of the turbidity sensor.
@@ -140,7 +140,7 @@ There is also a cap/filter for the pressure sensor that can be epoxied or glue i
 1. Clamp or tape the sensor head securely to the slab. If you are doing more than a few sensors, I recommend printing [this clamping caul](https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/3D_print/custom_pcbs/clampingCaul_v2_5x.3mf) that securely holdes 5 sensors at a time. If your printer does not have tight tolerances, you may have to increase the size slightly, there is only 0.2mm clearance. 
 
     <p align="center">
-      <img src="assets/images/epoxy_turbidity_single_tape.png" />
+      <img src="https://tedlanghorst.github.io/OpenOBS-328/assets/images/epoxy_turbidity_single_tape.png" />
     </p>
     
     *Single sensor taped to a granite block. Stretching electrical tape gives enough pressure to stop leaks.*
@@ -165,7 +165,7 @@ There is also a cap/filter for the pressure sensor that can be epoxied or glue i
 1. Once the epoxy is bubble free, slowly pour it into the proximity sensor slot. The level of the epoxy should go above the proximity sensor window but below the opening for the pressure sensor- we don't want epoxy dripping down on to the pressure sensor in this orientation. Allow the epoxy to cure for 12-24 hours before unclamping/removing tape.
 
     <p align="center">
-      <img src="./assets/images/epoxy_turbidity_final.png", width=50%>
+      <img src="https://tedlanghorst.github.io/OpenOBS-328/assets/images/epoxy_turbidity_final.png", width=50%>
     </p>
     
     *Face of the turbidity sensor after curing (older version but similar).*
@@ -174,7 +174,7 @@ There is also a cap/filter for the pressure sensor that can be epoxied or glue i
 1. Use hot glue to seal the hole at the base of the pressure sensor slot. This will keep the epoxy from leaking down.
 
     <p align="center">
-      <img src="./assets/images/epoxy_pressure_plug.JPG", width=50%>
+      <img src="https://tedlanghorst.github.io/OpenOBS-328/assets/images/epoxy_pressure_plug.JPG", width=50%>
     </p>
 
 1. Set the sensor head upright so that the pressure sensor is facing up.
