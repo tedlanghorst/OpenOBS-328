@@ -1,0 +1,7 @@
+**/*.ino linguist-detectable
+**/*.cpp linguist-detectable
+**/*.h linguist-detectable
+**/*.py  linguist-detectable
+**/*.m  linguist-detectable
+docs linguist-documentation
+
