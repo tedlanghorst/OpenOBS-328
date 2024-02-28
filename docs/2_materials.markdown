@@ -77,13 +77,13 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
     <td class="tg-73oq">Light sensor</td>
     <td class="tg-wp8o">2.5</td>
     <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/turbidity" target="_blank" rel="noopener noreferrer">Gerber files</a></td>
-    <td class="tg-73oq">JLCPCB ordering instructions</td>
+    <td class="tg-73oq">ordering instructions below</td>
   </tr>
   <tr>
     <td class="tg-73oq">pressure PCB</td>
     <td class="tg-wp8o">0.4</td>
     <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/pressure" target="_blank" rel="noopener noreferrer">Gerber files</a></td>
-    <td class="tg-73oq">JLCPCB ordering instructions</td>
+    <td class="tg-73oq">ordering instructions below</td>
   </tr>
   <tr>
     <td class="tg-73oq">pressure sensor</td>
@@ -133,7 +133,7 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
     <td class="tg-73oq">assembled PCB</td>
     <td class="tg-wp8o">12</td>
     <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/logger" target="_blank" rel="noopener noreferrer">Gerber files</a></td>
-    <td class="tg-73oq">JLCPCB ordering instruction</td>
+    <td class="tg-73oq">ordering instructions below</td>
   </tr>
   <tr>
     <td class="tg-73oq">Battery holder</td>
@@ -214,3 +214,34 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
   </tr>
 </tbody>
 </table>
+
+## Ordering PCBs from JLCPCB
+1. Download the manufacturing files for the [data logger](https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/logger), [turbidity sensor](https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/turbidity), and [pressure sensor](https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/pressure) from the project Github repo. The data logger and turbidity sensors can be ordered assembled, and as such will have 3 files each. The pressure sensor directory only has 1 file because you have to assemble it separately.
+
+1. Go to JLCPCB and click “Instant Quote”.
+
+1. Upload one of gerber files at the top of the page (.zip extension). You will need to change the following settings:
+    - **PCB Qty:** This is the number of **panels** you are ordering, and the actual number of finished boards will be greater. See next 2 steps. Multiply the rows and columns of Panel Format to get number of boards per panel.
+    - **Delivery format:** Panel by Customer
+    - **Panel Format:** This is different for each board:
+        |        PCB       | Columns | Rows |
+        |------------------|---------|------|
+        | data logger      | 1       | 5    |
+        | turbidity sensor | 5       | 4    |
+        | pressure board   | 9       | 10   |
+        
+    - **Remove order number:** Specify a location
+    > If you are ordering the pressure board, click **add to cart** and skip past the remainder of this section. If you are ordering the data logger or turbidity sensor, enable the option for **PCB Assembly** towards the bottom and continue. 
+    - **PCBA type:** Standard
+    - **Assembly side:** Top (Optionally both sides for the data logger)
+    - **Edge Rails/Fiducials:** Added by Customer
+    - Click **Confirm**. 
+    - Click **Next**
+    - This should take you to a page to upload upload the BOM and CPL files. They are both .csv files, named “BOM_\*.csv” and “PickAndPlace_\*.csv.” respectively. 
+    - On the same page, select **File provided as** "Single Piece, pls help … "
+    - Click **Process BOM & CPL**. You may get a warning that some components were not included in the BOM. This is fine, click **Continue**.
+    - Now a table of the parts will be shown. Make sure they’re all selected and there are no warnings about inventory shortage etc. Send me an email if any parts are out of stock and I can check if there are any compatable replacements. 
+    - Click **Next**. Now a rendering of the populated board should appear, but it will only include the first PCB on the panel. 
+    - Click **Next** again and then **Save to Cart**.
+1. Repeat the last section with any other PCBs you are ordering.
+1. Go through checkout.
