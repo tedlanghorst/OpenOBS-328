@@ -224,6 +224,7 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
     - **PCB Qty:** This is the number of **panels** you are ordering, and the actual number of finished boards will be greater. See next 2 steps. Multiply the rows and columns of Panel Format to get number of boards per panel.
     - **Delivery format:** Panel by Customer
     - **Panel Format:** This is different for each board:
+
         |        PCB       | Columns | Rows |
         |------------------|---------|------|
         | data logger      | 1       | 5    |
@@ -231,7 +232,7 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
         | pressure board   | 9       | 10   |
         
     - **Remove order number:** Specify a location
-    > If you are ordering the pressure board, click **add to cart** and skip past the remainder of this section. If you are ordering the data logger or turbidity sensor, enable the option for **PCB Assembly** towards the bottom and continue. 
+    - If you are ordering the pressure board, click **add to cart** and skip past the remainder of this section. If you are ordering the data logger or turbidity sensor, enable the option for **PCB Assembly** towards the bottom and continue. 
     - **PCBA type:** Standard
     - **Assembly side:** Top (Optionally both sides for the data logger)
     - **Edge Rails/Fiducials:** Added by Customer
