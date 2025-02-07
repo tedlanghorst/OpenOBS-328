@@ -111,11 +111,25 @@ void Adafruit_VCNL4010::setAmbientAveraging(uint8_t log2_avg) {
     log2_avg = 7; 
   }
 
+  // Read the current register value
+  uint8_t reg = read8(VCNL4010_AMBIENTPARAMETER);
+
   // Mask out the old averaging bits (Bit 2 to Bit 0) and set the new ones
   reg &= 0b11111000; 
   reg |= (log2_avg & 0b00000111); 
 
   // Write back to the register
+  write8(VCNL4010_AMBIENTPARAMETER, reg);
+}
+
+void Adafruit_VCNL4010::setAmbientContinuous(bool enable){
+  // Read the current register value
+  uint8_t reg = read8(VCNL4010_AMBIENTPARAMETER);
+
+  // Clear bit 7, then set it based on `enable`
+  /reg = (reg & 0b01111111) | (enable << 7); 
+
+  // Write back the modified register value
   write8(VCNL4010_AMBIENTPARAMETER, reg);
 }
 

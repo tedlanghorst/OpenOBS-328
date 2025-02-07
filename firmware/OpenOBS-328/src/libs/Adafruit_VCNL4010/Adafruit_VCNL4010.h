@@ -78,7 +78,8 @@ public:
   void setLEDcurrent(uint8_t c);
 
   void setFrequency(vcnl4010_freq f);
-  void setAmbientAveraging(uint8_t a)
+  void setAmbientAveraging(uint8_t a);
+  void setAmbientContinuous(bool e);
   uint16_t readProximity(void);
   uint16_t readAmbient(void);
 
