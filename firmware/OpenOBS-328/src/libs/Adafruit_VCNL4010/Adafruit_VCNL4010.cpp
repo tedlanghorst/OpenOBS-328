@@ -127,7 +127,7 @@ void Adafruit_VCNL4010::setAmbientContinuous(bool enable){
   uint8_t reg = read8(VCNL4010_AMBIENTPARAMETER);
 
   // Clear bit 7, then set it based on `enable`
-  /reg = (reg & 0b01111111) | (enable << 7); 
+  reg = (reg & 0b01111111) | (enable << 7); 
 
   // Write back the modified register value
   write8(VCNL4010_AMBIENTPARAMETER, reg);
