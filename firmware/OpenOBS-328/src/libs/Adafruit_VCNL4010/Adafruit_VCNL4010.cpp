@@ -100,6 +100,27 @@ void Adafruit_VCNL4010::setFrequency(vcnl4010_freq freq) {
 
 /**************************************************************************/
 /*!
+    @brief  Set the number of measurements to average for an ambient reading
+    @param  avg Sets the number of measurements (2^log2_avg)
+*/
+/**************************************************************************/
+
+void Adafruit_VCNL4010::setAmbientAveraging(uint8_t log2_avg) {
+  // Ensure the value does not exceed the maximum (128 conversions)
+  if (log2_avg > 7) {
+    log2_avg = 7; 
+  }
+
+  // Mask out the old averaging bits (Bit 2 to Bit 0) and set the new ones
+  reg &= 0b11111000; 
+  reg |= (log2_avg & 0b00000111); 
+
+  // Write back to the register
+  write8(VCNL4010_AMBIENTPARAMETER, reg);
+}
+
+/**************************************************************************/
+/*!
     @brief  Get proximity measurement
     @return Raw 16-bit reading value, will vary with LED current, unit-less!
 */
