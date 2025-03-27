@@ -36,7 +36,7 @@ void receiveGuiSettings() {
       delayedStart_seconds = atol(tmpbuf);
 
       RTC.adjust(DateTime(currentTime)); //set RTC
-      EEPROM.put(SLEEP_ADDRESS, sleepDuration_seconds); //store the new value.
+      EEPROM.put(SLEEP_ADDR, sleepDuration_seconds); //store the new value.
       serialSend("SET,SUCCESS");
       delay(100);
       break;
