@@ -8,6 +8,7 @@
 
 // Likely variables to change
 static const uint8_t MS5803_VERSION = 14;
+
 long sleepDuration_seconds = 0; 
 //
 
@@ -31,6 +32,7 @@ uint16_t serialNumber;
 #define MAX_CHAR 60            //max num character in messages
 char messageBuffer[MAX_CHAR];       //buffer for sending and receiving comms
 bool guiConnected = false;
+bool newFirmware = false;
 
 //data storage variables
 struct {
@@ -71,8 +73,12 @@ DS3231 RTC; //create RTC object
 char filename[] = "YYYYMMDD.TXT";
 SdFat sd;
 SdFile file;
+bool fileIsOpen = false;
 
+//Sensor vars
 Sensors sensors = Sensors(SENSOR_SETTINGS_ADDR, MS5803_VERSION);
+uint8_t measFlags = 0b00001111;
+uint8_t iredCurrent = 50;
 
 void setup() {
   Serial.begin(250000);
@@ -81,14 +87,9 @@ void setup() {
   
   getSerialNumber();
   getDataLoggerSettings();
-  initializeModules();
+  checkModuleStartup();
+  getSensorSettings();
 
-  //if we have established a connection to the gui,
-  //send a ready message and wait for a settings response.
-  if (guiConnected) {
-    receiveGuiSettings();
-  }
-  
   if (delayedStart_seconds > 0) {
     sensorSleep(RTC.now().unixtime(), delayedStart_seconds);
   }
@@ -150,15 +151,19 @@ void getDataLoggerSettings(){
   uint32_t storedTime;
   EEPROM.get(UPLOAD_TIME_ADDR, storedTime);
   if (uploadDT.unixtime() != storedTime) {
+    newFirmware = true;
+    startup.module.clk = RTC.begin(); //reset the RTC
+    RTC.adjust(uploadDT);
+    
     EEPROM.put(UPLOAD_TIME_ADDR, uploadDT.unixtime());
     EEPROM.put(SLEEP_ADDR, sleepDuration_seconds);
     Serial.println("Firmware updated");
-    startup.module.clk = RTC.begin(); //reset the RTC
-    RTC.adjust(uploadDT);
   }
   //otherwise check if the GUI is connected
   //send a startup message and wait a bit for an echo from the gui
-  else if (checkGuiConnection());
+  else if (checkGuiConnection()){
+    receiveGuiSettings();
+  }
   else {
     //if no contact from GUI, read last stored value
     EEPROM.get(SLEEP_ADDR, sleepDuration_seconds);
@@ -170,7 +175,7 @@ void getDataLoggerSettings(){
 }
 
 
-void initializeModules(){
+void checkModuleStartup(){
   //intialize & check all the modules
   startup.module.sd = sd.begin(pChipSelect, SPI_SPEED);
   if (!startup.module.sd) serialSend("SDINIT,0");
@@ -190,6 +195,23 @@ void initializeModules(){
   //RTC errors likely are fatal though. Will it even wake if RTC fails?
   if (!(startup.b == 0b00001111)) {
     Serial.println(F("$Startup failed*66"));
-    sensorSleep(RTC.now().unixtime(), sleepDuration_seconds);
+
+    if (sleepDuration_seconds>5){
+      sensorSleep(RTC.now().unixtime(), sleepDuration_seconds);
+    } else {
+      while(true); //wait forever.
+    }
+  }
+}
+
+
+void getSensorSettings(){
+  //if we have established a connection to the gui,
+  //send a ready message and wait for a settings response.
+  if (newFirmware || guiConnected){
+    sensors.setMeasurementFlags(measFlags);
+    sensors.setBackscatterCurrent(iredCurrent/10);
+  } else {
+    sensors.loadSettings();
   }
 }

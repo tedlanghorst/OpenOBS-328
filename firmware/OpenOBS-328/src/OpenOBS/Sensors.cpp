@@ -6,52 +6,40 @@ Sensors::Sensors(uint16_t eepromAddr, uint8_t ms5803_version) {
 
     if (ms5803_version > 0) {
         ms5803 = MS_5803(ms5803_version, 0x76, 4096);
+        hasPressureSensor = true;
     } else {
-        // ms5803 = nullptr;
+        hasPressureSensor = false;
     }
     
 }
 
 void Sensors::setBackscatterRate(vcnl4010_freq rate) {
     settings.backscatterRate = rate;
-    if (vcnl4010.begin()) {
-        vcnl4010.setFrequency(rate);
-    }
+    vcnl4010.setFrequency(rate);
+    saveSettings();
 }
 
 void Sensors::setBackscatterCurrent(uint8_t current) {
     settings.backscatterCurrent = current;
-    if (vcnl4010.begin()) {
-        vcnl4010.setLEDcurrent(current);
-    }
+    vcnl4010.setLEDcurrent(current);
+    saveSettings();
 }
 
 void Sensors::setAmbientAveraging(uint8_t averaging) {
     settings.ambientAveraging = averaging;
-    if (vcnl4010.begin()) {
-        vcnl4010.setAmbientAveraging(averaging);
-    }
+    vcnl4010.setAmbientAveraging(averaging);
+    saveSettings();
 }
 
 void Sensors::setAmbientContinuous(bool continuous) {
     settings.ambientContinuous = continuous;
-    if (vcnl4010.begin()) {
-        vcnl4010.setAmbientContinuous(continuous);
-    }
+    vcnl4010.setAmbientContinuous(continuous);
+    saveSettings();
 }
 
-void Sensors::setUsePressureSensor(bool use) {
-    settings.usePressureSensor = use;
-}
-
-void Sensors::newSettings(vcnl4010_freq bs_rate, uint8_t bs_current, uint8_t amb_averaging, bool amb_continuous, bool use_P) {
-        setBackscatterRate(bs_rate);
-        setBackscatterCurrent(bs_current);
-        setAmbientAveraging(amb_averaging);
-        setAmbientContinuous(amb_continuous);
-        setUsePressureSensor(use_P);
-
-        saveSettings();
+void Sensors::setMeasurementFlags(uint8_t flags) {
+    settings.measFlags = flags;
+    saveSettings();
 }
 
 // Load settings from EEPROM
@@ -75,8 +63,7 @@ void Sensors::begin(bool &vcnl_init, bool &ms5803_init) {
         vcnl4010.setAmbientContinuous(settings.ambientContinuous);
     } 
 
-    if (settings.usePressureSensor) { 
-        
+    if (hasPressureSensor) { 
         ms5803_init = ms5803.initializeMS_5803();
     } else {
         // Just set true if we are not using it.
@@ -86,16 +73,34 @@ void Sensors::begin(bool &vcnl_init, bool &ms5803_init) {
 
 
 void Sensors::getReadings(uint16_t &tuAmbient, uint16_t &tuBackscatter, uint32_t &abs_P, int16_t &water_temp) {
-    tuBackscatter = vcnl4010.readProximity();
-    tuAmbient = vcnl4010.readAmbient();
+    if (settings.measFlags & 0b00000001) { // Check bit 0 (readAmbient)
+        tuAmbient = vcnl4010.readAmbient();
+    } else {
+        tuAmbient = 0;
+    }
+
+    if (settings.measFlags & 0b00000010) { // Check bit 1 (readBackscatter)
+        tuBackscatter = vcnl4010.readProximity();
+    } else {
+        tuBackscatter = 0;
+    }
     
-    if (settings.usePressureSensor) {
+    if (hasPressureSensor && ((settings.measFlags & 0b00001100) != 0)) {
         ms5803.readSensor();
-        abs_P = ms5803.getPressure();           //bar*10^-5
-        water_temp = ms5803.getTemperature();   //C*10^-2
+        if (settings.measFlags & 0b00000100) { // Check bit 2 (readPressure)
+            abs_P = ms5803.getPressure();
+        } else {
+            abs_P = 0;
+        }
+
+        if (settings.measFlags & 0b00001000) { // Check bit 3 (readWaterTemp)
+            water_temp = ms5803.getTemperature();
+        } else {
+            water_temp = -32768;
+        }
     } else {
         abs_P = 0;
-        water_temp = -32768; // Invalid temperature marker
+        water_temp = -32768;
     }
 }
 
