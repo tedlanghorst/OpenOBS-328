@@ -28,17 +28,27 @@ void receiveGuiSettings() {
       char *tmpbuf;
       tmpbuf = strtok(messageBuffer, ",");
       if (strcmp(tmpbuf, "$SET") != 0) break; //somehow received another message.
+      
       tmpbuf = strtok(NULL, ",");
       currentTime = atol(tmpbuf);
+      RTC.adjust(DateTime(currentTime)); //set RTC
+      
       tmpbuf = strtok(NULL, ",");
       sleepDuration_seconds = atol(tmpbuf);
-      tmpbuf = strtok(NULL, "*");
+      EEPROM.put(SLEEP_ADDR, sleepDuration_seconds); //store the new value.
+      
+      tmpbuf = strtok(NULL, ",");
       delayedStart_seconds = atol(tmpbuf);
-
-      RTC.adjust(DateTime(currentTime)); //set RTC
-      EEPROM.put(SLEEP_ADDRESS, sleepDuration_seconds); //store the new value.
+      
+      tmpbuf = strtok(NULL, ",");
+      measFlags = atol(tmpbuf);
+//      sensors.setMeasurementFlags(measFlags);
+      
+      tmpbuf = strtok(NULL, "*");
+      iredCurrent = atol(tmpbuf);
+//      sensors.setBackscatterCurrent(iredCurrent/10);
+      
       serialSend("SET,SUCCESS");
-      delay(100);
       break;
     }
   }
