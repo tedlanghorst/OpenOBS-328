@@ -274,14 +274,15 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-<<<<<<< Updated upstream
 # MATLAB
 # Windows default autosave extension
 *.asv
 
 # OSX / *nix default autosave extension
 *.m~
-=======
+
 #OSX
 *.DS_Store
->>>>>>> Stashed changes
+
+
+*.sln.iml
