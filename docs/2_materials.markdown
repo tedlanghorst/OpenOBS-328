@@ -67,22 +67,29 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
 </thead>
 <tbody>
   <tr>
-    <td class="tg-1tol" rowspan="9">Sensor head</td>
+    <td class="tg-1tol" rowspan="10">Sensor head</td>
     <td class="tg-73oq">3D printed head</td>
     <td class="tg-wp8o">0.50</td>
-    <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/3D_print/custom_pcbs" target="_blank" rel="noopener noreferrer">files</a></td>
+    <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/sensor/hardware/3D_print/custom_pcbs" target="_blank" rel="noopener noreferrer">files</a></td>
     <td class="tg-73oq"></td>
+  </tr>
+  
+  <tr>
+    <td class="tg-73oq">m3x6 bolt</td>
+    <td class="tg-wp8o">0.10</td>
+    <td class="tg-73oq"><a href="https://www.amazon.com/Socket-Screws-Bolts-Thread-100pcs/dp/B07CMRQ3TB?crid=85QEXH6R1XAD&th=1" target="_blank" rel="noopener noreferrer">Gerber files</a></td>
+    <td class="tg-73oq">ordering instructions below</td>
   </tr>
   <tr>
     <td class="tg-73oq">Light sensor</td>
-    <td class="tg-wp8o">2.5</td>
-    <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/turbidity" target="_blank" rel="noopener noreferrer">Gerber files</a></td>
+    <td class="tg-wp8o">2.50</td>
+    <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/sensor/hardware/PCBA/turbidity" target="_blank" rel="noopener noreferrer">Gerber files</a></td>
     <td class="tg-73oq">ordering instructions below</td>
   </tr>
   <tr>
     <td class="tg-73oq">pressure PCB</td>
-    <td class="tg-wp8o">0.4</td>
-    <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/pressure" target="_blank" rel="noopener noreferrer">Gerber files</a></td>
+    <td class="tg-wp8o">0.40</td>
+    <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/sensor/hardware/PCBA/pressure" target="_blank" rel="noopener noreferrer">Gerber files</a></td>
     <td class="tg-73oq">ordering instructions below</td>
   </tr>
   <tr>
@@ -105,19 +112,19 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
   </tr>
   <tr>
     <td class="tg-73oq">epoxy</td>
-    <td class="tg-wp8o">0.5</td>
+    <td class="tg-wp8o">0.50</td>
     <td class="tg-73oq"><a href="https://www.amazon.com/dp/B07RM5Z991" target="_blank" rel="noopener noreferrer">750g</a><br><a href="https://www.amazon.com/dp/B079Y9QFQS/" target="_blank" rel="noopener noreferrer">1500g</a></td>
     <td class="tg-73oq">~20g per sensor</td>
   </tr>
   <tr>
     <td class="tg-73oq">1" PVC</td>
-    <td class="tg-wp8o">0.4</td>
+    <td class="tg-wp8o">0.40</td>
     <td class="tg-73oq"><a href="https://www.lowes.com/pd/1-in-dia-x-10-ft-L-450-PSI-PVC-Pipe/3133091" target="_blank" rel="noopener noreferrer">Lowe's</a></td>
     <td class="tg-73oq">6" per sensor</td>
   </tr>
   <tr>
     <td class="tg-73oq">pvc cement</td>
-    <td class="tg-wp8o">0.2</td>
+    <td class="tg-wp8o">0.20</td>
     <td class="tg-73oq"><a href="https://www.lowes.com/pd/Oatey-8-fl-oz-PVC-Cement/4750803" target="_blank" rel="noopener noreferrer">Lowe's</a></td>
     <td class="tg-73oq">cost based on 50 sensors</td>
   </tr>
@@ -132,7 +139,7 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
     <td class="tg-1tol" rowspan="5">OpenOBS-328</td>
     <td class="tg-73oq">assembled PCB</td>
     <td class="tg-wp8o">12</td>
-    <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/logger" target="_blank" rel="noopener noreferrer">Gerber files</a></td>
+    <td class="tg-73oq"><a href="https://github.com/tedlanghorst/OpenOBS-328/tree/main/sensor/hardware/PCBA/logger" target="_blank" rel="noopener noreferrer">Gerber files</a></td>
     <td class="tg-73oq">ordering instructions below</td>
   </tr>
   <tr>
@@ -216,7 +223,7 @@ The parts cost of an OpenOBS-328 is approximately $50 USD. This can be slightly 
 </table>
 
 ## Ordering PCBs from JLCPCB
-1. Download the manufacturing files for the [data logger](https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/logger), [turbidity sensor](https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/turbidity), and [pressure sensor](https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/PCBA/pressure) from the project Github repo. The data logger and turbidity sensors can be ordered assembled, and as such will have 3 files each. The pressure sensor directory only has 1 file because you have to assemble it separately.
+1. Download the manufacturing files for the [data logger](https://github.com/tedlanghorst/OpenOBS-328/tree/main/sensor/hardware/PCBA/logger), [turbidity sensor](https://github.com/tedlanghorst/OpenOBS-328/tree/main/sensor/hardware/PCBA/turbidity), and [pressure sensor](https://github.com/tedlanghorst/OpenOBS-328/tree/main/sensor/hardware/PCBA/pressure) from the project Github repo. The data logger and turbidity sensors can be ordered assembled, and as such will have 3 files each. The pressure sensor directory only has 1 file because you have to assemble it separately.
 
 1. Go to JLCPCB and click “Instant Quote”.
 

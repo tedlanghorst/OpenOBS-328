@@ -60,7 +60,7 @@ The sensor head is one of the OpenOBS end caps, and holds the proximity sensor a
 
 ### 3D printing housing
 
-The sensor housing is produced by 3D printing. [**files located here**](https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/3D_print/custom_pcbs).  
+The sensor housing is produced by 3D printing. [**files located here**](https://github.com/tedlanghorst/OpenOBS-328/tree/main/sensor/hardware/3D_print/custom_pcbs).  
 
 Upload the .3mf file to the 3D printer’s interface and slice the file into machine code that can be printed. Printing settings will vary depending on your printer and materials. Here are the settings I use with a Prusa MK3S+ printer, the PrusaSlicer, and PETG filament:
 
@@ -68,12 +68,8 @@ Upload the .3mf file to the 3D printer’s interface and slice the file into mac
 * 5 perimeters (greatly increases strength)
 * External perimeters print first (better dimensional accuracy)
 * Supports on the external overhangs only (internal overhangs can be bridged)
-* Classic perimeter generator (results in a complete path around the pressure sensor which helps prevent epoxy leaks)
 
-If you have a Prusa MK3S+ printer (or a clone), you can use the presliced gcode included on github which prints 8 heads at once. Do not try to use this gcode if you have another printer.
-![Alt text](./assets/images/8x_3d_print.png)
-
-There is also a cap/filter for the pressure sensor that can be epoxied or glue in place at the very end. These are a quick and simple print, but I also recommend 0.2mm layers and several perimeters so that they are solid.
+There is also a cap/filter for the pressure sensor to keep debris and sediment off the delicate white gel membrane. 
 
 
 ### Wiring
@@ -137,7 +133,7 @@ There is also a cap/filter for the pressure sensor that can be epoxied or glue i
 ### Epoxy potting
 #### Turbidity sensor
 1. The sensor head needs to be situated upside down in order to pour the epoxy. Place a shiny silicone pad or tuck tape (tyvek sheathing tape) between the sensor head and a flat surface (a granite countertop sample works well). The epoxy will not stick to the silicone pad and leaves a smooth surface. 
-1. Clamp or tape the sensor head securely to the slab. If you are doing more than a few sensors, I recommend printing [this clamping caul](https://github.com/tedlanghorst/OpenOBS-328/tree/main/hardware/3D_print/custom_pcbs/clampingCaul_v2_5x.3mf) that securely holdes 5 sensors at a time. If your printer does not have tight tolerances, you may have to increase the size slightly, there is only 0.2mm clearance. 
+1. Clamp or tape the sensor head securely to the slab. If you are doing more than a few sensors, I recommend printing [this clamping caul](https://github.com/tedlanghorst/OpenOBS-328/tree/main/sensor/hardware/3D_print/custom_pcbs/clampingCaul_v2_5x.3mf) that securely holdes 5 sensors at a time. If your printer does not have tight tolerances, you may have to increase the size slightly, there is only 0.2mm clearance. 
 
     <p align="center">
       <img src="https://tedlanghorst.github.io/OpenOBS-328/assets/images/epoxy_turbidity_single_tape.png" />
