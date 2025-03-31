@@ -1,15 +1,30 @@
-void sensorSleep(DateTime nextAlarm) {
+void sensorSleep(long last_wake_time, long sleep_seconds) {
+  // Ensure a margin for the next alarm before shutting down.
+  if ((last_wake_time+sleep_seconds) < (RTC.now().unixtime()+3)){
+    return;
+  }
+  
+  // Set the next alarm right away. Check it hasn't passed later.
+  nextAlarm = DateTime(last_wake_time + sleep_seconds);
+  RTC.enableAlarm(nextAlarm);
+  setBBSQW(); //enable battery-backed alarm
+  fileIsOpen = !file.close();
+  
+  
   LowPower.powerDown(SLEEP_250MS, ADC_OFF, BOD_ON); //ensure the alarm is set and SD card done reshuffling.
   serialSend("POWEROFF,1");
-  RTC.clearAlarm(); //turn off alarm
-  delay(sleepDuration_seconds * 1000); //delay program if we have another power source
+  
+  RTC.clearAlarm(); // Turn off alarm, cutting off battery supply.
+  delay(sleep_seconds * 1000); // Just wait if we have USB power (mimics shutdown).
 }
 
 
-void writeDataToSD() {
-  file.open(filename, O_WRITE | O_APPEND);
-  file.println(messageBuffer);
-  file.close();
+void writeToSD(char dataStr[]) {
+  if (~fileIsOpen){
+    fileIsOpen = file.open(filename, O_WRITE | O_APPEND);
+  }
+  file.println(dataStr);
+  file.sync();
 }
 
 
@@ -20,16 +35,18 @@ void updateFilename() {
 
   SdFile::dateTimeCallback(dateTime_callback);
   //if we create a new file with this name, set header
-  if (file.open(filename, O_CREAT | O_EXCL | O_WRITE)) {
+  fileIsOpen = file.open(filename, O_CREAT | O_EXCL | O_WRITE);
+  if (fileIsOpen) {
     snprintf(messageBuffer, 11, "%04u/%02u/%02u", uploadDT.year(), uploadDT.month(), uploadDT.date());
-    file.println((__FlashStringHelper*)contactInfo);
     file.print(F("Firmware updated: "));
     file.println(messageBuffer);
     file.print("OpenOBS SN:");
     file.println(serialNumber);
     file.println();
     file.println((__FlashStringHelper*)dataColumnLabels);
-  }
+  } 
+  sprintf(messageBuffer, "FILE,OPEN,%s\0", filename);
+  serialSend(messageBuffer);
 }
 
 
