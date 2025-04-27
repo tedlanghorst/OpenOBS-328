@@ -7,7 +7,7 @@
 #include "src/OpenOBS/Sensors.h"
 
 // Likely variables to change
-static const uint8_t MS5803_VERSION = 14;
+static const uint8_t MS5803_VERSION = 5;
 
 long sleepDuration_seconds = 0; 
 //
