@@ -45,9 +45,9 @@ boolean AS7265X::begin(TwoWire &wirePort)
   if ((value & 0b00110000) == 0)
     return (false); //Test if Slave1 and 2 are detected. If not, bail.
 
-  setBulbCurrent(AS7265X_LED_12_5MA, AS7265x_LED_WHITE);
-  setBulbCurrent(AS7265X_LED_CURRENT_LIMIT_12_5MA, AS7265x_LED_IR);
-  setBulbCurrent(AS7265X_LED_CURRENT_LIMIT_12_5MA, AS7265x_LED_UV);
+  setBulbCurrent(LED_12_5MA, AS7265x_LED_WHITE);
+  setBulbCurrent(LED_12_5MA, AS7265x_LED_IR);
+  setBulbCurrent(LED_12_5MA, AS7265x_LED_UV);
 
   disableBulb(AS7265x_LED_WHITE); //Turn off bulb to avoid heating sensor
   disableBulb(AS7265x_LED_IR);
@@ -56,7 +56,7 @@ boolean AS7265X::begin(TwoWire &wirePort)
   setIndicatorCurrent(INDICATOR_8MA); //Set to 8mA (maximum)
   enableIndicator();
 
-  setIntegrationCycles(49); //50 * 2.8ms = 140ms. 0 to 255 is valid.
+  setIntegrationCycles(1); //50 * 2.8ms = 140ms. 0 to 255 is valid.
   //If you use Mode 2 or 3 (all the colors) then integration time is double. 140*2 = 280ms between readings.
  
   setGain(GAIN_64X); //Set gain to 64x
@@ -345,28 +345,28 @@ float AS7265X::convertBytesToFloat(uint32_t myLong)
 //Mode 1: Different 4 channels out of 6 (see datasheet)
 //Mode 2: All 6 channels continuously
 //Mode 3: One-shot reading of all channels
-void AS7265X::setMeasurementMode(uint8_t mode)
+void AS7265X::setMeasurementMode(as7265x_mode mode)
 {
-  if (mode > 0b11)
-    mode = 0b11; //Error check
+  if (mode > MODE_6CHAN_ONE_SHOT)
+    mode = MODE_6CHAN_ONE_SHOT; // Error check
 
-  //Read, mask/set, write
-  uint8_t value = virtualReadRegister(AS7265X_CONFIG); //Read
-  value &= 0b11110011;                                 //Clear BANK bits
-  value |= (mode << 2);                                //Set BANK bits with user's choice
-  virtualWriteRegister(AS7265X_CONFIG, value);         //Write
+  // Read, mask/set, write
+  uint8_t value = virtualReadRegister(AS7265X_CONFIG); // Read
+  value &= 0b11110011;                                 // Clear BANK bits
+  value |= (mode << 2);                                // Set BANK bits with user's choice
+  virtualWriteRegister(AS7265X_CONFIG, value);         // Write
 }
 
-// Update setGain to use as7265x_gain enum
+// Update setGain to use as7265x_gain typedef
 void AS7265X::setGain(as7265x_gain gain)
 {
-  if (gain > gain_64X)
+  if (gain > GAIN_64X)
     gain = GAIN_64X;
 
   uint8_t value = virtualReadRegister(AS7265X_CONFIG); // Read
-  value &= 0b11001111; // Clear GAIN bits
-  value |= (gain << 4); // Set GAIN bits with user's choice
-  virtualWriteRegister(AS7265X_CONFIG, value); // Write
+  value &= 0b11001111;                                 // Clear GAIN bits
+  value |= (gain << 4);                                // Set GAIN bits with user's choice
+  virtualWriteRegister(AS7265X_CONFIG, value);         // Write
 }
 
 //Sets the integration cycle amount
@@ -424,7 +424,7 @@ void AS7265X::disableBulb(uint8_t device)
   virtualWriteRegister(AS7265X_LED_CONFIG, value);
 }
 
-// Update setBulbCurrent to use as7265x_led_current enum
+// Update setBulbCurrent to use as7265x_led_current typedef
 void AS7265X::setBulbCurrent(as7265x_led_current current, uint8_t device)
 {
   selectDevice(device);
@@ -433,9 +433,9 @@ void AS7265X::setBulbCurrent(as7265x_led_current current, uint8_t device)
     current = LED_100MA; // Limit to two bits
 
   uint8_t value = virtualReadRegister(AS7265X_LED_CONFIG); // Read
-  value &= 0b11001111; // Clear ICL_DRV bits
-  value |= (current << 4); // Set ICL_DRV bits with user's choice
-  virtualWriteRegister(AS7265X_LED_CONFIG, value); // Write
+  value &= 0b11001111;                                     // Clear ICL_DRV bits
+  value |= (current << 4);                                 // Set ICL_DRV bits with user's choice
+  virtualWriteRegister(AS7265X_LED_CONFIG, value);         // Write
 }
 
 //As we read various registers we have to point at the master or first/second slave
@@ -475,7 +475,7 @@ void AS7265X::disableIndicator()
   virtualWriteRegister(AS7265X_LED_CONFIG, value);
 }
 
-// Update setIndicatorCurrent to use as7265x_indicator_current enum
+// Update setIndicatorCurrent to use as7265x_indicator_current typedef
 void AS7265X::setIndicatorCurrent(as7265x_indicator_current current)
 {
   selectDevice(AS72651_NIR);
@@ -484,9 +484,9 @@ void AS7265X::setIndicatorCurrent(as7265x_indicator_current current)
     current = INDICATOR_8MA;
 
   uint8_t value = virtualReadRegister(AS7265X_LED_CONFIG); // Read
-  value &= 0b11111001; // Clear ICL_IND bits
-  value |= (current << 1); // Set ICL_IND bits with user's choice
-  virtualWriteRegister(AS7265X_LED_CONFIG, value); // Write
+  value &= 0b11111001;                                     // Clear ICL_IND bits
+  value |= (current << 1);                                 // Set ICL_IND bits with user's choice
+  virtualWriteRegister(AS7265X_LED_CONFIG, value);         // Write
 }
 
 //Returns the temperature of a given device in C

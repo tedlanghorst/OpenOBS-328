@@ -74,7 +74,6 @@
 #define AS7265X_COEF_DATA_WRITE 0x55
 
 //Settings
-
 #define AS7265X_POLLING_DELAY 5 //Amount of ms to wait between checking for virtual register changes
 
 #define AS72651_NIR 0x00
@@ -91,7 +90,6 @@ typedef enum {
   LED_50MA = 0b10,
   LED_100MA = 0b11,
 } as7265x_led_current;
-
 
 typedef enum {
   INDICATOR_1MA = 0b00,

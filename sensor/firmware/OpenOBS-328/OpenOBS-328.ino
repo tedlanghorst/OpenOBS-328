@@ -6,11 +6,8 @@
 #include "src/libs/LowPower/LowPower.h"
 #include "src/OpenOBS/Sensors.h"
 
-// Likely variables to change
-static const uint8_t MS5803_VERSION = 5;
-
+static const uint8_t MS5803_VERSION = 0; //set to 0 for to disable
 long sleepDuration_seconds = 0; 
-//
 
 //firmware data
 const DateTime uploadDT = DateTime((__DATE__), (__TIME__)); //saves compile time into progmem
@@ -78,13 +75,12 @@ bool fileIsOpen = false;
 //Sensor vars
 Sensors sensors = Sensors(SENSOR_SETTINGS_ADDR, MS5803_VERSION);
 uint8_t measFlags = 0b00001111;
-uint8_t iredCurrent = 50;
 
 void setup() {
   Serial.begin(250000);
   Serial.setTimeout(50);
   Wire.begin();
-  
+
   getSerialNumber();
   getDataLoggerSettings();
   checkModuleStartup();
@@ -210,7 +206,8 @@ void getSensorSettings(){
   //send a ready message and wait for a settings response.
   if (newFirmware || guiConnected){
     sensors.setMeasurementFlags(measFlags);
-    sensors.setBackscatterCurrent(iredCurrent/10);
+    // TODO
+//    sensors.setBackscatterCurrent(iredCurrent/10);
   } else {
     sensors.loadSettings();
   }

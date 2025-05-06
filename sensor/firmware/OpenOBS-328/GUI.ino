@@ -42,10 +42,10 @@ void receiveGuiSettings() {
       
       tmpbuf = strtok(NULL, ",");
       measFlags = atol(tmpbuf);
-//      sensors.setMeasurementFlags(measFlags);
+      sensors.setMeasurementFlags(measFlags);
       
-      tmpbuf = strtok(NULL, "*");
-      iredCurrent = atol(tmpbuf);
+//      tmpbuf = strtok(NULL, "*");
+//      iredCurrent = atol(tmpbuf);
 //      sensors.setBackscatterCurrent(iredCurrent/10);
       
       serialSend("SET,SUCCESS");

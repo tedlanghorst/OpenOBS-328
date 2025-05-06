@@ -13,27 +13,23 @@ Sensors::Sensors(uint16_t eepromAddr, uint8_t ms5803_version) {
     
 }
 
-void Sensors::setBackscatterRate(vcnl4010_freq rate) {
-    settings.backscatterRate = rate;
-    vcnl4010.setFrequency(rate);
-    saveSettings();
-}
-
-void Sensors::setBackscatterCurrent(uint8_t current) {
+void Sensors::setBackscatterCurrent(as7265x_led_current current) {
     settings.backscatterCurrent = current;
-    vcnl4010.setLEDcurrent(current);
+    as7265x.setBulbCurrent(current, AS7265x_LED_WHITE);
+    as7265x.setBulbCurrent(current, AS7265x_LED_IR);
+    as7265x.setBulbCurrent(current, AS7265x_LED_UV);
     saveSettings();
 }
 
-void Sensors::setAmbientAveraging(uint8_t averaging) {
-    settings.ambientAveraging = averaging;
-    vcnl4010.setAmbientAveraging(averaging);
+void Sensors::setIndicatorCurrent(as7265x_indicator_current current){
+    settings.indicatorCurrent = current;
+    as7265x.setIndicatorCurrent(current);
     saveSettings();
 }
 
-void Sensors::setAmbientContinuous(bool continuous) {
-    settings.ambientContinuous = continuous;
-    vcnl4010.setAmbientContinuous(continuous);
+void Sensors::setBackscatterGain(as7265x_gain gain){
+    settings.gain = gain;
+    as7265x.setGain(gain);
     saveSettings();
 }
 
@@ -54,14 +50,14 @@ void Sensors::saveSettings() {
 
 
 // Initialize sensors
-void Sensors::begin(bool &vcnl_init, bool &ms5803_init) {
-    vcnl_init = vcnl4010.begin();
-    if (vcnl_init) {
-        vcnl4010.setFrequency(settings.backscatterRate);
-        vcnl4010.setLEDcurrent(settings.backscatterCurrent);
-        vcnl4010.setAmbientAveraging(settings.ambientAveraging);
-        vcnl4010.setAmbientContinuous(settings.ambientContinuous);
-    } 
+void Sensors::begin(bool &as7265x_init, bool &ms5803_init) {
+    as7265x_init = as7265x.begin();
+    // if (as7265x_init) {
+        // as7265x.disableIndicator();
+        // setBackscatterCurrent(settings.backscatterCurrent);
+        // as7265x.setIndicatorCurrent(settings.indicatorCurrent);
+        // as7265x.setGain(settings.gain);
+    // } 
 
     if (hasPressureSensor) { 
         ms5803_init = ms5803.initializeMS_5803();
@@ -73,17 +69,23 @@ void Sensors::begin(bool &vcnl_init, bool &ms5803_init) {
 
 
 void Sensors::getReadings(uint16_t &tuAmbient, uint16_t &tuBackscatter, uint32_t &abs_P, int16_t &water_temp) {
-    if (settings.measFlags & 0b00000001) { // Check bit 0 (readAmbient)
-        tuAmbient = vcnl4010.readAmbient();
-    } else {
-        tuAmbient = 0;
-    }
+    // if (settings.measFlags & 0b00000001) { // Check bit 0 (readAmbient)
+    //     as7265x.takeMeasurements();
+    //     tuAmbient = as7265x.getCalibratedW();
+    // } else {
+    //     tuAmbient = 0;
+    // }
+    as7265x.takeMeasurements();
+    tuAmbient = as7265x.getCalibratedW();
 
-    if (settings.measFlags & 0b00000010) { // Check bit 1 (readBackscatter)
-        tuBackscatter = vcnl4010.readProximity();
-    } else {
-        tuBackscatter = 0;
-    }
+    // if (settings.measFlags & 0b00000010) { // Check bit 1 (readBackscatter)
+    //     as7265x.takeMeasurementsWithBulb();
+    //     tuBackscatter = as7265x.getCalibratedW();
+    // } else {
+    //     tuBackscatter = 0;
+    // }
+    as7265x.takeMeasurementsWithBulb();
+    tuBackscatter = as7265x.getCalibratedW();
     
     if (hasPressureSensor && ((settings.measFlags & 0b00001100) != 0)) {
         ms5803.readSensor();
