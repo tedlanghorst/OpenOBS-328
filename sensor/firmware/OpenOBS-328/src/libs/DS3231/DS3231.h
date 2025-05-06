@@ -13,7 +13,6 @@
 // Changed the following to work on 1.0
 //#include "WProgram.h"
 #include <Arduino.h>
-
 #include <Wire.h>
 
 #define DS3231_ADDRESS	      0x68 //I2C Slave address

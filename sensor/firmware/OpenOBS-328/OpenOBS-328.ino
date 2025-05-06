@@ -11,7 +11,7 @@ long sleepDuration_seconds = 0;
 
 //firmware data
 const DateTime uploadDT = DateTime((__DATE__), (__TIME__)); //saves compile time into progmem
-const char dataColumnLabels[] PROGMEM = "time,millis,ambient_light,backscatter,pressure,water_temp,battery";
+const char dataColumnLabels[] PROGMEM = "time,millis,A410,A435,A460,A485,A510,A535,A560,A585,A610,A645,A680,A705,A730,A760,A810,A860,A900,A940,B410,B435,B460,B485,B510,B535,B560,B585,B610,B645,B680,B705,B730,B760,B810,B860,B900,B940,pressure,water_temp,battery";
 uint16_t serialNumber;
 
 //connected pins
@@ -26,7 +26,7 @@ uint16_t serialNumber;
 
 //gui communications vars
 #define COMMS_TRY 3        //number of attemps for gui connection
-#define MAX_CHAR 60            //max num character in messages
+#define MAX_CHAR 60           //max num character in messages
 char messageBuffer[MAX_CHAR];       //buffer for sending and receiving comms
 bool guiConnected = false;
 bool newFirmware = false;
@@ -36,17 +36,11 @@ struct {
   uint32_t timeSeconds;
   uint32_t timeMillis;
   uint32_t absPressure;
-  uint16_t ambientLight;
-  uint16_t backscatterLight;
+  float ambientLight[18]; // Array for 18 ambient channel values
+  float backscatterLight[18]; // Array for 18 backscatter channel values
   int16_t waterTemp;
   uint16_t batteryVoltage;
-  
-  void toString(char* externalBuffer) {
-    sprintf(externalBuffer, "%lu,%lu,%u,%u,%lu,%i,%u",
-            timeSeconds, timeMillis, ambientLight, backscatterLight,
-            absPressure, waterTemp, batteryVoltage);
-  }
-} data; //20 bytes
+} data; // Updated to include arrays for ambient and backscatter values
 
 //initialization variables
 union {
@@ -95,7 +89,7 @@ void setup() {
 
 
 void loop()
-{   
+{  
   // Put new data into the data struct.
   data.timeSeconds = RTC.now().unixtime();
   data.timeMillis = millis();
@@ -106,13 +100,16 @@ void loop()
     data.absPressure, 
     data.waterTemp);
 
-  data.toString(messageBuffer);
-  writeToSD(messageBuffer);
-  serialSend(messageBuffer);
-  
-  if (sleepDuration_seconds>0) {
-    sensorSleep(data.timeSeconds, sleepDuration_seconds);
-  }
+   writeDataToSerial();
+   writeDataToSD();
+
+//  data.toString(messageBuffer);
+//  writeToSD(messageBuffer);
+//  serialSend(messageBuffer);
+//  
+//  if (sleepDuration_seconds>0) {
+//    sensorSleep(data.timeSeconds, sleepDuration_seconds);
+//  }
   
 }
 

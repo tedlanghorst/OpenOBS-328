@@ -13,7 +13,7 @@ Sensors::Sensors(uint16_t eepromAddr, uint8_t ms5803_version) {
     
 }
 
-void Sensors::setBackscatterCurrent(as7265x_led_current current) {
+void Sensors::setBackscatterCurrent(uint8_t current) {
     settings.backscatterCurrent = current;
     as7265x.setBulbCurrent(current, AS7265x_LED_WHITE);
     as7265x.setBulbCurrent(current, AS7265x_LED_IR);
@@ -21,13 +21,13 @@ void Sensors::setBackscatterCurrent(as7265x_led_current current) {
     saveSettings();
 }
 
-void Sensors::setIndicatorCurrent(as7265x_indicator_current current){
+void Sensors::setIndicatorCurrent(uint8_t current){
     settings.indicatorCurrent = current;
     as7265x.setIndicatorCurrent(current);
     saveSettings();
 }
 
-void Sensors::setBackscatterGain(as7265x_gain gain){
+void Sensors::setBackscatterGain(uint8_t gain){
     settings.gain = gain;
     as7265x.setGain(gain);
     saveSettings();
@@ -67,25 +67,42 @@ void Sensors::begin(bool &as7265x_init, bool &ms5803_init) {
     }
 }
 
+void Sensors::readChannels(float values[18], bool withBulb) {
+    if (withBulb) {
+        as7265x.takeMeasurementsWithBulb();
+    } else {
+        as7265x.takeMeasurements();
+    }
 
-void Sensors::getReadings(uint16_t &tuAmbient, uint16_t &tuBackscatter, uint32_t &abs_P, int16_t &water_temp) {
-    // if (settings.measFlags & 0b00000001) { // Check bit 0 (readAmbient)
-    //     as7265x.takeMeasurements();
-    //     tuAmbient = as7265x.getCalibratedW();
-    // } else {
-    //     tuAmbient = 0;
-    // }
-    as7265x.takeMeasurements();
-    tuAmbient = as7265x.getCalibratedW();
+    values[0] = as7265x.getCalibratedA();
+    values[1] = as7265x.getCalibratedB();
+    values[2] = as7265x.getCalibratedC();
+    values[3] = as7265x.getCalibratedD();
+    values[4] = as7265x.getCalibratedE();
+    values[5] = as7265x.getCalibratedF();
+    values[6] = as7265x.getCalibratedG();
+    values[7] = as7265x.getCalibratedH();
+    values[8] = as7265x.getCalibratedR();
+    values[9] = as7265x.getCalibratedI();
+    values[10] = as7265x.getCalibratedS();
+    values[11] = as7265x.getCalibratedJ();
+    values[12] = as7265x.getCalibratedT();
+    values[13] = as7265x.getCalibratedU();
+    values[14] = as7265x.getCalibratedV();
+    values[15] = as7265x.getCalibratedW();
+    values[16] = as7265x.getCalibratedK();
+    values[17] = as7265x.getCalibratedL();
+}
 
-    // if (settings.measFlags & 0b00000010) { // Check bit 1 (readBackscatter)
-    //     as7265x.takeMeasurementsWithBulb();
-    //     tuBackscatter = as7265x.getCalibratedW();
-    // } else {
-    //     tuBackscatter = 0;
-    // }
-    as7265x.takeMeasurementsWithBulb();
-    tuBackscatter = as7265x.getCalibratedW();
+void Sensors::getReadings(float ambient[18], float backscatter[18], uint32_t &abs_P, int16_t &water_temp) {
+    
+    if (settings.measFlags & 0b00000001) { // Check bit 0 (readAmbient)
+        readChannels(ambient, false);
+    } 
+
+    if (settings.measFlags & 0b00000010) { // Check bit 1 (readBackscatter)
+        readChannels(backscatter, true);
+    } 
     
     if (hasPressureSensor && ((settings.measFlags & 0b00001100) != 0)) {
         ms5803.readSensor();
@@ -105,6 +122,8 @@ void Sensors::getReadings(uint16_t &tuAmbient, uint16_t &tuBackscatter, uint32_t
         water_temp = -32768;
     }
 }
+
+
 
 
 

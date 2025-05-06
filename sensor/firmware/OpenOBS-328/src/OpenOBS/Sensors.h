@@ -8,9 +8,9 @@
 
 // Sensor settings structure
 struct SensorSettings {
-    as7265x_led_current backscatterCurrent = LED_12_5MA; // 12.5, 25, 50, 100 mA
-    as7265x_indicator_current indicatorCurrent = INDICATOR_2MA; // 1, 2, 4, 8 mA
-    as7265x_gain gain = GAIN_1X; // 1x, 37x, 16x, 64x
+    uint8_t backscatterCurrent = AS7265X_LED_CURRENT_LIMIT_12_5MA; // 12.5, 25, 50, 100 mA
+    uint8_t indicatorCurrent = AS7265X_INDICATOR_CURRENT_LIMIT_1MA; // 1, 2, 4, 8 mA
+    uint8_t gain = AS7265X_GAIN_64X; // 1x, 37x, 16x, 64x
     uint8_t integrationCycles = 64; //1-255
     uint8_t measFlags = 0b00001111;
 };
@@ -29,13 +29,14 @@ public:
 
     void saveSettings();
     void loadSettings(); 
-    void setBackscatterCurrent(as7265x_led_current current);
-    void setIndicatorCurrent(as7265x_indicator_current current);
-    void setBackscatterGain(as7265x_gain gain);
+    void setBackscatterCurrent(uint8_t current);
+    void setIndicatorCurrent(uint8_t current);
+    void setBackscatterGain(uint8_t gain);
     void setMeasurementFlags(uint8_t flags);
     void newSettings();
     void begin(bool &vcnl_init, bool &ms5803_init); 
-    void getReadings(uint16_t &tuAmbient, uint16_t &tuBackscatter, uint32_t &abs_P, int16_t &water_temp);
+    void readChannels(float values[18], bool withBulb);
+    void getReadings(float ambient[18], float backscatter[18], uint32_t &abs_P, int16_t &water_temp);
 };
     
 #endif // SENSORS_H

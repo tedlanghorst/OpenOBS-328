@@ -74,6 +74,7 @@
 #define AS7265X_COEF_DATA_WRITE 0x55
 
 //Settings
+
 #define AS7265X_POLLING_DELAY 5 //Amount of ms to wait between checking for virtual register changes
 
 #define AS72651_NIR 0x00
@@ -84,40 +85,32 @@
 #define AS7265x_LED_IR 0x01    //IR LED is connected to x52
 #define AS7265x_LED_UV 0x02    //UV LED is connected to x53
 
-typedef enum {
-  LED_12_5MA = 0b00,  
-  LED_25MA = 0b01,
-  LED_50MA = 0b10,
-  LED_100MA = 0b11,
-} as7265x_led_current;
+#define AS7265X_LED_CURRENT_LIMIT_12_5MA 0b00
+#define AS7265X_LED_CURRENT_LIMIT_25MA 0b01
+#define AS7265X_LED_CURRENT_LIMIT_50MA 0b10
+#define AS7265X_LED_CURRENT_LIMIT_100MA 0b11
 
-typedef enum {
-  INDICATOR_1MA = 0b00,
-  INDICATOR_2MA = 0b01,
-  INDICATOR_4MA = 0b10,
-  INDICATOR_8MA = 0b11,
-} as7265x_indicator_current;
+#define AS7265X_INDICATOR_CURRENT_LIMIT_1MA 0b00
+#define AS7265X_INDICATOR_CURRENT_LIMIT_2MA 0b01
+#define AS7265X_INDICATOR_CURRENT_LIMIT_4MA 0b10
+#define AS7265X_INDICATOR_CURRENT_LIMIT_8MA 0b11
 
-typedef enum {
-  GAIN_1X = 0b00,
-  GAIN_37X = 0b01,
-  GAIN_16X = 0b10,
-  GAIN_64X = 0b11,
-} as7265x_gain;
+#define AS7265X_GAIN_1X 0b00
+#define AS7265X_GAIN_37X 0b01
+#define AS7265X_GAIN_16X 0b10
+#define AS7265X_GAIN_64X 0b11
 
-typedef enum {
-  MODE_4CHAN = 0b00,
-  MODE_4CHAN_2 = 0b01,
-  MODE_6CHAN_CONTINUOUS = 0b10,
-  MODE_6CHAN_ONE_SHOT = 0b11, 
-} as7265x_mode;
+#define AS7265X_MEASUREMENT_MODE_4CHAN 0b00
+#define AS7265X_MEASUREMENT_MODE_4CHAN_2 0b01
+#define AS7265X_MEASUREMENT_MODE_6CHAN_CONTINUOUS 0b10
+#define AS7265X_MEASUREMENT_MODE_6CHAN_ONE_SHOT 0b11
 
 class AS7265X
 {
 public:
   AS7265X();
 
-  boolean begin(TwoWire &wirePort = Wire);
+  boolean begin();
   boolean isConnected(); //Checks if sensor ack's the I2C request
 
   uint8_t getDeviceType();
@@ -138,12 +131,12 @@ public:
   void enableBulb(uint8_t device);
   void disableBulb(uint8_t device);
 
-  void setGain(as7265x_gain gain);            //1 to 64x
-  void setMeasurementMode(as7265x_mode mode);      //4 channel, other 4 channel, 6 chan, or 6 chan one shot
+  void setGain(uint8_t gain);            //1 to 64x
+  void setMeasurementMode(uint8_t mode); //4 channel, other 4 channel, 6 chan, or 6 chan one shot
   void setIntegrationCycles(uint8_t cycleValue);
 
-  void setBulbCurrent(as7265x_led_current current, uint8_t device); 
-  void setIndicatorCurrent(as7265x_indicator_current current);            //0 to 8mA
+  void setBulbCurrent(uint8_t current, uint8_t device); //
+  void setIndicatorCurrent(uint8_t current);            //0 to 8mA
 
   void enableInterrupt();
   void disableInterrupt();

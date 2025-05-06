@@ -27,6 +27,73 @@ void writeToSD(char dataStr[]) {
   file.sync();
 }
 
+void writeDataToSerial() {
+  // Ensure Serial communication has been initialized in your setup() function, e.g., Serial.begin(9600);
+
+  // Write timestamp and pressure
+  Serial.print(data.timeSeconds);
+  Serial.print(',');
+  Serial.print(data.timeMillis);
+  Serial.print(',');
+  Serial.print(data.absPressure);
+  Serial.print(',');
+
+  // Write ambient light values with 2 decimal places
+  for (int i = 0; i < 18; i++) {
+    Serial.print(data.ambientLight[i], 2);
+    Serial.print(',');
+  }
+
+  // Write backscatter light values with 2 decimal places
+  for (int i = 0; i < 18; i++) {
+    Serial.print(data.backscatterLight[i], 2);
+    Serial.print(',');
+  }
+
+  // Write temp and battery voltage
+  Serial.print(data.waterTemp);
+  Serial.print(',');
+  Serial.println(data.batteryVoltage); // Newline at end of row
+
+  // Serial.flush(); // Optional: waits for the transmission of outgoing serial data to complete.
+                  // Similar in concept to file.sync() for ensuring data is sent.
+                  // Often not strictly necessary for Serial.print unless precise timing
+                  // or confirmation of transmission is critical before proceeding.
+}
+
+void writeDataToSD() {
+  if (!fileIsOpen) {
+    fileIsOpen = file.open(filename, O_WRITE | O_APPEND);
+  }
+
+  // Write timestamp and pressure
+  file.print(data.timeSeconds); 
+  file.print(',');
+  file.print(data.timeMillis);  
+  file.print(',');
+  file.print(data.absPressure); 
+  file.print(',');
+
+  // Write ambient light values with 2 decimal places
+  for (int i = 0; i < 18; i++) {
+    file.print(data.ambientLight[i], 2); 
+    file.print(',');
+  }
+
+  // Write backscatter light values with 2 decimal places
+  for (int i = 0; i < 18; i++) {
+    file.print(data.backscatterLight[i], 2); 
+    file.print(',');
+  }
+
+  // Write temp and battery voltage
+  file.print(data.waterTemp); 
+  file.print(',');
+  file.println(data.batteryVoltage); // Newline at end of row
+
+  file.sync();  // Ensure data is written to SD
+}
+
 
 //Check if the daily file exists already. If not, create one and write headers.
 void updateFilename() {

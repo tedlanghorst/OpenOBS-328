@@ -32,11 +32,8 @@ AS7265X::AS7265X()
 
 //Initializes the sensor with basic settings
 //Returns false if sensor is not detected
-boolean AS7265X::begin(TwoWire &wirePort)
+boolean AS7265X::begin()
 {
-  _i2cPort = &wirePort;
-  _i2cPort->begin(); //This resets any setClock() the user may have done
-
   if (isConnected() == false)
     return (false); //Check for sensor presence
 
@@ -45,23 +42,23 @@ boolean AS7265X::begin(TwoWire &wirePort)
   if ((value & 0b00110000) == 0)
     return (false); //Test if Slave1 and 2 are detected. If not, bail.
 
-  setBulbCurrent(LED_12_5MA, AS7265x_LED_WHITE);
-  setBulbCurrent(LED_12_5MA, AS7265x_LED_IR);
-  setBulbCurrent(LED_12_5MA, AS7265x_LED_UV);
+  setBulbCurrent(AS7265X_LED_CURRENT_LIMIT_12_5MA, AS7265x_LED_WHITE);
+  setBulbCurrent(AS7265X_LED_CURRENT_LIMIT_12_5MA, AS7265x_LED_IR);
+  setBulbCurrent(AS7265X_LED_CURRENT_LIMIT_12_5MA, AS7265x_LED_UV);
 
   disableBulb(AS7265x_LED_WHITE); //Turn off bulb to avoid heating sensor
   disableBulb(AS7265x_LED_IR);
   disableBulb(AS7265x_LED_UV);
 
-  setIndicatorCurrent(INDICATOR_8MA); //Set to 8mA (maximum)
-  enableIndicator();
+  setIndicatorCurrent(AS7265X_INDICATOR_CURRENT_LIMIT_8MA); //Set to 8mA (maximum)
+  disableIndicator();
 
-  setIntegrationCycles(1); //50 * 2.8ms = 140ms. 0 to 255 is valid.
+  setIntegrationCycles(49); //50 * 2.8ms = 140ms. 0 to 255 is valid.
   //If you use Mode 2 or 3 (all the colors) then integration time is double. 140*2 = 280ms between readings.
- 
-  setGain(GAIN_64X); //Set gain to 64x
 
-  setMeasurementMode(MODE_6CHAN_ONE_SHOT); //One-shot reading of VBGYOR
+  setGain(AS7265X_GAIN_64X); //Set gain to 64x
+
+  setMeasurementMode(AS7265X_MEASUREMENT_MODE_6CHAN_ONE_SHOT); //One-shot reading of VBGYOR
 
   enableInterrupt();
 
@@ -107,11 +104,11 @@ boolean AS7265X::isConnected()
   //Give IC 660ms for startup - max 1000ms
   for (uint8_t x = 0; x < 100; x++)
   {
-    _i2cPort->beginTransmission((uint8_t)AS7265X_ADDR);
+    Wire.beginTransmission((uint8_t)AS7265X_ADDR);
 #ifdef ENERGIA
-    _i2cPort->write(0x00); //See issue: https://github.com/sparkfun/SparkFun_AS7265x_Arduino_Library/issues/4
+    Wire.write(0x00); //See issue: https://github.com/sparkfun/SparkFun_AS7265x_Arduino_Library/issues/4
 #endif
-    if (_i2cPort->endTransmission() == 0)
+    if (Wire.endTransmission() == 0)
       return (true); //Sensor ACK'd
     delay(10);
   }
@@ -121,7 +118,7 @@ boolean AS7265X::isConnected()
 //Tells IC to take all channel measurements and polls for data ready flag
 void AS7265X::takeMeasurements()
 {
-  setMeasurementMode(MODE_6CHAN_ONE_SHOT); //Set mode to all 6-channels, one-shot
+  setMeasurementMode(AS7265X_MEASUREMENT_MODE_6CHAN_ONE_SHOT); //Set mode to all 6-channels, one-shot
 
   //Wait for data to be ready
   unsigned long startTime = millis();
@@ -345,28 +342,33 @@ float AS7265X::convertBytesToFloat(uint32_t myLong)
 //Mode 1: Different 4 channels out of 6 (see datasheet)
 //Mode 2: All 6 channels continuously
 //Mode 3: One-shot reading of all channels
-void AS7265X::setMeasurementMode(as7265x_mode mode)
+void AS7265X::setMeasurementMode(uint8_t mode)
 {
-  if (mode > MODE_6CHAN_ONE_SHOT)
-    mode = MODE_6CHAN_ONE_SHOT; // Error check
+  if (mode > 0b11)
+    mode = 0b11; //Error check
 
-  // Read, mask/set, write
-  uint8_t value = virtualReadRegister(AS7265X_CONFIG); // Read
-  value &= 0b11110011;                                 // Clear BANK bits
-  value |= (mode << 2);                                // Set BANK bits with user's choice
-  virtualWriteRegister(AS7265X_CONFIG, value);         // Write
+  //Read, mask/set, write
+  uint8_t value = virtualReadRegister(AS7265X_CONFIG); //Read
+  value &= 0b11110011;                                 //Clear BANK bits
+  value |= (mode << 2);                                //Set BANK bits with user's choice
+  virtualWriteRegister(AS7265X_CONFIG, value);         //Write
 }
 
-// Update setGain to use as7265x_gain typedef
-void AS7265X::setGain(as7265x_gain gain)
+//Sets the gain value
+//Gain 0: 1x (power-on default)
+//Gain 1: 3.7x
+//Gain 2: 16x
+//Gain 3: 64x
+void AS7265X::setGain(uint8_t gain)
 {
-  if (gain > GAIN_64X)
-    gain = GAIN_64X;
+  if (gain > 0b11)
+    gain = 0b11;
 
-  uint8_t value = virtualReadRegister(AS7265X_CONFIG); // Read
-  value &= 0b11001111;                                 // Clear GAIN bits
-  value |= (gain << 4);                                // Set GAIN bits with user's choice
-  virtualWriteRegister(AS7265X_CONFIG, value);         // Write
+  //Read, mask/set, write
+  uint8_t value = virtualReadRegister(AS7265X_CONFIG); //Read
+  value &= 0b11001111;                                 //Clear GAIN bits
+  value |= (gain << 4);                                //Set GAIN bits with user's choice
+  virtualWriteRegister(AS7265X_CONFIG, value);         //Write
 }
 
 //Sets the integration cycle amount
@@ -424,18 +426,22 @@ void AS7265X::disableBulb(uint8_t device)
   virtualWriteRegister(AS7265X_LED_CONFIG, value);
 }
 
-// Update setBulbCurrent to use as7265x_led_current typedef
-void AS7265X::setBulbCurrent(as7265x_led_current current, uint8_t device)
+//Set the current limit of bulb/LED.
+//Current 0: 12.5mA
+//Current 1: 25mA
+//Current 2: 50mA
+//Current 3: 100mA
+void AS7265X::setBulbCurrent(uint8_t current, uint8_t device)
 {
   selectDevice(device);
 
-  if (current > LED_100MA)
-    current = LED_100MA; // Limit to two bits
-
-  uint8_t value = virtualReadRegister(AS7265X_LED_CONFIG); // Read
-  value &= 0b11001111;                                     // Clear ICL_DRV bits
-  value |= (current << 4);                                 // Set ICL_DRV bits with user's choice
-  virtualWriteRegister(AS7265X_LED_CONFIG, value);         // Write
+  // set the current
+  if (current > 0b11)
+    current = 0b11;                                        //Limit to two bits
+  uint8_t value = virtualReadRegister(AS7265X_LED_CONFIG); //Read
+  value &= 0b11001111;                                     //Clear ICL_DRV bits
+  value |= (current << 4);                                 //Set ICL_DRV bits with user's choice
+  virtualWriteRegister(AS7265X_LED_CONFIG, value);         //Write
 }
 
 //As we read various registers we have to point at the master or first/second slave
@@ -475,18 +481,19 @@ void AS7265X::disableIndicator()
   virtualWriteRegister(AS7265X_LED_CONFIG, value);
 }
 
-// Update setIndicatorCurrent to use as7265x_indicator_current typedef
-void AS7265X::setIndicatorCurrent(as7265x_indicator_current current)
+//Set the current limit of onboard LED. Default is max 8mA = 0b11.
+void AS7265X::setIndicatorCurrent(uint8_t current)
 {
   selectDevice(AS72651_NIR);
 
-  if (current > INDICATOR_8MA)
-    current = INDICATOR_8MA;
+  if (current > 0b11)
+    current = 0b11;
+  //Read, mask/set, write
+  uint8_t value = virtualReadRegister(AS7265X_LED_CONFIG); //Read
+  value &= 0b11111001;                                     //Clear ICL_IND bits
+  value |= (current << 1);                                 //Set ICL_IND bits with user's choice
 
-  uint8_t value = virtualReadRegister(AS7265X_LED_CONFIG); // Read
-  value &= 0b11111001;                                     // Clear ICL_IND bits
-  value |= (current << 1);                                 // Set ICL_IND bits with user's choice
-  virtualWriteRegister(AS7265X_LED_CONFIG, value);         // Write
+  virtualWriteRegister(AS7265X_LED_CONFIG, value); //Write
 }
 
 //Returns the temperature of a given device in C
@@ -595,18 +602,18 @@ void AS7265X::virtualWriteRegister(uint8_t virtualAddr, uint8_t dataToWrite)
 //Reads from a give location from the AS726x
 uint8_t AS7265X::readRegister(uint8_t addr)
 {
-  _i2cPort->beginTransmission(AS7265X_ADDR);
-  _i2cPort->write(addr);
-  if (_i2cPort->endTransmission() != 0)
+  Wire.beginTransmission(AS7265X_ADDR);
+  Wire.write(addr);
+  if (Wire.endTransmission() != 0)
   {
     //Serial.println("No ack!");
     return (0); //Device failed to ack
   }
 
-  _i2cPort->requestFrom((uint8_t)AS7265X_ADDR, (uint8_t)1);
-  if (_i2cPort->available())
+  Wire.requestFrom((uint8_t)AS7265X_ADDR, (uint8_t)1);
+  if (Wire.available())
   {
-    return (_i2cPort->read());
+    return (Wire.read());
   }
 
   //Serial.println("No ack!");
@@ -616,10 +623,10 @@ uint8_t AS7265X::readRegister(uint8_t addr)
 //Write a value to a spot in the AS726x
 boolean AS7265X::writeRegister(uint8_t addr, uint8_t val)
 {
-  _i2cPort->beginTransmission(AS7265X_ADDR);
-  _i2cPort->write(addr);
-  _i2cPort->write(val);
-  if (_i2cPort->endTransmission() != 0)
+  Wire.beginTransmission(AS7265X_ADDR);
+  Wire.write(addr);
+  Wire.write(val);
+  if (Wire.endTransmission() != 0)
   {
     //Serial.println("No ack!");
     return (false); //Device failed to ack
