@@ -18,7 +18,7 @@ bool checkGuiConnection() {
 }
 
 void receiveGuiSettings() {
-  serialSend("READY");
+  serialSend(sensorVersion);
   //wait indefinitely while user picks settings and clicks 'send' button.
   while (true) {
     delay(100);

@@ -31,6 +31,7 @@ void writeDataToSerial() {
   // Ensure Serial communication has been initialized in your setup() function, e.g., Serial.begin(9600);
 
   // Write timestamp and pressure
+  Serial.print("DATA,");
   Serial.print(data.timeSeconds);
   Serial.print(',');
   Serial.print(data.timeMillis);

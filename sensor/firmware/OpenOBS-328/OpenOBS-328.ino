@@ -12,6 +12,7 @@ long sleepDuration_seconds = 0;
 //firmware data
 const DateTime uploadDT = DateTime((__DATE__), (__TIME__)); //saves compile time into progmem
 const char dataColumnLabels[] PROGMEM = "time,millis,A410,A435,A460,A485,A510,A535,A560,A585,A610,A645,A680,A705,A730,A760,A810,A860,A900,A940,B410,B435,B460,B485,B510,B535,B560,B585,B610,B645,B680,B705,B730,B760,B810,B860,B900,B940,pressure,water_temp,battery";
+const char sensorVersion[] = "SENSOR,AS7265X";
 uint16_t serialNumber;
 
 //connected pins
@@ -68,7 +69,7 @@ bool fileIsOpen = false;
 
 //Sensor vars
 Sensors sensors = Sensors(SENSOR_SETTINGS_ADDR, MS5803_VERSION);
-uint8_t measFlags = 0b00001111;
+uint8_t measFlags = 0b00001101;
 
 void setup() {
   Serial.begin(250000);
@@ -85,6 +86,8 @@ void setup() {
   }
   
   updateFilename();
+  Serial.print("HEADERS,");
+  Serial.println((__FlashStringHelper*)dataColumnLabels);
 }
 
 
