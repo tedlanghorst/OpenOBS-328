@@ -4,7 +4,7 @@ bool checkGuiConnection() {
   while (try_count < COMMS_TRY) {
     sprintf(messageBuffer, "OPENOBS,%u", serialNumber);
     serialSend(messageBuffer);
-    delay(50);
+    delay(100);
     if (serialReceive(&messageBuffer[0])) {
       if (strncmp(messageBuffer, "$OPENOBS", 8) == 0) {
         startup.module.clk = RTC.begin(); //reset the RTC

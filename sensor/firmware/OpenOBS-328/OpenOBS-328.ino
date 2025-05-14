@@ -95,6 +95,8 @@ void setup() {
   }
   
   updateFilename();
+  Serial.print("HEADERS,");
+  Serial.println((__FlashStringHelper*)dataColumnLabels);
 }
 
 
@@ -112,7 +114,10 @@ void loop()
 
   data.toString(messageBuffer);
   writeToSD(messageBuffer);
-  serialSend(messageBuffer);
+
+  Serial.print("DATA,");
+  Serial.println(messageBuffer);
+  //serialSend(messageBuffer);
   
   if (sleepDuration_seconds>0) {
     sensorSleep(data.timeSeconds, sleepDuration_seconds);
